@@ -8,7 +8,6 @@ from rest_framework.exceptions import PermissionDenied
 from stores.models import Store
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsStoreOwnerOrReadOnly, IsAuthenticated]
     authentication_classes = [TokenAuthentication]
@@ -50,7 +49,6 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class PictureViewSet(viewsets.ModelViewSet):
-    queryset = Picture.objects.all()
     serializer_class = PictureSerializer
     permission_classes = [IsStoreOwnerOrReadOnly, IsAuthenticated]
     authentication_classes = [TokenAuthentication]

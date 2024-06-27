@@ -7,7 +7,6 @@ from users.permissions import IsStoreOwnerOrReadOnly
 from rest_framework.exceptions import PermissionDenied
 
 class StoreViewSet(viewsets.ModelViewSet):
-    queryset = Store.objects.all()
     serializer_class = StoreSerializer
     permission_classes = [IsStoreOwnerOrReadOnly, IsAuthenticated]
     authentication_classes = [TokenAuthentication]

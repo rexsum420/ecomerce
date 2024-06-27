@@ -6,10 +6,15 @@ from .serializers import OrderSerializer, LineItemSerializer, CreateLineItemSeri
 from users.permissions import IsCustomerOrStoreReadOnly
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsCustomerOrStoreReadOnly, IsAuthenticated]
     authentication_classes = [TokenAuthentication]
+
+    def get_queryset(self):
+        user = self.request.user
+        if user is not None:
+            return Order.objects.filter(customer=user) | Order.objects.filter(store__owner=user)
+        return None
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -20,11 +25,16 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.save(customer=self.request.user)
 
 class LineItemViewSet(viewsets.ModelViewSet):
-    queryset = LineItem.objects.all()
     serializer_class = LineItemSerializer
     permission_classes = [IsCustomerOrStoreReadOnly, IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
+    def get_queryset(self):
+        user = self.request,user
+        if user is not None:
+            return LineItem.objects.filter(order__customer=user) | LineItem.objects.filter(order__store__owner=user)
+        return None
+    
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateLineItemSerializer
