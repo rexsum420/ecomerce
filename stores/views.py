@@ -15,7 +15,7 @@ class StoreViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.user is not None:
             return Store.objects.filter(owner=self.request.user)
-        return None
+        return Store.objects.none()
 
     def get_serializer_class(self):
         if self.request.method == 'POST':

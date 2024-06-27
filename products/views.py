@@ -65,7 +65,7 @@ class PictureViewSet(viewsets.ModelViewSet):
         if user is not None:
             prods = Product.objects.filter(store__owner=user)
             return Picture.objects.filter(product__in=prods)
-        return None
+        return Picture.objects.none()
 
     def perform_create(self, serializer):
         product = serializer.validated_data['product']

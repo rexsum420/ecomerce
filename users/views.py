@@ -6,10 +6,8 @@ from .serializers import UserSerializer, ProfileSerializer, Profile
 from .permissions import UserModelMixin
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import PermissionDenied
-from django.shortcuts import redirect, render, HttpResponse
+from django.shortcuts import render, HttpResponse
 from django.contrib.auth.models import User
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
 from django.contrib import messages
 
 from rest_framework.authtoken.models import Token
@@ -84,7 +82,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 return Profile.objects.all()
             else:
                 return Profile.objects.filter(user=user)
-        return User.objects.none()
+        return Profile.objects.none()
 
     def perform_create(self, serializer):
         raise PermissionDenied('Profiles are created by the server automatically')

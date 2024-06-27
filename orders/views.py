@@ -16,7 +16,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if user is not None:
             return Order.objects.filter(customer=user) | Order.objects.filter(store__owner=user)
-        return None
+        return Order.objects.none()
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -42,7 +42,7 @@ class LineItemViewSet(viewsets.ModelViewSet):
         user = self.request,user
         if user is not None:
             return LineItem.objects.filter(order__customer=user) | LineItem.objects.filter(order__store__owner=user)
-        return None
+        return LineItem.objects.none()
     
     def get_serializer_class(self):
         if self.request.method == 'POST':
