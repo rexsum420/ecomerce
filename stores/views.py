@@ -12,6 +12,11 @@ class StoreViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStoreOwnerOrReadOnly, IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
+    def get_queryset(self):
+        if self.request.user is not None:
+            return Store.objects.filter(owner=self.request.user)
+        return None
+
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return CreateStoreSerializer

@@ -70,6 +70,15 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Profile.objects.all()
 
+    def get_queryset(self):
+        user = self.request.user
+        if user and user.is_authenticated:
+            if user.is_staff:
+                return Profile.objects.all()
+            else:
+                return Profile.objects.filter(user=user)
+        return User.objects.none()
+
     def perform_create(self, serializer):
         raise PermissionDenied('Profiles are created by the server automatically')
     

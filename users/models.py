@@ -5,11 +5,7 @@ from django.dispatch import receiver
 from django.db import models
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
 from django.conf import settings
-from django.urls import reverse
-from market.utils import email_verification_token
 from django.contrib.sites.shortcuts import get_current_site
 
 class Profile(models.Model):
