@@ -26,11 +26,6 @@ class Product(models.Model):
         ('GRY', 'Grey'),
         ('BRN', 'Brown'),
         ('TAN', 'Tan'),
-        ('LBU', 'Light Blue'),
-        ('DGY', 'Dark Grey'),
-        ('LGR', 'Light Green'),
-        ('DGR', 'Dark Green'),
-        ('TEA', 'Teal'),
         ('OTH', 'Other')
     ]
 
