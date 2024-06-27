@@ -11,8 +11,7 @@ from django.contrib.auth.models import User
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.contrib import messages
-from market.utils import email_verification_token
-from .models import send_verification_email
+
 from rest_framework.authtoken.models import Token
 
 def activate(request, token):
