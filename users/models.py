@@ -30,17 +30,15 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Profile.objects.create(user=instance)
         Token.objects.create(user=instance)
-        send_verification_email(instance)
 
-def send_verification_email(user):
-    token = email_verification_token.make_token(user)
-    uid = urlsafe_base64_encode(force_bytes(user.pk))
-    current_site = get_current_site(None)
+def send_verification_email(user, request):
+    tokn = Token.objects.get(user=user)
+    token = tokn.key 
+    current_site = get_current_site(request)
     mail_subject = 'Activate your account.'
     message = render_to_string('acc_active_email.html', {
         'user': user,
         'domain': current_site.domain,
-        'uid': uid,
         'token': token,
     })
     send_mail(

@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.routers import DefaultRouter
-from users.views import UserViewSet, ProfileViewSet
+from users.views import UserViewSet, ProfileViewSet, activate
 from stores.views import StoreViewSet
 from products.views import ProductViewSet, PictureViewSet
 from orders.views import OrderViewSet, LineItemViewSet
@@ -35,5 +35,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('auth/', ObtainAuthToken.as_view()),
-    path('accounts/', include('users.urls')),
+    path('activate/<token>/', activate, name='activate'),
 ]

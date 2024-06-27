@@ -6,28 +6,30 @@ from .serializers import UserSerializer, ProfileSerializer, Profile
 from .permissions import UserModelMixin
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import PermissionDenied
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, HttpResponse
 from django.contrib.auth.models import User
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django.contrib import messages
 from market.utils import email_verification_token
+from .models import send_verification_email
+from rest_framework.authtoken.models import Token
 
-def activate(request, uidb64, token):
+def activate(request, token):
     try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
+        tokn = Token.objects.get(key=token)
+        user = tokn.user
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
 
-    if user is not None and email_verification_token.check_token(user, token):
+    if user is not None:
         user.profile.email_confirmed = True
         user.profile.save()
         messages.success(request, 'Your email has been confirmed.')
         return render(request, 'email_verified.html', {'user': user})
     else:
         messages.warning(request, 'The confirmation link was invalid, possibly because it has already been used.')
-        return redirect('home')
+        return HttpResponse('email not verified')
 User = get_user_model()
 
 class UserViewSet(UserModelMixin, viewsets.ModelViewSet):
@@ -57,6 +59,7 @@ class UserViewSet(UserModelMixin, viewsets.ModelViewSet):
         return super().get_authenticators()
 
     def perform_create(self, serializer):
+
         serializer.save()
 
     def perform_destroy(self, instance):

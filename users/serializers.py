@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Profile
+from .models import User, Profile, send_verification_email
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -12,6 +12,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
+        send_verification_email(user, self.context.get('request'))
         return user
 
     def update(self, instance, validated_data):

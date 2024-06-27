@@ -13,7 +13,8 @@ if 'SECRET_KEY' not in os.environ:
 else:
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = False
+DEBUG = True
+USE_ENCRYPTION = False
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.1']
 
@@ -25,7 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-
     'rest_framework.authtoken',
     'rest_framework',
     'products',
@@ -45,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if not DEBUG: MIDDLEWARE += ['market.middleware.EncryptionMiddleware']
+if not DEBUG and USE_ENCRYPTION: MIDDLEWARE += ['market.middleware.EncryptionMiddleware']
 
 ROOT_URLCONF = 'market.urls'
 
@@ -98,6 +98,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
