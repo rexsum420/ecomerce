@@ -1,0 +1,10 @@
+env/
+.env
+
+client.py
+db.sqlite3
+debug.log
+
+*.pyc
+products/pictures/*
+products/pictures/

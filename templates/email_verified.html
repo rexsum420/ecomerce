@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Email Verified</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Email Verification Successful</h1>
+        <p>Thank you, {{ user.username }}! Your email has been successfully verified.</p>
+        {% comment %} <p>You can now <a href="{% url 'login' %}">login</a> to your account.</p> {% endcomment %}
+    </div>
+</body>
+</html>
