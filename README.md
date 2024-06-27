@@ -1,6 +1,6 @@
 <html>
 <body>
-<h6>you will need a .env file with these settings defined:</h6>
+<h5>you will need a .env file with these settings defined:</h5>
 <p>
     <b>SECRET_KEY</b> (one will be generated if not defined) <br />
     <b>ENCRYPTION_KEY</b> (one will be generated if not defined) <br />
