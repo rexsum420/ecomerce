@@ -4,6 +4,8 @@ from rest_framework.authentication import TokenAuthentication
 from .models import Order, LineItem
 from .serializers import OrderSerializer, LineItemSerializer, CreateLineItemSerializer, CreateOrderSerializer
 from users.permissions import IsCustomerOrStoreReadOnly
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
 
 class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
@@ -24,6 +26,13 @@ class OrderViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(customer=self.request.user)
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not self.request.user == instance.store.owner or self.request.user == instance.customer:
+            raise PermissionDenied("You do not have permission to view this product.")
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
 class LineItemViewSet(viewsets.ModelViewSet):
     serializer_class = LineItemSerializer
     permission_classes = [IsCustomerOrStoreReadOnly, IsAuthenticated]
@@ -42,3 +51,10 @@ class LineItemViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not self.request.user == instance.order.store.owner or self.request.user == instance.order.customer:
+            raise PermissionDenied("You do not have permission to view this product.")
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

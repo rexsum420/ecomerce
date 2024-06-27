@@ -6,6 +6,7 @@ from .serializers import ProductSerializer, PictureSerializer, CreateProductSeri
 from users.permissions import IsStoreOwnerOrReadOnly
 from rest_framework.exceptions import PermissionDenied
 from stores.models import Store
+from rest_framework.response import Response
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
@@ -47,6 +48,12 @@ class ProductViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You do not have permission to delete this product.")
         instance.delete()
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not self.request.user == instance.store.owner:
+            raise PermissionDenied("You do not have permission to view this product.")
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 class PictureViewSet(viewsets.ModelViewSet):
     serializer_class = PictureSerializer
@@ -82,3 +89,10 @@ class PictureViewSet(viewsets.ModelViewSet):
         if not self.request.user == instance.product.store.owner:
             raise PermissionDenied("You do not have permission to delete this picture.")
         instance.delete()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not self.request.user == instance.product.store.owner:
+            raise PermissionDenied("You do not have permission to view this product.")
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

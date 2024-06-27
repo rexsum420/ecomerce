@@ -5,6 +5,7 @@ from .models import Store
 from .serializers import StoreSerializer, CreateStoreSerializer
 from users.permissions import IsStoreOwnerOrReadOnly
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
 
 class StoreViewSet(viewsets.ModelViewSet):
     serializer_class = StoreSerializer
@@ -41,3 +42,10 @@ class StoreViewSet(viewsets.ModelViewSet):
         if instance.owner != self.request.user:
             raise PermissionDenied('You are not the owner of this store')
         instance.delete()
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not self.request.user == instance.owner:
+            raise PermissionDenied("You do not have permission to view this product.")
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)

@@ -63,6 +63,13 @@ class UserViewSet(UserModelMixin, viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         return PermissionDenied('Users can not be deleted')
+    
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not self.request.user == instance:
+            raise PermissionDenied("You do not have permission to view this product.")
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
@@ -96,3 +103,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, serializer):
         raise PermissionDenied('Profiles can not be deleted')
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if not self.request.user == instance.user:
+            raise PermissionDenied("You do not have permission to view this product.")
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
