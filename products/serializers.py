@@ -5,7 +5,10 @@ from stores.serializers import StoreSerializer
 class PictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Picture
-        fields = ['product', 'image', 'alt']
+        fields = ['product', 'image', 'alt', 'main']
+        extra_kwargs = {
+            'main': {'required': False}
+        }
 
 class ProductSerializer(serializers.ModelSerializer):
     pictures = PictureSerializer(many=True, read_only=True)
@@ -46,3 +49,20 @@ class CreateProductSerializer(serializers.ModelSerializer):
             'inventory_count': {'required': False},
             'category': {'required': False},
         }
+
+class ReadProductsShortSerializer(serializers.ModelSerializer):
+    pictures = serializers.SerializerMethodField(read_only=True)
+    store = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'description', 'pictures', 'store', 'category']
+
+    def get_pictures(self, obj):
+        main_pic = Picture.objects.filter(product=obj, main=True).first()
+        if main_pic:
+            return main_pic.image.url
+        return None
+
+    def get_store(self, obj):
+        return obj.store.name

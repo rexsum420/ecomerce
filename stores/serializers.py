@@ -35,3 +35,7 @@ class CreateStoreSerializer(serializers.ModelSerializer):
             return super().create(instance)
 
 
+class ListStoresSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ['id', 'name']

@@ -1,12 +1,13 @@
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, generics
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authentication import TokenAuthentication
 from .models import Product, Picture
-from .serializers import ProductSerializer, PictureSerializer, CreateProductSerializer
+from .serializers import ProductSerializer, PictureSerializer, CreateProductSerializer, ReadProductsShortSerializer
 from users.permissions import IsStoreOwnerOrReadOnly
 from rest_framework.exceptions import PermissionDenied
 from stores.models import Store
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
@@ -96,3 +97,27 @@ class PictureViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You do not have permission to view this product.")
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+    
+class ProductListPagination(PageNumberPagination):
+    page_size = 25
+
+
+class ProductListView(viewsets.ReadOnlyModelViewSet):
+    queryset = Product.objects.all().order_by('id')
+    serializer_class = ReadProductsShortSerializer
+    pagination_class = ProductListPagination
+    permission_classes = [AllowAny]
+    authentication_classes = [TokenAuthentication]
+
+    def get_queryset(self):
+        category = self.request.query_params.get('category', None)
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        if category:
+            queryset = queryset.filter(category=category)
+        
+        if user.is_authenticated:
+            queryset = queryset.exclude(store__owner=user)
+
+        return queryset

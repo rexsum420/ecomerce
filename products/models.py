@@ -1,5 +1,7 @@
 from django.db import models
 from stores.models import Store
+import uuid
+from django.utils.deconstruct import deconstructible
 
 class Product(models.Model):
     SIZE_CHOICES = [
@@ -79,7 +81,38 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+
+@deconstructible
+class PathAndRename:
+    def __init__(self, path):
+        self.path = path
+
+    def __call__(self, instance, filename):
+        ext = filename.split('.')[-1]
+        # Generate a unique filename
+        filename = f'{uuid.uuid4()}.{ext}'
+        return f'{self.path}/{filename}'
+
+def product_picture_upload_to(instance, filename):
+    return PathAndRename('products/pictures/')(instance, filename)
+
 class Picture(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='pictures')
-    image = models.ImageField(upload_to='products/pictures/')
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='pictures')
+    image = models.ImageField(upload_to=product_picture_upload_to)
     alt = models.CharField(max_length=256)
+    main = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.main:
+            super().save(*args, **kwargs)
+            pics = Picture.objects.filter(product=self.product).exclude(id=self.id)
+            for pic in pics:
+                if pic.main:
+                    pic.main = False
+                    pic.save()
+        else:
+            super().save(*args, **kwargs)
+            pics = Picture.objects.filter(product=self.product)
+            if len(pics) == 1:
+                pics[0].main = True
+                pics[0].save()

@@ -9,6 +9,7 @@ from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import render, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
+from rest_framework.status import HTTP_200_OK
 
 from rest_framework.authtoken.models import Token
 
@@ -27,7 +28,15 @@ def activate(request, token):
     else:
         messages.warning(request, 'The confirmation link was invalid, possibly because it has already been used.')
         return HttpResponse('email not verified')
+    
 User = get_user_model()
+
+def check(request, token):
+    try:
+        tokn = Token.objects.get(key=token)
+        return Response({'detail': 'Token verified'}, status=HTTP_200_OK)
+    except:
+        return PermissionDenied('Token doesn\'t match any user tokens')
 
 class UserViewSet(UserModelMixin, viewsets.ModelViewSet):
     serializer_class = UserSerializer
