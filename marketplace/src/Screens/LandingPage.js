@@ -58,7 +58,7 @@ const LandingPage = ({ category }) => {
     <Container>
     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
         <div style={{ width:'100%'}}>
-            <h1>{(getCategoryValue(category) != null) ? `${category}` : `Products`}</h1>
+            <small><h1>{(getCategoryValue(category) != null) ? `${category}` : `Products`}</h1></small>
         </div>
         <div style={{ width:'60%'}}></div>
       <Box style={{ width: '100%'}}>

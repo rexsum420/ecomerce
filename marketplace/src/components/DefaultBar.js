@@ -3,12 +3,9 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
 import InputBase from '@mui/material/InputBase';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
@@ -16,7 +13,9 @@ import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import { MenuItem as SelectMenuItem } from '@mui/material';
-
+import Cart from './Cart';
+import { Drawer, Button, Placeholder } from 'rsuite';
+import { Link, useNavigate } from 'react-router-dom';
 
 const settings = ['Login', 'Sign Up'];
 const categories = [
@@ -65,14 +64,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function DefaultAppBar({ category, setCategory }) {
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [openWithHeader, setOpenWithHeader] = React.useState(false);
+  const navigation = useNavigate();
 
   const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
+    setOpenWithHeader(true);
   };
 
   const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
+    setOpenWithHeader(false);
   };
 
   const handleCategoryChange = (event) => {
@@ -83,8 +83,8 @@ function DefaultAppBar({ category, setCategory }) {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center' }}>
-            <Search style={{ flexGrow: 1 }}>
+          <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center', p:2 }}>
+            <Search style={{ flexGrow: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
               <SearchIconWrapper>
                 <SearchIcon />
               </SearchIconWrapper>
@@ -92,7 +92,6 @@ function DefaultAppBar({ category, setCategory }) {
                 placeholder="Search…"
                 inputProps={{ 'aria-label': 'search' }}
               />
-            </Search>
             <FormControl variant="outlined" sx={{ minWidth: 320, ml: 2 }}>
               <InputLabel id="category-select-label">Category</InputLabel>
               <Select
@@ -109,35 +108,33 @@ function DefaultAppBar({ category, setCategory }) {
                 ))}
               </Select>
             </FormControl>
+            </Search>
+            
           </Box>
+        
           <Box sx={{ flexGrow: 0 }}>
+          <Cart />
             <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 2 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+      <Drawer open={openWithHeader} onClose={() => setOpenWithHeader(false)}>
+        <Drawer.Header>
+          <Drawer.Title><a href="http://localhost:3000/">Marketplace</a></Drawer.Title>
+          <Drawer.Actions>
+          <Button onClick={() => {navigation('/signup'); setOpenWithHeader(false);}} style={{ textWeight: 'bold', color: 'white'}} appearance="primary">
+              Sign Up
+            </Button>
+            <Button onClick={() => {navigation('/login'); setOpenWithHeader(false);}} style={{ textWeight: 'bold', color: 'white'}} appearance="primary">
+              Login
+            </Button>
+          </Drawer.Actions>
+        </Drawer.Header>
+        <Drawer.Body>
+          <Placeholder.Paragraph />
+        </Drawer.Body>
+      </Drawer>
           </Box>
         </Toolbar>
       </Container>

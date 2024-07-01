@@ -34,7 +34,7 @@ const ProductCard = ({ product }) => {
         </Typography>
         <Box position="absolute" top={0} right={0} p={1} bgcolor="rgba(0, 0, 0, 0.3)" borderRadius="5px">
           <Typography variant="body2" color="textSecondary">
-            {product.store}
+            <b>{product.store}</b>
           </Typography>
         </Box>
       </Box>
@@ -42,7 +42,7 @@ const ProductCard = ({ product }) => {
         <img src={product.pictures} alt={product.name} style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain' }} />
         <Box position="absolute" bottom={0} right={0} p={1} bgcolor="rgba(0, 0, 0, 0.3)" borderRadius="5px">
           <Typography variant="body2" color="textSecondary">
-            Category: {getCategoryLabel(product.category)}
+            {getCategoryLabel(product.category)}
           </Typography>
         </Box>
         <Box style={{ display: "flex", flexDirection: 'row', justifyContent: "space-between", marginTop: '10px'}}>
