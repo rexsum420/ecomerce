@@ -8,6 +8,7 @@ from rest_framework.exceptions import PermissionDenied
 from stores.models import Store
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
+from django.contrib.auth.models import AnonymousUser
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
@@ -16,10 +17,14 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user is not None:
-            # Retrieve all products from the stores owned by the user
+        if user.is_authenticated:
             return Product.objects.filter(store__owner=user)
         return Product.objects.none()
+    
+    def get_permissions(self):
+        if self.request.method in ['GET', 'OPTIONS', 'HEAD']:
+            return [AllowAny()]
+        return super().get_permissions()
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -51,7 +56,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not self.request.user == instance.store.owner:
+        if not self.request.user == instance.store.owner and not self.request.user.is_superuser:
             raise PermissionDenied("You do not have permission to view this product.")
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
@@ -63,7 +68,7 @@ class PictureViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user is not None:
+        if user.is_authenticated:
             prods = Product.objects.filter(store__owner=user)
             return Picture.objects.filter(product__in=prods)
         return Picture.objects.none()
@@ -93,7 +98,7 @@ class PictureViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not self.request.user == instance.product.store.owner:
+        if not self.request.user == instance.product.store.owner and not self.request.user.is_superuser:
             raise PermissionDenied("You do not have permission to view this product.")
         serializer = self.get_serializer(instance)
         return Response(serializer.data)

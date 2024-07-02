@@ -13,11 +13,11 @@ import Select from '@mui/material/Select';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import { MenuItem as SelectMenuItem } from '@mui/material';
-import Cart from './Cart';
+import CartImage from './Cart';
 import { Drawer, Button, Placeholder } from 'rsuite';
 import { Link, useNavigate } from 'react-router-dom';
 
-const settings = ['Login', 'Sign Up'];
+
 const categories = [
   'All Categories', 'Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Personal Care', 'Health & Wellness',
   'Toys & Games', 'Sports & Outdoors', 'Automotive', 'Books', 'Music & Movies', 'Office Supplies',
@@ -111,9 +111,9 @@ function DefaultAppBar({ category, setCategory }) {
             </Search>
             
           </Box>
-        
-          <Box sx={{ flexGrow: 0 }}>
-          <Cart />
+          <CartImage />
+          <Box sx={{ flexGrow: 0, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+          
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 2 }}>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
@@ -121,7 +121,7 @@ function DefaultAppBar({ category, setCategory }) {
             </Tooltip>
       <Drawer open={openWithHeader} onClose={() => setOpenWithHeader(false)}>
         <Drawer.Header>
-          <Drawer.Title><a href="http://localhost:3000/">Marketplace</a></Drawer.Title>
+          <Drawer.Title><a href="http://localhost:3000/">Free Market</a></Drawer.Title>
           <Drawer.Actions>
           <Button onClick={() => {navigation('/signup'); setOpenWithHeader(false);}} style={{ textWeight: 'bold', color: 'white'}} appearance="primary">
               Sign Up

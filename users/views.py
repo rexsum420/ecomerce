@@ -10,6 +10,7 @@ from django.shortcuts import render, HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
 from rest_framework.status import HTTP_200_OK
+from rest_framework.views import APIView
 
 from rest_framework.authtoken.models import Token
 
@@ -31,12 +32,13 @@ def activate(request, token):
     
 User = get_user_model()
 
-def check(request, token):
-    try:
-        tokn = Token.objects.get(key=token)
-        return Response({'detail': 'Token verified'}, status=HTTP_200_OK)
-    except:
-        return PermissionDenied('Token doesn\'t match any user tokens')
+class CheckTokenView(APIView):
+    def get(self, request, token, format=None):
+        try:
+            tokn = Token.objects.get(key=token)
+            return Response({'detail': 'Token verified'}, status=HTTP_200_OK)
+        except Token.DoesNotExist:
+            raise PermissionDenied('Token doesn\'t match any user tokens')
 
 class UserViewSet(UserModelMixin, viewsets.ModelViewSet):
     serializer_class = UserSerializer

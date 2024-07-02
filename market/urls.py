@@ -18,12 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.routers import DefaultRouter
-from users.views import UserViewSet, ProfileViewSet, activate, check
+from users.views import UserViewSet, ProfileViewSet, activate, CheckTokenView
 from stores.views import StoreViewSet, StoreListView
 from products.views import ProductViewSet, PictureViewSet, ProductListView
 from orders.views import OrderViewSet, LineItemViewSet
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='user')
@@ -41,7 +42,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('auth/', ObtainAuthToken.as_view()),
     path('activate/<token>/', activate, name='activate'),
-    path('check/<token>/', check, name='check'),
+    path('check/<token>/', CheckTokenView.as_view(), name='check'),
+    path('', views.index, name='react')
 ]
 
 if settings.DEBUG:

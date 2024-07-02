@@ -15,6 +15,7 @@ const LoginScreen = () => {
       const response = await Api('http://192.168.1.75:8000/auth/', 'POST', { username, password }, false);
       localStorage.setItem('token', response.token);
       navigate('/');
+      document.location.reload();
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
