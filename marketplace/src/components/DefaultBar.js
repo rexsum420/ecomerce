@@ -1,22 +1,8 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
-import InputBase from '@mui/material/InputBase';
-import { styled, alpha } from '@mui/material/styles';
-import SearchIcon from '@mui/icons-material/Search';
-import Select from '@mui/material/Select';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import { MenuItem as SelectMenuItem } from '@mui/material';
-import CartImage from './Cart';
-import { Drawer, Button, Placeholder } from 'rsuite';
+import React from 'react';
+import { Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack } from '@chakra-ui/react';
+import { SearchIcon } from '@chakra-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
-
+import CartImage from './Cart';
 
 const categories = [
   'All Categories', 'Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Personal Care', 'Health & Wellness',
@@ -27,118 +13,99 @@ const categories = [
   'Musical Instruments', 'Gift Cards', 'Watches'
 ];
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: 'auto',
-  display: 'flex',
-  alignItems: 'center',
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '12ch',
-    '&:focus': {
-      width: '20ch',
-    },
-  },
-}));
-
 function DefaultAppBar({ category, setCategory }) {
-  const [openWithHeader, setOpenWithHeader] = React.useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const navigation = useNavigate();
-
-  const handleOpenUserMenu = (event) => {
-    setOpenWithHeader(true);
-  };
-
-  const handleCloseUserMenu = () => {
-    setOpenWithHeader(false);
-  };
 
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center', p:2 }}>
-            <Search style={{ flexGrow: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between'}}>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ 'aria-label': 'search' }}
+    <Box bg="blue.500" px={4}>
+      <Container maxW="container.xl">
+        <Flex h={16} alignItems="center" justifyContent="space-between">
+          <HStack spacing={8} alignItems="center">
+            <Box>
+              <HStack>
+                <Box position="relative">
+                  <IconButton
+                    aria-label="Search database"
+                    icon={<SearchIcon />}
+                    bg="transparent"
+                    _hover={{ bg: 'transparent' }}
+                    position="absolute"
+                    top="50%"
+                    left="0"
+                    transform="translateY(-50%)"
+                    zIndex={1}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Search…"
+                    pl="2.5rem"
+                    borderColor="whiteAlpha.300"
+                    _placeholder={{ color: 'whiteAlpha.700' }}
+                    _hover={{ borderColor: 'whiteAlpha.500' }}
+                    _focus={{ borderColor: 'whiteAlpha.700' }}
+                  />
+                </Box>
+                <Select
+                  value={category}
+                  onChange={handleCategoryChange}
+                  placeholder="Category"
+                  variant="filled"
+                  borderColor="whiteAlpha.300"
+                  _hover={{ borderColor: 'whiteAlpha.500' }}
+                  _focus={{ borderColor: 'whiteAlpha.700' }}
+                  color="black"
+                >
+                  {categories.map((categorie) => (
+                    <option key={categorie} value={categorie}>
+                      {categorie}
+                    </option>
+                  ))}
+                </Select>
+              </HStack>
+            </Box>
+          </HStack>
+          <HStack spacing={8} alignItems="center">
+            <CartImage />
+            <Tooltip label="Open settings" aria-label="A tooltip">
+              <IconButton
+                icon={<Avatar size="sm" src="/static/images/avatar/2.jpg" />}
+                onClick={onOpen}
+                variant="outline"
+                borderColor="whiteAlpha.300"
+                _hover={{ bg: 'whiteAlpha.200' }}
+                _focus={{ bg: 'whiteAlpha.300' }}
               />
-            <FormControl variant="outlined" sx={{ minWidth: 320, ml: 2 }}>
-              <InputLabel id="category-select-label">Category</InputLabel>
-              <Select
-                labelId="category-select-label"
-                id="category-select"
-                value={category}
-                onChange={handleCategoryChange}
-                label="Category"
-              >
-                {categories.map((categorie) => (
-                  <SelectMenuItem key={categorie} value={categorie}>
-                    {categorie}
-                  </SelectMenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            </Search>
-            
-          </Box>
-          <CartImage />
-          <Box sx={{ flexGrow: 0, display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-          
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 2 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
             </Tooltip>
-      <Drawer open={openWithHeader} onClose={() => setOpenWithHeader(false)}>
-        <Drawer.Header>
-          <Drawer.Title><a href="http://localhost:3000/">Free Market</a></Drawer.Title>
-          <Drawer.Actions>
-          <Button onClick={() => {navigation('/signup'); setOpenWithHeader(false);}} style={{ textWeight: 'bold', color: 'white'}} appearance="primary">
-              Sign Up
-            </Button>
-            <Button onClick={() => {navigation('/login'); setOpenWithHeader(false);}} style={{ textWeight: 'bold', color: 'white'}} appearance="primary">
-              Login
-            </Button>
-          </Drawer.Actions>
-        </Drawer.Header>
-        <Drawer.Body>
-          <Placeholder.Paragraph />
-        </Drawer.Body>
-      </Drawer>
-          </Box>
-        </Toolbar>
+          </HStack>
+        </Flex>
       </Container>
-    </AppBar>
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>
+            <Heading size="md">
+              <Link to="/">Free Market</Link>
+            </Heading>
+          </DrawerHeader>
+          <DrawerBody>
+            <VStack>
+              <Button colorScheme="blue" onClick={() => { navigation('/signup'); onClose(); }}>
+                Sign Up
+              </Button>
+              <Button colorScheme="blue" onClick={() => { navigation('/login'); onClose(); }}>
+                Login
+              </Button>
+            </VStack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+    </Box>
   );
 }
 

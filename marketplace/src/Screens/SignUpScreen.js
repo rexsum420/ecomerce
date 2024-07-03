@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import {
+  Box,
+  Container,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Heading,
+  Text,
+} from '@chakra-ui/react';
 import Api from '../utils/Api';
 
 const SignUpScreen = () => {
@@ -22,7 +31,7 @@ const SignUpScreen = () => {
   const validatePassword = (password) => {
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     if (!re.test(password)) {
-      setError('Password must be at least 8 characters long, contain a capital letter, a lower case letter, and a number or symbol.'); 
+      setError('Password must be at least 8 characters long, contain a capital letter, a lower case letter, and a number or symbol.');
     } else {
       setError('');
     }
@@ -50,62 +59,70 @@ const SignUpScreen = () => {
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box display="flex" flexDirection="column" alignItems="center" mt={8}>
-        <Typography variant="h4" gutterBottom>
+    <Container maxW="sm">
+      <Box
+        mt={8}
+        p={6}
+        borderWidth="1px"
+        borderRadius="lg"
+        boxShadow="lg"
+      >
+        <Heading as="h2" size="xl" mb={6} textAlign="center">
           Sign Up
-        </Typography>
-        <TextField
-          label="Username"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          label="Email"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            validateEmail(e.target.value);
-          }}
-        />
-        <TextField
-          label="Password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          type="password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            validatePassword(e.target.value);
-          }}
-        />
-        <TextField
-          label="Confirm Password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
+        </Heading>
+        <FormControl mb={4}>
+          <FormLabel>Username</FormLabel>
+          <Input
+            type="text"
+            variant="filled"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </FormControl>
+        <FormControl mb={4}>
+          <FormLabel>Email</FormLabel>
+          <Input
+            type="email"
+            variant="filled"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              validateEmail(e.target.value);
+            }}
+          />
+        </FormControl>
+        <FormControl mb={4}>
+          <FormLabel>Password</FormLabel>
+          <Input
+            type="password"
+            variant="filled"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              validatePassword(e.target.value);
+            }}
+          />
+        </FormControl>
+        <FormControl mb={4}>
+          <FormLabel>Confirm Password</FormLabel>
+          <Input
+            type="password"
+            variant="filled"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </FormControl>
         {error && (
-          <Typography color="error" variant="body2" gutterBottom>
+          <Text color="red.500" mb={4}>
             {error}
-          </Typography>
+          </Text>
         )}
         {success && (
-          <Typography color="primary" variant="body2" gutterBottom>
+          <Text color="green.500" mb={4}>
             {success}
-          </Typography>
+          </Text>
         )}
-        <Button variant="contained" color="primary" onClick={handleSignUp}>
+        <Button colorScheme="blue" onClick={handleSignUp} mb={4} w="100%">
           Sign Up
         </Button>
       </Box>

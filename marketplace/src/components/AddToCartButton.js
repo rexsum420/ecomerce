@@ -1,13 +1,19 @@
 import React, { useContext } from 'react';
-import { CartContext } from '../contexts/CartContext';
+import { CartContext } from './CartProvider.js';
+import { Button } from '@chakra-ui/react';
 
 const AddToCartButton = ({ product }) => {
     const { addToCart } = useContext(CartContext);
 
     return (
-        <button onClick={() => addToCart(product)}>
+        <Button 
+            backgroundColor="blue.500" 
+            color="white" 
+            _hover={{ backgroundColor: 'blue.600' }}
+            onClick={() => addToCart(product)}
+        >
             Add to Cart
-        </button>
+        </Button>
     );
 };
 

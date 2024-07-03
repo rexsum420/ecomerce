@@ -2,8 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { getCategoryValue } from '../utils/CategoryEncoder';
 import useFetchList from '../utils/useFetchList';
 import ProductCard from '../components/ProductCard';
-import { Grid, Container, Select, MenuItem, FormControl, InputLabel, Grow } from '@mui/material';
-import { Box } from '@mui/material';
+import {
+  Box,
+  Container,
+  FormControl,
+  FormLabel,
+  Select,
+  Grid,
+  GridItem,
+  Heading,
+  Spinner,
+  Text,
+} from '@chakra-ui/react';
 
 const HomeScreen = ({ category }) => {
   const [products, setProducts] = useState([]);
@@ -47,44 +57,34 @@ const HomeScreen = ({ category }) => {
   });
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
 
   if (error) {
-    return <div>Error loading products</div>;
+    return <Text>Error loading products</Text>;
   }
 
   return (
-    <Container>
-    <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <div style={{ width:'100%'}}>
-            <small><h1>{(getCategoryValue(category) != null) ? `${category}` : `Products`}</h1></small>
-        </div>
-        <div style={{ width:'60%'}}></div>
-      <Box style={{ width: '100%'}}>
-      <FormControl variant="outlined" fullWidth margin="dense">
-        <InputLabel style={{ height: '20px'}} id="sort-select-label">Sort By</InputLabel>
-        <Select
-          labelId="sort-select-label"
-          id="sort-select"
-          value={sortOption}
-          onChange={handleSortChange}
-          label="Sort By"
-        >
-          <MenuItem value="">None</MenuItem>
-          <MenuItem value="price_asc">Price: Low to High</MenuItem>
-          <MenuItem value="price_desc">Price: High to Low</MenuItem>
-          <MenuItem value="name_asc">Name: A to Z</MenuItem>
-          <MenuItem value="name_desc">Name: Z to A</MenuItem>
-        </Select>
-      </FormControl>
+    <Container maxW="container.xl" mt={4}>
+      <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" mb={4}>
+        <Heading size="lg">
+          {getCategoryValue(category) != null ? `${category}` : `Products`}
+        </Heading>
+        <FormControl width="300px">
+          <FormLabel>Sort By</FormLabel>
+          <Select value={sortOption} onChange={handleSortChange} placeholder="None">
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+            <option value="name_asc">Name: A to Z</option>
+            <option value="name_desc">Name: Z to A</option>
+          </Select>
+        </FormControl>
       </Box>
-      </div>
-      <Grid style={{ marginTop:'20px' }} container spacing={2}>
+      <Grid templateColumns="repeat(auto-fit, minmax(300px, 1fr))" gap={6}>
         {sortedProducts.map((product) => (
-          <Grid item key={product.id} xs={12} sm={6} md={4}>
+          <GridItem key={product.id}>
             <ProductCard product={product} />
-          </Grid>
+          </GridItem>
         ))}
       </Grid>
     </Container>

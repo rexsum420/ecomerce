@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import {
+  Box,
+  Container,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Heading,
+  Text,
+} from '@chakra-ui/react';
 import Api from '../utils/Api';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,41 +24,47 @@ const LoginScreen = () => {
       const response = await Api('http://192.168.1.75:8000/auth/', 'POST', { username, password }, false);
       localStorage.setItem('token', response.token);
       navigate('/');
-      document.location.reload();
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box display="flex" flexDirection="column" alignItems="center" mt={8}>
-        <Typography variant="h4" gutterBottom>
+    <Container maxW="sm">
+      <Box
+        mt={8}
+        p={6}
+        borderWidth="1px"
+        borderRadius="lg"
+        boxShadow="lg"
+      >
+        <Heading as="h2" size="xl" mb={6} textAlign="center">
           Login
-        </Typography>
-        <TextField
-          label="Username"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        </Heading>
+        <FormControl mb={4}>
+          <FormLabel>Username</FormLabel>
+          <Input
+            type="text"
+            variant="filled"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </FormControl>
+        <FormControl mb={4}>
+          <FormLabel>Password</FormLabel>
+          <Input
+            type="password"
+            variant="filled"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </FormControl>
         {error && (
-          <Typography color="error" variant="body2" gutterBottom>
+          <Text color="red.500" mb={4}>
             {error}
-          </Typography>
+          </Text>
         )}
-        <Button variant="contained" color="primary" onClick={handleLogin}>
+        <Button colorScheme="blue" onClick={handleLogin} mb={4} w="100%">
           Login
         </Button>
       </Box>

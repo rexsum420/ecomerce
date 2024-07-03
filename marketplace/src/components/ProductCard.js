@@ -1,65 +1,64 @@
 import React from "react";
-import { Paper, Typography, Button, Box } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { Box, Text, Button, Image, Badge, useTheme } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "@emotion/react";
 import getCategoryLabel from "../utils/CategoryDecoder";
-
-const ProductCardContainer = styled(Paper)(({ theme }) => ({
-  position: 'relative', // Ensure container is relative for absolute positioning inside it
-  padding: theme.spacing(1),
-  margin: theme.spacing(1),
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'space-between',
-  height: '100%',
-}));
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const theme = useTheme();
 
   const handleViewDetails = (id) => {
-    navigate(`/view-product?id=${id}`);
+    navigate(`/view-product/${id}`);
   };
 
   return (
-    <ProductCardContainer elevation={3}>
-      <Box position="relative" style={{ textAlign: 'left'}}>
-        <Typography variant="h5" component="h2" gutterBottom>
-        <small>{product.name}</small>
-        </Typography>
-        <Typography variant="body2" color="textSecondary" paragraph>
+    <Box
+      borderWidth="1px"
+      borderRadius="lg"
+      overflow="hidden"
+      p={4}
+      m={2}
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
+      height="100%"
+      position="relative"
+    >
+      <Box position="relative" textAlign="left">
+        <Text fontSize="xl" fontWeight="bold" mb={2}>
+          <small>{product.name}</small>
+        </Text>
+        <Text fontSize="sm" color="gray.500" mb={2}>
           {product.description}
-        </Typography>
-        <Box position="absolute" top={0} right={0} p={1} bgcolor="rgba(0, 0, 0, 0.3)" borderRadius="5px">
-          <Typography variant="body2" color="textSecondary">
+        </Text>
+        <Badge position="absolute" top={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
+          <Text fontSize="sm">
             <b>{product.store}</b>
-          </Typography>
-        </Box>
+          </Text>
+        </Badge>
       </Box>
       <Box position="relative">
-        <img src={product.pictures} alt={product.name} style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain' }} />
-        <Box position="absolute" bottom={0} right={0} p={1} bgcolor="rgba(0, 0, 0, 0.3)" borderRadius="5px">
-          <Typography variant="body2" color="textSecondary">
-            {getCategoryLabel(product.category)}
-          </Typography>
-        </Box>
-        <Box style={{ display: "flex", flexDirection: 'row', justifyContent: "space-between", marginTop: '10px'}}>
-        <Typography variant="h5" component="p" color="green" gutterBottom style={{marginLeft: 20}}>
-          ${product.price}
-        </Typography>
-        <Button variant="contained" color="primary" onClick={() => handleViewDetails(product.id)}>
-          View Details
-        </Button>
-        </Box>
-        <Box>
-            <br />
-            <br />
-            <br />
+        <Image
+          src={product.pictures}
+          alt={product.name}
+          maxW="100%"
+          maxH="200px"
+          objectFit="contain"
+          mb={2}
+        />
+        <Badge position="absolute" bottom={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
+          <Text fontSize="sm">{getCategoryLabel(product.category)}</Text>
+        </Badge>
+        <Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
+          <Text fontSize="xl" color="green.500" ml={2}>
+            ${product.price}
+          </Text>
+          <Button colorScheme="blue" onClick={() => handleViewDetails(product.id)}>
+            View Details
+          </Button>
         </Box>
       </Box>
-    </ProductCardContainer>
+    </Box>
   );
 };
 
