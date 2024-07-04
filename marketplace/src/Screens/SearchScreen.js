@@ -17,7 +17,7 @@ const SearchScreen = () => {
 
     const fetchProducts = async() => {
         try {
-            const res = await Api(`http://192.168.1.75:8000/api/products/?search=${term}`);
+            const res = await Api(`http://192.168.1.75:8000/api/search/?search=${term}`);
             setProds(res.results);
             setLoading(false);
         } catch (error) {

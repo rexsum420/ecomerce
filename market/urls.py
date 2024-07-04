@@ -36,6 +36,7 @@ router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'lineitems', LineItemViewSet, basename='lineitem')
 router.register(r'homepage', ProductListView, basename='homepage')
 router.register(r'my-stores', StoreListView, basename='my-store')
+router.register(r'search', ProductListView, basename='search')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
