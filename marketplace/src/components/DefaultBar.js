@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack } from '@chakra-ui/react';
+import { Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import CartImage from './Cart';

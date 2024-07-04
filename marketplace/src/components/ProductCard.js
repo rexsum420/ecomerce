@@ -1,11 +1,9 @@
 import React from "react";
-import { Box, Text, Button, Image, Badge, useTheme } from "@chakra-ui/react";
+import { Box, Text, Button, Image } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import getCategoryLabel from "../utils/CategoryDecoder";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
-  const theme = useTheme();
 
   const handleViewDetails = (id) => {
     navigate(`/view-product/${id}`);

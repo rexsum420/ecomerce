@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image, Button, CardFooter } from "@chakra-ui/react";
+import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image, Button } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import Api from "../utils/Api";
 
@@ -58,7 +58,7 @@ const StoreScreen = () => {
     useEffect(() => {
         fetchStore(id);
         fetchProducts();
-    }, [id]);
+    }, []);
 
     if (loading) {
         return <Spinner size="xl" />;
