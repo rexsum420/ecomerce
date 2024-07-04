@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Box, Badge, createIcon } from '@chakra-ui/react';
 import { CartContext } from './CartProvider';
+import { useNavigate } from 'react-router-dom';
 
 const CartIcon = createIcon({
   displayName: 'CartIcon',
@@ -40,7 +41,12 @@ const CartIcon = createIcon({
 
 const CartImage = (props) => {
   const { cart } = useContext(CartContext);
-  const cartItemCount = cart.length;
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const navigate = useNavigate();
+
+  const handleBadgeClick = () => {
+    navigate('/cart');
+  }
 
   return (
     <Box position="relative" display="inline-block">
@@ -55,6 +61,7 @@ const CartImage = (props) => {
           fontSize="0.8em"
           px={2}
           py={1}
+          onClick={() => handleBadgeClick()}
         >
           {cartItemCount}
         </Badge>

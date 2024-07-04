@@ -31,11 +31,6 @@ const ProductCard = ({ product }) => {
         <Text fontSize="sm" color="gray.500" mb={2}>
           {product.description}
         </Text>
-        <Badge position="absolute" top={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
-          <Text fontSize="sm">
-            {product.store}
-          </Text>
-        </Badge>
       </Box>
       <Box position="relative">
         <Image
@@ -46,9 +41,6 @@ const ProductCard = ({ product }) => {
           objectFit="contain"
           mb={2}
         />
-        <Badge position="absolute" bottom={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
-          <Text fontSize="sm">{getCategoryLabel(product.category)}</Text>
-        </Badge>
         <Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
           <Text fontSize="xl" color="green.500" ml={2}>
             ${product.price}

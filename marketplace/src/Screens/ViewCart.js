@@ -1,15 +1,20 @@
 import React, { useContext } from 'react';
 import { CartContext } from '../components/CartProvider';
-import { Box, Button, Flex, Image, Input, Text } from '@chakra-ui/react';
+import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
 
 const ViewCart = () => {
     const { cart, setCart, removeFromCart, clearCart } = useContext(CartContext);
 
-    const handleQuantityChange = (product, quantity) => {
+    const handleQuantityChange = (product, change) => {
         const newCart = cart.map(item => 
-            item.id === product.id ? { ...item, quantity: parseInt(quantity) } : item
-        );
+            item.id === product.id ? { ...item, quantity: item.quantity + change } : item
+        ).filter(item => item.quantity > 0);
         setCart(newCart);
+    };
+
+    const getMainImage = (pictures) => {
+        const mainImage = pictures.find(picture => picture.main);
+        return mainImage ? mainImage.image : '';
     };
 
     return (
@@ -19,17 +24,15 @@ const ViewCart = () => {
             ) : (
                 cart.map(product => (
                     <Flex key={product.id} p={4} borderWidth={1} borderRadius="md" mb={2} alignItems="center">
-                        <Image src={product.image} alt={product.name} boxSize="100px" objectFit="cover" mr={4} />
+                        <Image src={getMainImage(product.pictures)} alt={product.name} boxSize="100px" objectFit="cover" mr={4} />
                         <Box flex="1">
                             <Text fontWeight="bold">{product.name}</Text>
                             <Text>${product.price}</Text>
-                            <Input
-                                type="number"
-                                value={product.quantity}
-                                min="1"
-                                onChange={(e) => handleQuantityChange(product, e.target.value)}
-                                width="60px"
-                            />
+                            <Flex alignItems="center">
+                                <Button onClick={() => handleQuantityChange(product, -1)}>-</Button>
+                                <Text mx={2}>{product.quantity}</Text>
+                                <Button onClick={() => handleQuantityChange(product, 1)}>+</Button>
+                            </Flex>
                         </Box>
                         <Button ml={4} colorScheme="red" onClick={() => removeFromCart(product.id)}>Remove</Button>
                     </Flex>

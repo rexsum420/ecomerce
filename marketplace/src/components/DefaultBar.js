@@ -33,6 +33,9 @@ function DefaultAppBar({ category, setCategory }) {
     setSearchValue(event.target.value);
   }
 
+  const handleCartClick = () => {
+    navigation('/cart');
+  }
 
   return (
     <Box bg="blue.500" px={4}>
@@ -88,7 +91,7 @@ function DefaultAppBar({ category, setCategory }) {
             </Box>
           </HStack>
           <HStack spacing={8} alignItems="center">
-            <CartImage />
+          <CartImage onClick={() => handleCartClick()} />
             <Tooltip label="Open settings" aria-label="A tooltip">
               <IconButton
                 icon={<Avatar size="sm" src="/static/images/avatar/2.jpg" />}

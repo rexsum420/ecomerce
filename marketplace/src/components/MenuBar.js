@@ -36,6 +36,10 @@ function LoggedInAppBar({ category, setCategory }) {
     }
   }
 
+  const handleCartClick = () => {
+    navigation('/cart');
+  }
+
   const handleSearchText = (event) => {
     setSearchValue(event.target.value);
   }
@@ -86,7 +90,7 @@ function LoggedInAppBar({ category, setCategory }) {
             </Flex>
           </HStack>
           <HStack spacing={4} alignItems="center">
-            <CartImage />
+            <CartImage onClick={() => handleCartClick()} />
             <Tooltip label="Open settings" aria-label="A tooltip">
               <IconButton
                 icon={<Avatar size="sm" src="/static/images/avatar/2.jpg" />}
