@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
+import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image, Button, CardFooter } from "@chakra-ui/react";
+import { useParams, useNavigate } from "react-router-dom";
 import Api from "../utils/Api";
 
 const StoreScreen = () => {
@@ -10,16 +10,30 @@ const StoreScreen = () => {
     const [error, setError] = useState(false);
     const [unAuth, setUnAuth] = useState(false);
     const [prods, setProds] = useState([]);
+    const navigate = useNavigate();
 
     const fetchStore = async (storeId) => {
         try {
-            const res = await Api(`http://192.168.1.75:8000/api/stores/${storeId}/`);
-            if (res.status_code !== 401) {
-                setStore(res); // Assuming res contains the store data
-                setLoading(false);
-            } else {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://192.168.1.75:8000/api/stores/${storeId}/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${token}`
+                }
+            });
+        
+            if (response.status === 401) {
                 console.log("Unauthorized");
                 setUnAuth(true);
+                setLoading(false);
+            } else if (response.ok) {
+                const data = await response.json();
+                setStore(data);
+                setLoading(false);
+            } else {
+                console.error("Error fetching store:", response.statusText);
+                setError(true);
                 setLoading(false);
             }
         } catch (error) {
@@ -27,7 +41,7 @@ const StoreScreen = () => {
             setError(true);
             setLoading(false);
         }
-    };
+    } 
 
     const fetchProducts = async() => {
         try {
@@ -68,17 +82,36 @@ const StoreScreen = () => {
         );
     }
 
+    const handleAddProduct = () => {
+        navigate(`store/${id}/add-product`);
+    }
+
+    const handleEditStore = () => {
+        navigate(`store/${id}/edit`);
+    }
+
     return (
         <Box p={5}>
             <Heading as="h1" mb={5}>Store Details</Heading>
-            <Box p={5} shadow="md" borderWidth="1px" borderRadius="md">
-                <Heading fontSize="xl">{store.name}</Heading>
+            <Box p={5} shadow="md" borderWidth="1px" borderRadius="md" display='flex' flexDirection='row' justifyContent='space-between'>
+                <Heading fontSize="xl">
+                    {store.name}
+                </Heading>
+                    <Button onClick={() => handleEditStore()}>
+                        Edit Store
+                    </Button>
+
+                </Box>
+                <Box display='flex' flexDirection='row' justifyContent='space-between'>
                 <Box mt={4}>
                     <Heading size="md">Description:</Heading>
                     <Text>{store.description}</Text>
                 </Box>
+                <Button onClick={() => handleAddProduct()}>
+                    Add Product
+                </Button>
             </Box>
-            <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6} marginTop={10}>
+            <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} gap={6} marginTop={10}>
                 {prods.map((product) => {
                     const mainPicture = product.pictures.find(picture => picture.main);
                     return (
@@ -88,6 +121,7 @@ const StoreScreen = () => {
                                 {mainPicture && <Image src={mainPicture.image} alt={mainPicture.alt || product.name} />}
                                 <Text mt={2}>{product.description}</Text>
                                 <Text mt={2} color="green.500">${product.price}</Text>
+                                <Button onClick={() => navigate(`/view-product/${product.id}`)}>View Product</Button>
                             </Box>
                         </GridItem>
                     );

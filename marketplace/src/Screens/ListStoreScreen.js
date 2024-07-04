@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, SimpleGrid, Spinner, Alert, AlertIcon, Heading } from "@chakra-ui/react";
+import { Box, SimpleGrid, Spinner, Alert, AlertIcon, Heading, Button } from "@chakra-ui/react";
 import Api from "../utils/Api";
 import { useNavigate } from "react-router-dom";
 
@@ -41,9 +41,18 @@ const ListStoreScreen = () => {
         navigate(`/store/${id}`);
     };
 
+    const handleCreateStore = () => {
+        navigate("/create-store");
+    }
+
     return (
         <Box p={5}>
-            <Heading as="h1" mb={5}>Stores</Heading>
+            <Heading as="h1" mb={5}>
+                Stores
+                <Button onClick={() => handleCreateStore()}>
+                    Create Store
+                </Button>
+            </Heading>
             {stores.length > 0 ? (
                 <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacing={5}>
                     {stores.map(store => (

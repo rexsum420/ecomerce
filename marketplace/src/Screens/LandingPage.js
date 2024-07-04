@@ -81,7 +81,10 @@ const LandingPage = ({ category }) => {
           </FormControl>
         </Box>
       </Box>
-      <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
+      <Grid 
+        templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} 
+        gap={6}
+      >
         {sortedProducts.map((product) => (
           <GridItem key={product.id}>
             <ProductCard product={product} />

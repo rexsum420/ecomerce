@@ -29,7 +29,7 @@ function LoggedInAppBar({ category, setCategory }) {
   };
 
   const handleSearchClick = () => {
-    if (searchValue != '') {
+    if (searchValue !== '') {
     navigation(`/search?term=${searchValue}`);
     } else {
       navigation('/');

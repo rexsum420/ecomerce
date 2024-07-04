@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image } from "@chakra-ui/react";
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image, Button, Badge } from "@chakra-ui/react";
 import Api from "../utils/Api";
-import ProductCard from "../components/ProductCard";
+import { getCategoryValue } from '../utils/CategoryEncoder';
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
@@ -14,6 +14,7 @@ const SearchScreen = () => {
     const [prods, setProds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const navigate = useNavigate();
 
     const fetchProducts = async() => {
         try {
@@ -30,6 +31,10 @@ const SearchScreen = () => {
     useEffect(() => {
         fetchProducts();
     }, [term]);
+
+    const handleViewDetails = (id) => {
+        navigate(`/view-product/${id}`);
+      };
 
     if (loading) {
         return <Spinner size="xl" />;
@@ -50,7 +55,53 @@ const SearchScreen = () => {
             <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
                 {prods.map((product) => (
                     <GridItem key={product.id}>
-                        <ProductCard product={product} />
+                        <Box
+                            borderWidth="1px"
+                            borderRadius="lg"
+                            overflow="hidden"
+                            p={4}
+                            m={2}
+                            display="flex"
+                            flexDirection="column"
+                            justifyContent="space-between"
+                            height="100%"
+                            position="relative"
+                            >
+                            <Box position="relative" textAlign="left">
+                                <Text fontSize="xl" fontWeight="bold" mb={2}>
+                                {product.name}
+                                </Text>
+                                <Text fontSize="sm" color="gray.500" mb={2}>
+                                {product.description}
+                                </Text>
+                                <Badge position="absolute" top={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
+                                <Text fontSize="sm">
+                                    {product.store}
+                                </Text>
+                                </Badge>
+                            </Box>
+                            <Box position="relative">
+                                <Image
+                                src={product.pictures}
+                                alt={product.name}
+                                maxW="100%"
+                                maxH="200px"
+                                objectFit="contain"
+                                mb={2}
+                                />
+                                <Badge position="absolute" bottom={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
+                                <Text fontSize="sm">{getCategoryValue(product.category)}</Text>
+                                </Badge>
+                                <Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
+                                <Text fontSize="xl" color="green.500" ml={2}>
+                                    ${product.price}
+                                </Text>
+                                <Button colorScheme="blue" onClick={() => handleViewDetails(product.id)}>
+                                    View Details
+                                </Button>
+                                </Box>
+                            </Box>
+                        </Box>
                     </GridItem>
                 ))}
             </Grid>

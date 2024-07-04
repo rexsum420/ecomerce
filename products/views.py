@@ -22,9 +22,9 @@ class ProductViewSet(viewsets.ModelViewSet):
         if user.is_authenticated:
             store = self.request.query_params.get('store', None)
             if store:
-                return Product.objects.filter(store__id=store, store__owner=user).order_by('id')
-            return Product.objects.filter(store__owner=user).order_by('id')
-        return Product.objects.none()
+                return Product.objects.filter(store__id=store).order_by('id')
+            return Product.objects.all().order_by('id')
+        return Product.objects.all()
     
     def get_permissions(self):
         if self.request.method in ['GET', 'OPTIONS', 'HEAD']:
@@ -136,8 +136,5 @@ class ProductListView(viewsets.ReadOnlyModelViewSet):
                 Q(store__name__icontains=search) |
                 Q(description__icontains=search)
             ).order_by('id')
-
-        if user.is_authenticated:
-            queryset = queryset.exclude(store__owner=user).order_by('id')
 
         return queryset
