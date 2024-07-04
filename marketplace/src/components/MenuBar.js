@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack, Text } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,6 +16,7 @@ const categories = [
 function LoggedInAppBar({ category, setCategory }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigation = useNavigate();
+  const [searchValue, setSearchValue] = useState('');
   
   const handleLogOut = () => {
     localStorage.removeItem('token');
@@ -26,6 +27,18 @@ function LoggedInAppBar({ category, setCategory }) {
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
+
+  const handleSearchClick = () => {
+    if (searchValue != '') {
+    navigation(`/search?term=${searchValue}`);
+    } else {
+      navigation('/');
+    }
+  }
+
+  const handleSearchText = (event) => {
+    setSearchValue(event.target.value);
+  }
 
   return (
     <Box bg="blue.500" px={2}>
@@ -50,6 +63,8 @@ function LoggedInAppBar({ category, setCategory }) {
                 _placeholder={{ color: 'whiteAlpha.700' }}
                 color="black"
                 flex="1"
+                onChange={handleSearchText}
+                value={searchValue}
               />
               <Select
                 value={category}
@@ -65,6 +80,9 @@ function LoggedInAppBar({ category, setCategory }) {
                   </option>
                 ))}
               </Select>
+              <Button onClick={handleSearchClick}>
+                Search
+              </Button>
             </Flex>
           </HStack>
           <HStack spacing={4} alignItems="center">

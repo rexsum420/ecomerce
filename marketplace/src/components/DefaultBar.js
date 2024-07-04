@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,10 +16,23 @@ const categories = [
 function DefaultAppBar({ category, setCategory }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigation = useNavigate();
+  const [searchValue, setSearchValue] = useState('');
 
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
   };
+
+  const handleSearchClick = () => {
+    if (searchValue != '') {
+    navigation(`/search?term=${searchValue}`);
+    } else {
+      navigation('/');
+    }
+  }
+  const handleSearchText = (event) => {
+    setSearchValue(event.target.value);
+  }
+
 
   return (
     <Box bg="blue.500" px={4}>
@@ -48,6 +61,8 @@ function DefaultAppBar({ category, setCategory }) {
                     _placeholder={{ color: 'whiteAlpha.700' }}
                     _hover={{ borderColor: 'whiteAlpha.500' }}
                     _focus={{ borderColor: 'whiteAlpha.700' }}
+                    onChange={{handleSearchText}}
+                    value={searchValue}
                   />
                 </Box>
                 <Select
@@ -66,6 +81,9 @@ function DefaultAppBar({ category, setCategory }) {
                     </option>
                   ))}
                 </Select>
+                <Button onClick={handleSearchClick}> 
+                  Search
+                </Button>
               </HStack>
             </Box>
           </HStack>

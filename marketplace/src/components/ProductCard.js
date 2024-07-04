@@ -26,14 +26,14 @@ const ProductCard = ({ product }) => {
     >
       <Box position="relative" textAlign="left">
         <Text fontSize="xl" fontWeight="bold" mb={2}>
-          <small>{product.name}</small>
+          {product.name}
         </Text>
         <Text fontSize="sm" color="gray.500" mb={2}>
           {product.description}
         </Text>
         <Badge position="absolute" top={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
           <Text fontSize="sm">
-            <b>{product.store}</b>
+            {product.store}
           </Text>
         </Badge>
       </Box>

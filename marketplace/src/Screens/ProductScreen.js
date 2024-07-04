@@ -68,7 +68,7 @@ const ProductScreen = () => {
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" mt="100px">
-      <Card display="flex" flexDirection="row" width="80%" height="60%">
+      <Card display="flex" flexDirection="row" width="80%" height="60%" shadow="md">
         <VStack width="50%">
           <Image src={mainPicture.image} alt={mainPicture.alt} height="400px" objectFit="contain" />
           <HStack mt="10px">

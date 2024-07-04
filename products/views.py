@@ -9,6 +9,8 @@ from stores.models import Store
 from rest_framework.response import Response
 from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import AnonymousUser
+from django.db.models import Q
+from market.utils import trim_and_case
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
@@ -18,7 +20,10 @@ class ProductViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         if user.is_authenticated:
-            return Product.objects.filter(store__owner=user)
+            store = self.request.query_params.get('store', None)
+            if store:
+                return Product.objects.filter(store__id=store, store__owner=user).order_by('id')
+            return Product.objects.filter(store__owner=user).order_by('id')
         return Product.objects.none()
     
     def get_permissions(self):
@@ -116,13 +121,23 @@ class ProductListView(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         category = self.request.query_params.get('category', None)
+        search = self.request.query_params.get('search', None)
         user = self.request.user
         queryset = super().get_queryset()
 
         if category:
-            queryset = queryset.filter(category=category)
-        
+            queryset = queryset.filter(category=category).order_by('id')
+
+        if search:
+            search = trim_and_case(search)
+            queryset = queryset.filter(
+                Q(name__icontains=search) |
+                Q(category__icontains=search) |
+                Q(store__name__icontains=search) |
+                Q(description__icontains=search)
+            ).order_by('id')
+
         if user.is_authenticated:
-            queryset = queryset.exclude(store__owner=user)
+            queryset = queryset.exclude(store__owner=user).order_by('id')
 
         return queryset

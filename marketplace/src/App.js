@@ -9,6 +9,8 @@ import HomeScreen from './Screens/HomeScreen';
 import LandingPage from './Screens/LandingPage';
 import LoginScreen from './Screens/LoginScreen';
 import SignUpScreen from './Screens/SignUpScreen';
+import StoreScreen from './Screens/StoreScreen';
+import ListStoreScreen from './Screens/ListStoreScreen';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import 'rsuite/dist/rsuite.min.css';
@@ -55,6 +57,8 @@ function App() {
           <Route path="/login" element={isLoggedIn ? <HomeScreen category={category} setCategory={setCategory}/> : <LoginScreen />} />
           <Route path="/signup" element={isLoggedIn ? <HomeScreen category={category} setCategory={setCategory}/> : <SignUpScreen />} />
           <Route path="/view-product/:id" element={<ProductScreen />} />
+          <Route path="/stores" element={isLoggedIn ? <ListStoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />
+          <Route path="/store/:id" element={isLoggedIn ? <StoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />
         </Routes>
       </div>
     </Router>
