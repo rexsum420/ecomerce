@@ -11,6 +11,7 @@ import {
   Heading,
   VStack,
   HStack,
+  Button,
 } from "@chakra-ui/react";
 import AddToCartButton from "../components/AddToCartButton";
 import getCategoryLabel from "../utils/CategoryDecoder";
@@ -20,9 +21,11 @@ const ProductScreen = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [owner, setOwner] = useState(false);
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("username");
   if (!token) {
     navigate("/login");
     document.location.reload();
@@ -41,6 +44,10 @@ const ProductScreen = () => {
       }
       const data = await response.json();
       setProduct(data);
+      console.log(data.store.owner.username)
+      if (userId == data.store.owner.username) {
+        setOwner(true);
+      }
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -60,6 +67,9 @@ const ProductScreen = () => {
     return <Text>Error: {error}</Text>;
   }
 
+  const handleEditClick = () => {
+    navigate(`/edit-product/${id}`);
+  }
   const category = getCategoryLabel(product.category);
   const mainPicture = product.pictures.find((picture) => picture.main) || product.pictures[0];
   const otherPictures = product.pictures.filter((picture) => picture !== mainPicture);
@@ -101,6 +111,8 @@ const ProductScreen = () => {
             <AddToCartButton product={product} />
           </CardFooter>
         </VStack>
+        {owner ? <CardFooter><Button onClick={() => handleEditClick()}>Edit Product</Button></CardFooter> : <></>}
+
       </Card>
     </Box>
   );

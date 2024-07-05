@@ -25,30 +25,39 @@ import PublicViewStore from './Screens/PublicViewStore';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [category, setCategory] = useState('');
+  const [data, setData] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetch(`http://192.168.1.75:8000/check/${token}/`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-        .then(response => {
-          if (response.status === 200) {
-            setIsLoggedIn(true);
-          } else {
-            localStorage.removeItem('token');
-            setIsLoggedIn(false);
-          }
-        })
-        .catch(() => {
-          localStorage.removeItem('token');
-          setIsLoggedIn(false);
-        });
-    }
-  }, []);
+    const checkToken = async () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const response = await fetch(`http://192.168.1.75:8000/check/${token}/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                if (response.status === 200) {
+                    const data = await response.json();
+                    setIsLoggedIn(true);
+                    setData(data);
+                    localStorage.setItem('username', data.user);
+                } else {
+                    localStorage.removeItem('token');
+                    setIsLoggedIn(false);
+                }
+            } catch (error) {
+                localStorage.removeItem('token');
+                setIsLoggedIn(false);
+            }
+        }
+    };
+
+    checkToken();
+}, []);
+
 
   return (
     <Router>

@@ -32,15 +32,15 @@ function LoggedInAppBar({ category, setCategory }) {
   const handleSearchClick = () => {
     if (searchValue !== '') {
         if (getCategoryValue(category)) {
-            navigate(`/search?term=${searchValue}&category=${getCategoryValue(category)}`);
+            navigation(`/search?term=${searchValue}&category=${getCategoryValue(category)}`);
         } else {
-            navigate(`/search?term=${searchValue}`);
+            navigation(`/search?term=${searchValue}`);
         }
     } else {
         if (getCategoryValue(category)) {
-            navigate(`/search?category=${getCategoryValue(category)}`);
+            navigation(`/search?category=${getCategoryValue(category)}`);
         } else {
-            navigate('/');
+            navigation('/');
         }
     }
 }

@@ -36,7 +36,7 @@ class CheckTokenView(APIView):
     def get(self, request, token, format=None):
         try:
             tokn = Token.objects.get(key=token)
-            return Response({'detail': 'Token verified'}, status=HTTP_200_OK)
+            return Response({'detail': 'Token verified', 'user': tokn.user.username}, status=HTTP_200_OK)
         except Token.DoesNotExist:
             raise PermissionDenied('Token doesn\'t match any user tokens')
 
