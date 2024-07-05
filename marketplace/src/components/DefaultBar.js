@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack } from '@chakra-ui/react';
+import {
+  Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody,
+  DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack, Switch,
+  useColorMode, Text, Image
+} from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import CartImage from './Cart';
 import { getCategoryValue } from '../utils/CategoryEncoder';
+import Logo from '../assets/freemarket.png';
+import LogoWhite from '../assets/freemarket-white.png';
+
 
 const categories = [
   'All Categories', 'Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Personal Care', 'Health & Wellness',
@@ -16,8 +23,9 @@ const categories = [
 
 function DefaultAppBar({ category, setCategory }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
+  const { colorMode, toggleColorMode } = useColorMode();
 
   const handleCategoryChange = (event) => {
     setCategory(event.target.value);
@@ -25,83 +33,77 @@ function DefaultAppBar({ category, setCategory }) {
 
   const handleSearchClick = () => {
     if (searchValue !== '') {
-        if (getCategoryValue(category)) {
-            navigation(`/search?term=${searchValue}&category=${getCategoryValue(category)}`);
-        } else {
-            navigation(`/search?term=${searchValue}`);
-        }
+      if (getCategoryValue(category)) {
+        navigate(`/search?term=${searchValue}&category=${getCategoryValue(category)}`);
+      } else {
+        navigate(`/search?term=${searchValue}`);
+      }
     } else {
-        if (getCategoryValue(category)) {
-            navigation(`/search?category=${getCategoryValue(category)}`);
-        } else {
-            navigation('/');
-        }
+      if (getCategoryValue(category)) {
+        navigate(`/search?category=${getCategoryValue(category)}`);
+      } else {
+        navigate('/');
+      }
     }
-}
+  };
 
   const handleSearchText = (event) => {
     setSearchValue(event.target.value);
-  }
+  };
 
   const handleCartClick = () => {
-    navigation('/cart');
-  }
+    navigate('/cart');
+  };
 
   return (
-    <Box bg="blue.500" px={4}>
+    <Box bg={colorMode === 'dark' ? 'gray.800' : 'blue.500'} px={4}>
       <Container maxW="container.xl">
         <Flex h={16} alignItems="center" justifyContent="space-between">
-          <HStack spacing={8} alignItems="center">
-            <Box>
-              <HStack>
-                <Box position="relative">
-                  <IconButton
-                    aria-label="Search database"
-                    icon={<SearchIcon />}
-                    bg="transparent"
-                    _hover={{ bg: 'transparent' }}
-                    position="absolute"
-                    top="50%"
-                    left="0"
-                    transform="translateY(-50%)"
-                    zIndex={1}
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Search…"
-                    pl="2.5rem"
-                    borderColor="whiteAlpha.300"
-                    _placeholder={{ color: 'whiteAlpha.700' }}
-                    _hover={{ borderColor: 'whiteAlpha.500' }}
-                    _focus={{ borderColor: 'whiteAlpha.700' }}
-                    onChange={{handleSearchText}}
-                    value={searchValue}
-                  />
-                </Box>
-                <Select
-                  value={category}
-                  onChange={handleCategoryChange}
-                  placeholder="Category"
-                  variant="filled"
-                  borderColor="whiteAlpha.300"
-                  _hover={{ borderColor: 'whiteAlpha.500' }}
-                  _focus={{ borderColor: 'whiteAlpha.700' }}
-                  color="black"
-                >
-                  {categories.map((categorie) => (
-                    <option key={categorie} value={categorie}>
-                      {categorie}
-                    </option>
-                  ))}
-                </Select>
-                <Button onClick={handleSearchClick}> 
-                  Search
-                </Button>
-              </HStack>
-            </Box>
+          <HStack spacing={4} alignItems="center">
+            <Text fontSize="lg" color="white">
+              <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
+            </Text>
+            <Flex display={{base:'none', lg:'flex'}} alignItems="center" bg="whiteAlpha.200" borderRadius="md" p={1}>
+              <IconButton
+                aria-label="Search database"
+                icon={<SearchIcon />}
+                bg="transparent"
+                _hover={{ bg: 'transparent' }}
+                mr={2}
+              />
+              <Input
+                type="text"
+                placeholder="Search…"
+                variant="unstyled"
+                _placeholder={{ color: 'whiteAlpha.700' }}
+                color={colorMode === 'dark' ? "white" : "black"}
+                flex="1"
+                onChange={handleSearchText}
+                value={searchValue}
+              />
+              <Select
+                value={category}
+                onChange={handleCategoryChange}
+                placeholder="Category"
+                variant="unstyled"
+                color={colorMode === 'dark' ? "white" : "black"}
+                flex="1"
+              >
+                {categories.map((categorie) => (
+                  <option key={categorie} value={categorie}>
+                    {categorie}
+                  </option>
+                ))}
+              </Select>
+              <Button onClick={handleSearchClick}>
+                Search
+              </Button>
+            </Flex>
           </HStack>
-          <HStack spacing={8} alignItems="center">
-          <CartImage onClick={() => handleCartClick()} />
+          <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
+          <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
+          <HStack spacing={4} alignItems="center">
+            <CartImage onClick={handleCartClick} />
             <Tooltip label="Open settings" aria-label="A tooltip">
               <IconButton
                 icon={<Avatar size="sm" src="/static/images/avatar/2.jpg" />}
@@ -121,15 +123,15 @@ function DefaultAppBar({ category, setCategory }) {
           <DrawerCloseButton />
           <DrawerHeader>
             <Heading size="md">
-              <Link to="/">Free Market</Link>
+              <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
             </Heading>
           </DrawerHeader>
           <DrawerBody>
             <VStack>
-              <Button colorScheme="blue" onClick={() => { navigation('/signup'); onClose(); }}>
+              <Button colorScheme="blue" onClick={() => { navigate('/signup'); onClose(); }}>
                 Sign Up
               </Button>
-              <Button colorScheme="blue" onClick={() => { navigation('/login'); onClose(); }}>
+              <Button colorScheme="blue" onClick={() => { navigate('/login'); onClose(); }}>
                 Login
               </Button>
             </VStack>

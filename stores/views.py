@@ -8,6 +8,9 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework import mixins
 from rest_framework.decorators import action
+from market.utils import trim_and_case
+from .utils import replace_spaces
+import logging
 
 class StoreViewSet(viewsets.ModelViewSet):
     serializer_class = StoreSerializer
@@ -63,16 +66,42 @@ class StoreListView(viewsets.ReadOnlyModelViewSet):
             return Store.objects.filter(owner=self.request.user).order_by('id')
         return Store.objects.none()
     
+logger = logging.getLogger(__name__)
+
 class ReadStoreViewSet(mixins.RetrieveModelMixin,
-                   mixins.ListModelMixin,
-                   viewsets.GenericViewSet):
+                       mixins.ListModelMixin,
+                       viewsets.GenericViewSet):
     queryset = Store.objects.all()
     serializer_class = GetStoreByNameSerializer
 
-    @action(detail=False, methods=['get'], url_path='name/(?P<name>[^/.]+)')
-    def get_by_name(self, request, name=None):
-        store = Store.objects.filter(name=name).first()
-        if store:
-            serializer = self.get_serializer(store)
+    def get_queryset(self):
+        store_name = self.request.query_params.get('store', None)
+        store_list = self.request.query_params.get('list', None)
+        
+        logger.debug(f"Received query parameters - store: {store_name}, list: {store_list}")
+        
+        if store_name:
+            # Remove any trailing slash or whitespace from the store_name
+            store_name = replace_spaces(store_name.rstrip('/').strip())
+            logger.debug(f"Querying store by name: {store_name}")
+            # Filter stores by name (case-insensitive)
+            stores = Store.objects.filter(name__iexact=store_name)
+            if stores.exists():
+                logger.debug(f"Store found: {stores}")
+                return stores
+            logger.debug(f"Store not found: {store_name}")
+        elif store_list is not None:
+            logger.debug("Querying all stores")
+            return Store.objects.all()
+        logger.debug("No valid query parameters provided")
+        return Store.objects.none()
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if queryset.exists():
+            if 'list' in request.query_params:
+                serializer = ListStoresSerializer(queryset, many=True)
+            else:
+                serializer = self.get_serializer(queryset, many=True)
             return Response(serializer.data)
         return Response({"detail": "Not found."}, status=404)

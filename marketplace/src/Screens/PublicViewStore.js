@@ -14,39 +14,54 @@ const PublicViewStore = () => {
     const fetchStore = async (storeName) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.75:8000/get-store/name/${storeName}/`, {
+            const response = await fetch(`http://192.168.1.75:8000/api/get-store/?store=${storeName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     ...(token && { 'Authorization': `Token ${token}` })
                 }
             });
-
-            if (response.status === 401) {
-                console.log("Unauthorized");
-                setUnAuth(true);
+    
+            if (!response.ok) {
+                // Handle HTTP errors
+                if (response.status === 404) {
+                    console.error("Page Not Found", response.statusText);
+                    setError(true);
+                } else {
+                    console.error("HTTP error:", response.status, response.statusText);
+                    setError(true);
+                }
                 setLoading(false);
-            } else if (response.ok) {
-                const data = await response.json();
-                setStore(data);
-                setLoading(false);
-            } else {
-                console.error("Error fetching store:", response.statusText);
-                setError(true);
-                setLoading(false);
+                return;
             }
-        } catch (error) {
-            console.error("Error fetching store:", error);
+    
+            try {
+                // Attempt to parse the response as JSON
+                const data = await response.json();
+                console.log(data);
+                setStore(data[0]);
+                setError(false);
+            } catch (jsonError) {
+                console.error("Error parsing JSON:", jsonError);
+                setError(true);
+            }
+    
+            setLoading(false);
+        } catch (fetchError) {
+            // Handle network errors or other unexpected errors
+            console.error("Error fetching store:", fetchError);
             setError(true);
             setLoading(false);
         }
     };
+    
 
     const fetchProducts = async (storeName) => {
         try {
-            const res = await fetch(`http://192.168.1.75:8000/api/products/?store=${storeName}`);
+            const res = await fetch(`http://192.168.1.75:8000/api/homepage/?store=${storeName}`);
             const data = await res.json();
             setProds(data.results);
+            setLoading(false)
         } catch (error) {
             console.error("Error fetching products:", error);
             setError(true);
@@ -93,12 +108,11 @@ const PublicViewStore = () => {
 
             <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }} gap={6} mt={10}>
                 {prods.map((product) => {
-                    const mainPicture = product.pictures.find(picture => picture.main);
                     return (
                         <GridItem key={product.id}>
                             <Box shadow="md" borderWidth="1px" borderRadius="md" p={5}>
                                 <Heading fontSize="xl" mb={2}>{product.name}</Heading>
-                                {mainPicture && <Image src={mainPicture.image} alt={mainPicture.alt || product.name} />}
+                                {product.pictures && <Image src={product.pictures} alt={product.name || product.name} />}
                                 <Text mt={2}>{product.description}</Text>
                                 <Text mt={2} color="green.500">${product.price}</Text>
                                 <Button onClick={() => navigate(`/view-product/${product.id}`)}>View Product</Button>

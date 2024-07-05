@@ -1,17 +1,45 @@
-import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, Input, Textarea, useToast } from '@chakra-ui/react';
+import React, { useState, useEffect } from 'react';
+import { Box, Button, FormControl, FormLabel, Input, Textarea, FormErrorMessage } from '@chakra-ui/react';
 
 const AddStore = () => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [website, setWebsite] = useState('');
     const [phone, setPhone] = useState('');
-    const toast = useToast();
+    const [storeList, setStoreList] = useState([]);
+    const [nameError, setNameError] = useState('');
+
+    useEffect(() => {
+        const fetchStoreList = async () => {
+            const response = await fetch('http://192.168.1.75:8000/api/get-store/?list=True');
+            if (response.ok) {
+                const data = await response.json();
+                setStoreList(data);
+            }
+        };
+
+        fetchStoreList();
+    }, []);
+
+    const handleNameChange = (e) => {
+        const newName = e.target.value;
+        setName(newName);
+
+        // Check if the store name already exists
+        const storeExists = storeList.some(store => store.name.toLowerCase() === newName.toLowerCase());
+
+        if (storeExists) {
+            setNameError('Store name already exists. Please choose a different name.');
+        } else {
+            setNameError('');
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (nameError) return;
+
         const token = localStorage.getItem('token');
-        
         const response = await fetch('http://192.168.1.75:8000/api/stores/', {
             method: 'POST',
             headers: {
@@ -27,40 +55,29 @@ const AddStore = () => {
         });
 
         if (response.ok) {
-            toast({
-                title: "Store created.",
-                description: "Your store has been created successfully.",
-                status: "success",
-                duration: 5000,
-                isClosable: true,
-            });
             // Reset form fields
             setName('');
             setDescription('');
             setWebsite('');
             setPhone('');
+            setStoreList([...storeList, { name }]); // Add new store to the list
         } else {
             const errorData = await response.json();
-            toast({
-                title: "Error creating store.",
-                description: errorData.detail || "An error occurred while creating the store.",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-            });
+            setNameError(errorData.detail || 'An error occurred while creating the store.');
         }
     };
 
     return (
         <Box p={5} maxW="500px" mx="auto">
             <form onSubmit={handleSubmit}>
-                <FormControl id="name" mb={4} isRequired>
+                <FormControl id="name" mb={4} isInvalid={nameError}>
                     <FormLabel>Store Name</FormLabel>
                     <Input
                         type="text"
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={handleNameChange}
                     />
+                    {nameError && <FormErrorMessage>{nameError}</FormErrorMessage>}
                 </FormControl>
                 <FormControl id="description" mb={4}>
                     <FormLabel>Description</FormLabel>
@@ -85,7 +102,7 @@ const AddStore = () => {
                         onChange={(e) => setPhone(e.target.value)}
                     />
                 </FormControl>
-                <Button type="submit" colorScheme="blue" isFullWidth>
+                <Button type="submit" colorScheme="blue" isFullWidth disabled={nameError}>
                     Add Store
                 </Button>
             </form>

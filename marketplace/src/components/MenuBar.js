@@ -1,9 +1,20 @@
 import React, { useState } from 'react';
-import { Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack, Text } from '@chakra-ui/react';
+import {
+  Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure,
+  Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
+  Button, Tooltip, Text, Switch, useColorMode, VStack, Image
+} from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import CartImage from './Cart';
 import { getCategoryValue } from '../utils/CategoryEncoder';
+import HomeImage from '../assets/home.png';
+import ProfileImage from '../assets/profile.png';
+import StoreImage from '../assets/store.png';
+import OrderImage from '../assets/order.png';
+import PurchaseImage from '../assets/purchase.png';
+import Logo from '../assets/freemarket.png';
+import LogoWhite from '../assets/freemarket-white.png'
 
 const categories = [
   'All Categories', 'Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Personal Care', 'Health & Wellness',
@@ -16,12 +27,13 @@ const categories = [
 
 function LoggedInAppBar({ category, setCategory }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
-  
+  const { colorMode, toggleColorMode } = useColorMode();
+
   const handleLogOut = () => {
-    localStorage.removeItem('token');
-    navigation('/');
+    localStorage.clear();
+    navigate('/');
     document.location.reload();
   };
 
@@ -31,37 +43,37 @@ function LoggedInAppBar({ category, setCategory }) {
 
   const handleSearchClick = () => {
     if (searchValue !== '') {
-        if (getCategoryValue(category)) {
-            navigation(`/search?term=${searchValue}&category=${getCategoryValue(category)}`);
-        } else {
-            navigation(`/search?term=${searchValue}`);
-        }
+      if (getCategoryValue(category)) {
+        navigate(`/search?term=${searchValue}&category=${getCategoryValue(category)}`);
+      } else {
+        navigate(`/search?term=${searchValue}`);
+      }
     } else {
-        if (getCategoryValue(category)) {
-            navigation(`/search?category=${getCategoryValue(category)}`);
-        } else {
-            navigation('/');
-        }
+      if (getCategoryValue(category)) {
+        navigate(`/search?category=${getCategoryValue(category)}`);
+      } else {
+        navigate('/');
+      }
     }
-}
+  };
 
   const handleCartClick = () => {
-    navigation('/cart');
-  }
+    navigate('/cart');
+  };
 
   const handleSearchText = (event) => {
     setSearchValue(event.target.value);
-  }
+  };
 
   return (
-    <Box bg="blue.500" px={2}>
+    <Box bg={colorMode === 'dark' ? 'gray.800' : 'blue.500'} px={2}>
       <Container maxW="container.xl">
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <HStack spacing={4} alignItems="center">
             <Text fontSize="lg" color="white">
-              <Link to="/">Free Market</Link>
+              <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
             </Text>
-            <Flex alignItems="center" bg="whiteAlpha.200" borderRadius="md" p={1}>
+            <Flex display={{base:'none', lg:'flex'}} alignItems="center" bg="whiteAlpha.200" borderRadius="md" p={1}>
               <IconButton
                 aria-label="Search database"
                 icon={<SearchIcon />}
@@ -74,7 +86,7 @@ function LoggedInAppBar({ category, setCategory }) {
                 placeholder="Search…"
                 variant="unstyled"
                 _placeholder={{ color: 'whiteAlpha.700' }}
-                color="black"
+                color={colorMode === 'dark' ? "white" : "black"}
                 flex="1"
                 onChange={handleSearchText}
                 value={searchValue}
@@ -84,7 +96,7 @@ function LoggedInAppBar({ category, setCategory }) {
                 onChange={handleCategoryChange}
                 placeholder="Category"
                 variant="unstyled"
-                color="black"
+                color={colorMode === 'dark' ? "white" : "black"}
                 flex="1"
               >
                 {categories.map((categorie) => (
@@ -98,8 +110,12 @@ function LoggedInAppBar({ category, setCategory }) {
               </Button>
             </Flex>
           </HStack>
+          <Flex>
+          <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
+          <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
+          </Flex>
           <HStack spacing={4} alignItems="center">
-            <CartImage onClick={() => handleCartClick()} />
+            <CartImage onClick={handleCartClick} />
             <Tooltip label="Open settings" aria-label="A tooltip">
               <IconButton
                 icon={<Avatar size="sm" src="/static/images/avatar/2.jpg" />}
@@ -115,41 +131,60 @@ function LoggedInAppBar({ category, setCategory }) {
       </Container>
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay />
-        <DrawerContent >
+        <DrawerContent>
           <DrawerCloseButton />
           <DrawerHeader>
-            <Heading size="md">
-              <Link to="/">Free Market</Link>
-            </Heading>
+            <Text fontSize="lg">
+              <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
+            </Text>
           </DrawerHeader>
           <hr />
           <DrawerBody>
             <Flex justifyContent="space-between" height="84vh" direction="column">
-            <VStack align="start">
-              <Button onClick={() => { navigation('/'); onClose(); }}>
-                Home
-              </Button>
-              <Button onClick={() => { navigation('/profile'); onClose(); }}>
-                Profile
-              </Button>
-              <Button onClick={() => { navigation('/stores'); onClose(); }}>
-                Stores
-              </Button>
-              <Button onClick={() => { navigation('/orders'); onClose(); }}>
-                Orders
-              </Button>
-              <Button onClick={() => { navigation('/purchases'); onClose(); }}>
-                Purchases
-              </Button>
-            </VStack>
-            <VStack align="center">
-              <Flex direction='column'>
-              <hr />
-            <Button colorScheme="blue" onClick={handleLogOut}>
-                Sign Out
-              </Button>
-              </Flex>
-            </VStack>
+              <VStack align="start">
+                <Flex display='flex' flexDirection='row'>
+                  <Image src={HomeImage} alt='home' boxSize={'32px'} marginRight={'20px'} />
+                <Button onClick={() => { navigate('/'); onClose(); }}>
+                  Home
+                </Button>
+                </Flex>
+                <br />
+                <Flex display='flex' flexDirection='row'>
+                  <Image src={ProfileImage} alt='profile' boxSize={'32px'} marginRight={'20px'}  />
+                <Button onClick={() => { navigate('/profile'); onClose(); }}>
+                  Profile
+                </Button>
+                </Flex>
+                <br />
+                <Flex display='flex' flexDirection='row'>
+                  <Image src={StoreImage} alt='store' boxSize={'32px'} marginRight={'20px'} />
+                <Button onClick={() => { navigate('/stores'); onClose(); }}>
+                  Stores
+                </Button>
+                </Flex>
+                <br />
+                <Flex display='flex' flexDirection='row'>
+                  <Image src={OrderImage} alt='order'boxSize={'32px'} marginRight={'20px'} />
+                <Button onClick={() => { navigate('/orders'); onClose(); }}>
+                  Orders
+                </Button>
+                </Flex>
+                <br />
+                <Flex display='flex' flexDirection='row'>
+                  <Image src={PurchaseImage} alt='purchase' boxSize={'32px'} marginRight={'20px'} />
+                <Button onClick={() => { navigate('/purchases'); onClose(); }}>
+                  Purchases
+                </Button>
+                </Flex>
+              </VStack>
+              <VStack align="center">
+                <Flex direction='column'>
+                  <hr />
+                  <Button colorScheme="blue" onClick={handleLogOut}>
+                    Sign Out
+                  </Button>
+                </Flex>
+              </VStack>
             </Flex>
           </DrawerBody>
         </DrawerContent>

@@ -11,20 +11,13 @@ from rest_framework.pagination import PageNumberPagination
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Q
 from market.utils import trim_and_case
+from stores.utils import replace_spaces
 
 class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated:
-            store = self.request.query_params.get('store', None)
-            if store:
-                return Product.objects.filter(store__id=store).order_by('id')
-            return Product.objects.all().order_by('id')
-        return Product.objects.all()
     
     def get_permissions(self):
         if self.request.method in ['GET', 'OPTIONS', 'HEAD']:
@@ -119,8 +112,13 @@ class ProductListView(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         category = self.request.query_params.get('category', None)
         search = self.request.query_params.get('search', None)
+        store = self.request.query_params.get('store', None)
         user = self.request.user
         queryset = super().get_queryset()
+
+        if store:
+            store = replace_spaces(store)
+            return queryset.filter(store__name=store)
 
         if category:
             queryset = queryset.filter(category=category).order_by('id')

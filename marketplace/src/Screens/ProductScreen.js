@@ -75,7 +75,7 @@ const ProductScreen = () => {
   const otherPictures = product.pictures.filter((picture) => picture !== mainPicture);
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" mt="100px">
+    <Box display="flex" justifyContent="center" alignItems="center" mt="100px" flexDirection={'column'}>
       <Card display="flex" flexDirection="row" width="80%" height="60%" shadow="md">
         <VStack width="50%">
           <Image src={mainPicture.image} alt={mainPicture.alt} height="400px" objectFit="contain" />
@@ -111,9 +111,8 @@ const ProductScreen = () => {
             <AddToCartButton product={product} />
           </CardFooter>
         </VStack>
-        {owner ? <CardFooter><Button onClick={() => handleEditClick()}>Edit Product</Button></CardFooter> : <></>}
-
       </Card>
+      {owner ? <Button marginTop={'20px'} onClick={() => handleEditClick()}>Edit Product</Button> : <></>}
     </Box>
   );
 };
