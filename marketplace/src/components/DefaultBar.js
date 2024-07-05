@@ -24,11 +24,20 @@ function DefaultAppBar({ category, setCategory }) {
 
   const handleSearchClick = () => {
     if (searchValue !== '') {
-    navigation(`/search?term=${searchValue}`);
+        if (getCategoryValue(category)) {
+            navigate(`/search?term=${searchValue}&category=${getCategoryValue(category)}`);
+        } else {
+            navigate(`/search?term=${searchValue}`);
+        }
     } else {
-      navigation('/');
+        if (getCategoryValue(category)) {
+            navigate(`/search?category=${getCategoryValue(category)}`);
+        } else {
+            navigate('/');
+        }
     }
-  }
+}
+
   const handleSearchText = (event) => {
     setSearchValue(event.target.value);
   }

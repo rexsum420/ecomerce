@@ -2,10 +2,12 @@ from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from .models import Store
-from .serializers import StoreSerializer, CreateStoreSerializer, ListStoresSerializer
+from .serializers import StoreSerializer, CreateStoreSerializer, ListStoresSerializer, GetStoreByNameSerializer
 from users.permissions import IsStoreOwnerOrReadOnly
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
+from rest_framework import mixins
+from rest_framework.decorators import action
 
 class StoreViewSet(viewsets.ModelViewSet):
     serializer_class = StoreSerializer
@@ -60,3 +62,17 @@ class StoreListView(viewsets.ReadOnlyModelViewSet):
         if self.request.user.is_authenticated:
             return Store.objects.filter(owner=self.request.user).order_by('id')
         return Store.objects.none()
+    
+class ReadStoreViewSet(mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Store.objects.all()
+    serializer_class = GetStoreByNameSerializer
+
+    @action(detail=False, methods=['get'], url_path='name/(?P<name>[^/.]+)')
+    def get_by_name(self, request, name=None):
+        store = Store.objects.filter(name=name).first()
+        if store:
+            serializer = self.get_serializer(store)
+            return Response(serializer.data)
+        return Response({"detail": "Not found."}, status=404)

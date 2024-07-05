@@ -11,6 +11,7 @@ const useQuery = () => {
 const SearchScreen = () => {
     const query = useQuery();
     const term = query.get('term');
+    const category = query.get('category');
     const [prods, setProds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -18,7 +19,10 @@ const SearchScreen = () => {
 
     const fetchProducts = async() => {
         try {
-            const res = await Api(`http://192.168.1.75:8000/api/search/?search=${term}`);
+            let apiUrl = `http://192.168.1.75:8000/api/search/?`;
+            if (term) apiUrl += `search=${term}&`;
+            if (category) apiUrl += `category=${category}&`;
+            const res = await Api(apiUrl.slice(0, -1)); // Remove the last '&'
             setProds(res.results);
             setLoading(false);
         } catch (error) {
@@ -30,11 +34,11 @@ const SearchScreen = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [term]);
+    }, [term, category]);
 
     const handleViewDetails = (id) => {
         navigate(`/view-product/${id}`);
-      };
+    };
 
     if (loading) {
         return <Spinner size="xl" />;

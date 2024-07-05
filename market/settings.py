@@ -156,27 +156,27 @@ REST_FRAMEWORK = {
 #     'loggers': {
 #         'django': {
 #             'handlers': ['console', 'file'],
-#             'level': 'WARNING',
+#             'level': 'DEBUG',
 #             'propagate': True,
 #         },
 #         'django.request': {
 #             'handlers': ['file'],
-#             'level': 'WARNING',
+#             'level': 'DEBUG',
 #             'propagate': False,
 #         },
 #         'stores': {
 #             'handlers': ['console', 'file'],
-#             'level': 'WARNING',
+#             'level': 'DEBUG',
 #             'propagate': True,
 #         },
 #         'products': {
 #             'handlers': ['console', 'file'],
-#             'level': 'WARNING',
+#             'level': 'DEBUG',
 #             'propagate': True,
 #         },
 #         'orders': {
 #             'handlers': ['console', 'file'],
-#             'level': 'WARNING',
+#             'level': 'DEBUG',
 #             'propagate': True,
 #         },
 #     },

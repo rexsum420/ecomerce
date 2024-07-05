@@ -20,6 +20,7 @@ import 'rsuite/dist/rsuite.min.css';
 import ProductScreen from './Screens/ProductScreen';
 import EditStore from './Screens/EditStore';
 import ViewCart from './Screens/ViewCart';
+import PublicViewStore from './Screens/PublicViewStore';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
@@ -63,6 +64,7 @@ function App() {
           <Route path="/signup" element={isLoggedIn ? <HomeScreen category={category} setCategory={setCategory}/> : <SignUpScreen />} />
           <Route path="/view-product/:id" element={<ProductScreen />} />
           <Route path="/stores" element={isLoggedIn ? <ListStoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />
+          <Route path="/stores/:name" element={<PublicViewStore />} />
           <Route path="/store/:id/edit" element={isLoggedIn ? <EditStore /> : <HomeScreen category={category} setCategory={setCategory}/>} />
           <Route path="/store/:id/add-product" element={isLoggedIn ? <AddProduct /> : <HomeScreen category={category} setCategory={setCategory}/>} />          
           <Route path="/store/:id" element={isLoggedIn ? <StoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />

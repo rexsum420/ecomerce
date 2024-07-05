@@ -39,3 +39,19 @@ class ListStoresSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
         fields = ['id', 'name']
+        
+class GetStoreByNameSerializer(serializers.ModelSerializer):
+    owner = UserSerializer()
+
+    class Meta:
+        model = Store
+        fields = [
+            'id', 'owner', 'name', 'description', 'website', 'phone', 
+            'verified', 'created_at'
+        ]
+        extra_kwargs = {
+            'description': {'required': False},
+            'website': {'required': False},
+            'phone': {'required': False},
+            'verified': {'required': False},
+        }

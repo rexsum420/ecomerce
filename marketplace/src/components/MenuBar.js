@@ -3,6 +3,7 @@ import { Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDis
 import { SearchIcon } from '@chakra-ui/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import CartImage from './Cart';
+import { getCategoryValue } from '../utils/CategoryEncoder';
 
 const categories = [
   'All Categories', 'Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Personal Care', 'Health & Wellness',
@@ -30,11 +31,19 @@ function LoggedInAppBar({ category, setCategory }) {
 
   const handleSearchClick = () => {
     if (searchValue !== '') {
-    navigation(`/search?term=${searchValue}`);
+        if (getCategoryValue(category)) {
+            navigate(`/search?term=${searchValue}&category=${getCategoryValue(category)}`);
+        } else {
+            navigate(`/search?term=${searchValue}`);
+        }
     } else {
-      navigation('/');
+        if (getCategoryValue(category)) {
+            navigate(`/search?category=${getCategoryValue(category)}`);
+        } else {
+            navigate('/');
+        }
     }
-  }
+}
 
   const handleCartClick = () => {
     navigation('/cart');

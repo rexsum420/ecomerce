@@ -19,7 +19,7 @@ from django.urls import path, include
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.routers import DefaultRouter
 from users.views import UserViewSet, ProfileViewSet, activate, CheckTokenView
-from stores.views import StoreViewSet, StoreListView
+from stores.views import StoreViewSet, StoreListView, ReadStoreViewSet
 from products.views import ProductViewSet, PictureViewSet, ProductListView
 from orders.views import OrderViewSet, LineItemViewSet
 from django.conf import settings
@@ -35,8 +35,9 @@ router.register(r'pictures', PictureViewSet, basename='picture')
 router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'lineitems', LineItemViewSet, basename='lineitem')
 router.register(r'homepage', ProductListView, basename='homepage')
-router.register(r'my-stores', StoreListView, basename='my-store')
+router.register(r'my-stores', StoreListView, basename='my_store')
 router.register(r'search', ProductListView, basename='search')
+router.register(r'get-store', ReadStoreViewSet, basename='get_store')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

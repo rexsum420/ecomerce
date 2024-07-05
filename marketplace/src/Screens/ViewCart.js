@@ -24,7 +24,7 @@ const ViewCart = () => {
             ) : (
                 cart.map(product => (
                     <Flex key={product.id} p={4} borderWidth={1} borderRadius="md" mb={2} alignItems="center">
-                        <Image src={getMainImage(product.pictures)} alt={product.name} boxSize="100px" objectFit="cover" mr={4} />
+                        <Image src={getMainImage(product.pictures)} alt={product.name} boxSize="90px" objectFit="cover" mr={4} />
                         <Box flex="1">
                             <Text fontWeight="bold">{product.name}</Text>
                             <Text>${product.price}</Text>

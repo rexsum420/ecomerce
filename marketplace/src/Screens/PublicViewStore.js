@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image, Button } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
-import Api from "../utils/Api";
 
-const StoreScreen = () => {
-    const { id } = useParams();
+const PublicViewStore = () => {
+    const { name } = useParams();
     const [store, setStore] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -12,17 +11,17 @@ const StoreScreen = () => {
     const [prods, setProds] = useState([]);
     const navigate = useNavigate();
 
-    const fetchStore = async (storeId) => {
+    const fetchStore = async (storeName) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.75:8000/api/stores/${storeId}/`, {
+            const response = await fetch(`http://192.168.1.75:8000/get-store/name/${storeName}/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
+                    ...(token && { 'Authorization': `Token ${token}` })
                 }
             });
-        
+
             if (response.status === 401) {
                 console.log("Unauthorized");
                 setUnAuth(true);
@@ -41,13 +40,13 @@ const StoreScreen = () => {
             setError(true);
             setLoading(false);
         }
-    } 
+    };
 
-    const fetchProducts = async() => {
+    const fetchProducts = async (storeName) => {
         try {
-            const res = await Api(`http://192.168.1.75:8000/api/products/?store=${id}`);
-            setProds(res.results);
-            console.log(res.results);
+            const res = await fetch(`http://192.168.1.75:8000/api/products/?store=${storeName}`);
+            const data = await res.json();
+            setProds(data.results);
         } catch (error) {
             console.error("Error fetching products:", error);
             setError(true);
@@ -56,9 +55,9 @@ const StoreScreen = () => {
     };
 
     useEffect(() => {
-        fetchStore(id);
-        fetchProducts();
-    }, []);
+        fetchStore(name);
+        fetchProducts(name);
+    }, [name]);
 
     if (loading) {
         return <Spinner size="xl" />;
@@ -82,32 +81,17 @@ const StoreScreen = () => {
         );
     }
 
-    const handleAddProduct = () => {
-        window.location.href = `http://localhost:3000/store/${id}/add-product`;
-    };
-
-    const handleEditStore = () => {
-        window.location.href = `http://localhost:3000/store/${id}/edit`;
-    }
-
     return (
-        <Box p={5}>
+        <Box p={5} w={{ base: '100%', md: '40%' }} mx="auto">
             <Heading as="h1" mb={5}>Store Details</Heading>
-            <Box p={5} shadow="md" borderWidth="1px" borderRadius="md" display='flex' flexDirection='row' justifyContent='space-between'>
-                <Heading fontSize="xl">
-                    {store.name}
-                </Heading>
-                    <Button onClick={() => handleEditStore()}>Edit Store</Button>
-                </Box>
-    
-                <Box display='flex' flexDirection='row' justifyContent='space-between'>
-                <Box mt={4}>
-                    <Heading size="md">Description:</Heading>
-                    <Text>{store.description}</Text>
-                </Box>
-                <Button onClick={() => handleAddProduct()}>Add Product</Button>
-                </Box>
-            <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} gap={6} marginTop={10}>
+            <Box p={5} shadow="md" borderWidth="1px" borderRadius="md">
+                <Heading fontSize="xl" mb={2}>{store.name}</Heading>
+                <Text>{store.description}</Text>
+                <Text>{store.website}</Text>
+                <Text>{store.phone}</Text>
+            </Box>
+
+            <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }} gap={6} mt={10}>
                 {prods.map((product) => {
                     const mainPicture = product.pictures.find(picture => picture.main);
                     return (
@@ -127,4 +111,4 @@ const StoreScreen = () => {
     );
 };
 
-export default StoreScreen;
+export default PublicViewStore;

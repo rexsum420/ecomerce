@@ -35,9 +35,11 @@ class ProductSerializer(serializers.ModelSerializer):
 class CreateProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['store', 'name', 'description', 'price', 'size', 'color', 
+        fields = [
+            'store', 'name', 'description', 'price', 'size', 'color', 
             'variations', 'barcode_number', 'model_number', 'manufacturer', 
-            'inventory_count', 'category']
+            'inventory_count', 'category'
+        ]
         extra_kwargs = {
             'description': {'required': False},
             'size': {'required': False},
@@ -49,6 +51,11 @@ class CreateProductSerializer(serializers.ModelSerializer):
             'inventory_count': {'required': False},
             'category': {'required': False},
         }
+
+    def validate_store(self, value):
+        if not value.owner == self.context['request'].user:
+            raise serializers.ValidationError("You do not have permission to create products for this store.")
+        return value
 
 class ReadProductsShortSerializer(serializers.ModelSerializer):
     pictures = serializers.SerializerMethodField(read_only=True)

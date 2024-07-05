@@ -14,7 +14,7 @@ from market.utils import trim_and_case
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
-    permission_classes = [IsStoreOwnerOrReadOnly, IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
     def get_queryset(self):
@@ -37,9 +37,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         return super().get_serializer_class()
 
     def perform_create(self, serializer):
-        store = serializer.validated_data['store']
-        if not self.request.user == store.owner:
-            raise PermissionDenied("You do not have permission to create products for this store.")
         serializer.save()
 
     def perform_update(self, serializer):
@@ -68,7 +65,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class PictureViewSet(viewsets.ModelViewSet):
     serializer_class = PictureSerializer
-    permission_classes = [IsStoreOwnerOrReadOnly, IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
     def get_queryset(self):
