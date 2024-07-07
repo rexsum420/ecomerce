@@ -6,6 +6,28 @@ from rest_framework.authentication import get_authorization_header
 from rest_framework.exceptions import AuthenticationFailed
 from .encryption import encrypt, decrypt
 from users.models import Profile
+from django.core.cache import cache
+from django.urls import resolve
+from datetime import datetime, timedelta
+from rest_framework.response import Response
+
+User = get_user_model()
+
+class RequestThrottleMiddleware(MiddlewareMixin):
+    THROTTLE_INTERVAL = 1
+
+    def process_request(self, request):
+        if request.user.is_authenticated:
+            url_name = resolve(request.path_info).url_name
+            cache_key = f'request_throttle_{request.user.id}_{url_name}'
+
+            if cache.get(cache_key):
+                return self._throttled_response()
+
+            cache.set(cache_key, True, timeout=self.THROTTLE_INTERVAL)
+
+    def _throttled_response(self):
+        return Response ({})
 
 User = get_user_model()
 

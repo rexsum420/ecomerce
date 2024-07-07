@@ -32,7 +32,9 @@ function LoggedInAppBar({ category, setCategory }) {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const handleLogOut = () => {
+    const temp = localStorage.getItem('chakra-ui-color-mode')
     localStorage.clear();
+    localStorage.setItem('chakra-ui-color-mode', temp);
     navigate('/');
     document.location.reload();
   };

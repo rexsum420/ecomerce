@@ -97,16 +97,16 @@ const StoreScreen = () => {
                 <Heading fontSize="xl">
                     {store.name}
                 </Heading>
-                    <Button onClick={() => handleEditStore()}>Edit Store</Button>
-                </Box>
+                <Button onClick={() => handleEditStore()} colorScheme="blue">Edit Store</Button>
+            </Box>
     
-                <Box display='flex' flexDirection='row' justifyContent='space-between'>
-                <Box mt={4}>
+            <Box display='flex' flexDirection='row' justifyContent='space-between' mt={4}>
+                <Box>
                     <Heading size="md">Description:</Heading>
                     <Text>{store.description}</Text>
                 </Box>
-                <Button onClick={() => handleAddProduct()}>Add Product</Button>
-                </Box>
+                <Button onClick={() => handleAddProduct()} colorScheme="green">Add Product</Button>
+            </Box>
             <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} gap={6} marginTop={10}>
                 {prods.map((product) => {
                     const mainPicture = product.pictures.find(picture => picture.main);
@@ -117,7 +117,7 @@ const StoreScreen = () => {
                                 {mainPicture && <Image src={mainPicture.image} alt={mainPicture.alt || product.name} />}
                                 <Text mt={2}>{product.description}</Text>
                                 <Text mt={2} color="green.500">${product.price}</Text>
-                                <Button onClick={() => navigate(`/view-product/${product.id}`)}>View Product</Button>
+                                <Button mt={2} colorScheme="teal" onClick={() => navigate(`/view-product/${product.id}`)}>View Product</Button>
                             </Box>
                         </GridItem>
                     );

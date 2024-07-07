@@ -23,7 +23,6 @@ const PublicViewStore = () => {
             });
     
             if (!response.ok) {
-                // Handle HTTP errors
                 if (response.status === 404) {
                     console.error("Page Not Found", response.statusText);
                     setError(true);
@@ -36,7 +35,6 @@ const PublicViewStore = () => {
             }
     
             try {
-                // Attempt to parse the response as JSON
                 const data = await response.json();
                 console.log(data);
                 setStore(data[0]);
@@ -48,7 +46,6 @@ const PublicViewStore = () => {
     
             setLoading(false);
         } catch (fetchError) {
-            // Handle network errors or other unexpected errors
             console.error("Error fetching store:", fetchError);
             setError(true);
             setLoading(false);
@@ -61,7 +58,7 @@ const PublicViewStore = () => {
             const res = await fetch(`http://192.168.1.75:8000/api/homepage/?store=${storeName}`);
             const data = await res.json();
             setProds(data.results);
-            setLoading(false)
+            setLoading(false);
         } catch (error) {
             console.error("Error fetching products:", error);
             setError(true);
@@ -75,7 +72,11 @@ const PublicViewStore = () => {
     }, [name]);
 
     if (loading) {
-        return <Spinner size="xl" />;
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <Spinner size="xl" />
+            </Box>
+        );
     }
 
     if (error) {
@@ -97,7 +98,7 @@ const PublicViewStore = () => {
     }
 
     return (
-        <Box p={5} w={{ base: '100%', md: '40%' }} mx="auto">
+        <Box p={5} w={{ base: '100%', md: '60%' }} mx="auto">
             <Heading as="h1" mb={5}>Store Details</Heading>
             <Box p={5} shadow="md" borderWidth="1px" borderRadius="md">
                 <Heading fontSize="xl" mb={2}>{store.name}</Heading>
@@ -106,20 +107,18 @@ const PublicViewStore = () => {
                 <Text>{store.phone}</Text>
             </Box>
 
-            <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(3, 1fr)' }} gap={6} mt={10}>
-                {prods.map((product) => {
-                    return (
-                        <GridItem key={product.id}>
-                            <Box shadow="md" borderWidth="1px" borderRadius="md" p={5}>
-                                <Heading fontSize="xl" mb={2}>{product.name}</Heading>
-                                {product.pictures && <Image src={product.pictures} alt={product.name || product.name} />}
-                                <Text mt={2}>{product.description}</Text>
-                                <Text mt={2} color="green.500">${product.price}</Text>
-                                <Button onClick={() => navigate(`/view-product/${product.id}`)}>View Product</Button>
-                            </Box>
-                        </GridItem>
-                    );
-                })}
+            <Grid templateColumns={{ base: 'repeat(1, 1fr)', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }} gap={6} mt={10}>
+                {prods.map((product) => (
+                    <GridItem key={product.id}>
+                        <Box shadow="md" borderWidth="1px" borderRadius="md" p={5}>
+                            <Heading fontSize="xl" mb={2}>{product.name}</Heading>
+                            {product.pictures && <Image src={product.pictures} alt={product.name || product.name} />}
+                            <Text mt={2}>{product.description}</Text>
+                            <Text mt={2} color="green.500">${product.price}</Text>
+                            <Button mt={2} colorScheme="teal" onClick={() => navigate(`/view-product/${product.id}`)}>View Product</Button>
+                        </Box>
+                    </GridItem>
+                ))}
             </Grid>
         </Box>
     );

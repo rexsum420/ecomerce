@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, FormControl, FormLabel, Input, Textarea, FormErrorMessage } from '@chakra-ui/react';
+import {
+    Box,
+    Button,
+    FormControl,
+    FormLabel,
+    Input,
+    Textarea,
+    FormErrorMessage,
+} from '@chakra-ui/react';
 
 const AddStore = () => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [website, setWebsite] = useState('');
-    const [phone, setPhone] = useState('');
     const [storeList, setStoreList] = useState([]);
     const [nameError, setNameError] = useState('');
 
@@ -49,8 +55,6 @@ const AddStore = () => {
             body: JSON.stringify({
                 name,
                 description,
-                website,
-                phone
             })
         });
 
@@ -58,8 +62,6 @@ const AddStore = () => {
             // Reset form fields
             setName('');
             setDescription('');
-            setWebsite('');
-            setPhone('');
             setStoreList([...storeList, { name }]); // Add new store to the list
         } else {
             const errorData = await response.json();
@@ -68,7 +70,7 @@ const AddStore = () => {
     };
 
     return (
-        <Box p={5} maxW="500px" mx="auto">
+        <Box p={5} maxW="500px" mx="auto" boxShadow="lg" borderRadius="md" bg="transparent" mt={8}>
             <form onSubmit={handleSubmit}>
                 <FormControl id="name" mb={4} isInvalid={nameError}>
                     <FormLabel>Store Name</FormLabel>
@@ -76,6 +78,8 @@ const AddStore = () => {
                         type="text"
                         value={name}
                         onChange={handleNameChange}
+                        placeholder="Enter store name"
+                        size="lg"
                     />
                     {nameError && <FormErrorMessage>{nameError}</FormErrorMessage>}
                 </FormControl>
@@ -84,25 +88,18 @@ const AddStore = () => {
                     <Textarea
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Enter store description"
+                        size="lg"
                     />
                 </FormControl>
-                <FormControl id="website" mb={4}>
-                    <FormLabel>Website</FormLabel>
-                    <Input
-                        type="url"
-                        value={website}
-                        onChange={(e) => setWebsite(e.target.value)}
-                    />
-                </FormControl>
-                <FormControl id="phone" mb={4}>
-                    <FormLabel>Phone</FormLabel>
-                    <Input
-                        type="text"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                    />
-                </FormControl>
-                <Button type="submit" colorScheme="blue" isFullWidth disabled={nameError}>
+                <Button
+                    type="submit"
+                    colorScheme="blue"
+                    isFullWidth
+                    size="lg"
+                    mt={4}
+                    disabled={nameError}
+                >
                     Add Store
                 </Button>
             </form>

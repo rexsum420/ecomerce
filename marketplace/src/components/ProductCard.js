@@ -23,10 +23,10 @@ const ProductCard = ({ product }) => {
       position="relative"
     >
       <Box position="relative" textAlign="left">
-        <Text fontSize="xl" fontWeight="bold" mb={2}>
+        <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="bold" mb={2}>
           {product.name}
         </Text>
-        <Text fontSize="sm" color="gray.500" mb={2}>
+        <Text fontSize={{ base: "sm", md: "md" }} color="gray.500" mb={2}>
           {product.description}
         </Text>
       </Box>
@@ -34,16 +34,21 @@ const ProductCard = ({ product }) => {
         <Image
           src={product.pictures}
           alt={product.name}
-          maxW="100%"
-          maxH="200px"
+          width="100%"
+          height="auto"
+          maxH={{ base: "150px", md: "200px" }}
           objectFit="contain"
           mb={2}
         />
         <Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
-          <Text fontSize="xl" color="green.500" ml={2}>
+          <Text fontSize={{ base: "lg", md: "xl" }} color="green.500" ml={2}>
             ${product.price}
           </Text>
-          <Button colorScheme="blue" onClick={() => handleViewDetails(product.id)}>
+          <Button
+            colorScheme="blue"
+            size={{ base: "sm", md: "md" }}
+            onClick={() => handleViewDetails(product.id)}
+          >
             View Details
           </Button>
         </Box>

@@ -13,6 +13,7 @@ import {
   Heading,
   Spinner,
   Text,
+  Flex,
 } from '@chakra-ui/react';
 
 const HomeScreen = ({ category }) => {
@@ -70,14 +71,16 @@ const HomeScreen = ({ category }) => {
         <Heading size="lg">
           {getCategoryValue(category) != null ? `${category}` : `Products`}
         </Heading>
-        <FormControl width="300px">
-          <FormLabel>Sort By</FormLabel>
-          <Select value={sortOption} onChange={handleSortChange} placeholder="None">
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="name_asc">Name: A to Z</option>
-            <option value="name_desc">Name: Z to A</option>
-          </Select>
+        <FormControl width={{ base: "250px", md: "400px" }}>
+          <Flex justifyContent="space-between" alignItems="center">
+            <FormLabel>Sort By</FormLabel>
+            <Select width={{ base: "180px", md: "300px" }} value={sortOption} onChange={handleSortChange} placeholder="None">
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="name_asc">Name: A to Z</option>
+              <option value="name_desc">Name: Z to A</option>
+            </Select>
+          </Flex>
         </FormControl>
       </Box>
       <Grid 

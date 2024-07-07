@@ -31,29 +31,28 @@ const ViewCart = () => {
                 <Text>Your cart is empty</Text>
             ) : (
                 cart.map(product => (
-                    <Flex key={product.id} p={4} borderWidth={1} borderRadius="md" mb={2} alignItems="center">
-                        <Image src={getMainImage(product.pictures)} alt={product.name} boxSize="90px" objectFit="cover" mr={4} />
+                    <Flex key={product.id} p={4} borderWidth={1} borderRadius="md" mb={2} alignItems="center" shadow="md">
+                        <Image src={getMainImage(product.pictures)} alt={product.name} boxSize="90px" objectFit="cover" mr={4} borderRadius="md" />
                         <Box flex="1">
                             <Text fontWeight="bold">{product.name}</Text>
                             <Text>${product.price} each</Text>
-                            <Flex alignItems="center">
-                                <Button onClick={() => handleQuantityChange(product, -1)}>-</Button>
+                            <Flex alignItems="center" mt={2}>
+                                <Button size="sm" onClick={() => handleQuantityChange(product, -1)}>-</Button>
                                 <Text mx={2}>{product.quantity}</Text>
-                                <Button onClick={() => handleQuantityChange(product, 1)}>+</Button>
+                                <Button size="sm" onClick={() => handleQuantityChange(product, 1)}>+</Button>
                             </Flex>
-                            
                         </Box>
-                        <Box>
-                        <Text textAlign='right'>Line Total: ${(product.price * product.quantity).toFixed(2)}</Text>
-                        <Button ml={4} colorScheme="red" onClick={() => removeFromCart(product.id)}>Remove</Button>
+                        <Box textAlign="right">
+                            <Text>Line Total: ${(product.price * product.quantity).toFixed(2)}</Text>
+                            <Button mt={2} colorScheme="red" onClick={() => removeFromCart(product.id)}>Remove</Button>
                         </Box>
                     </Flex>
                 ))
             )}
             {cart.length > 0 && (
-                <Box mt={4}>
-                    <Text textAlign='right' fontWeight='bold'>Tax: ${calculateTax()}</Text>
-                    <Text textAlign='right' fontWeight="bold">Total: ${(parseFloat(calculateTotal()) + parseFloat(calculateTax())).toFixed(2)}</Text>
+                <Box mt={4} textAlign="right">
+                    <Text fontWeight="bold">Tax: ${calculateTax()}</Text>
+                    <Text fontWeight="bold">Total: ${(parseFloat(calculateTotal()) + parseFloat(calculateTax())).toFixed(2)}</Text>
                     <Button mt={4} colorScheme="blue" onClick={clearCart}>Clear Cart</Button>
                 </Box>
             )}

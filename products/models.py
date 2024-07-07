@@ -77,6 +77,8 @@ class Product(models.Model):
     manufacturer = models.CharField(max_length=255, blank=True, null=True)
     inventory_count = models.PositiveIntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    views = models.PositiveIntegerField(default=0)
+    bought = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name

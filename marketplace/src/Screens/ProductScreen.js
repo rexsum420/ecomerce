@@ -44,8 +44,7 @@ const ProductScreen = () => {
       }
       const data = await response.json();
       setProduct(data);
-      console.log(data.store.owner.username)
-      if (userId == data.store.owner.username) {
+      if (userId === data.store.owner.username) {
         setOwner(true);
       }
       setLoading(false);
@@ -70,6 +69,7 @@ const ProductScreen = () => {
   const handleEditClick = () => {
     navigate(`/edit-product/${id}`);
   }
+
   const category = getCategoryLabel(product.category);
   const mainPicture = product.pictures.find((picture) => picture.main) || product.pictures[0];
   const otherPictures = product.pictures.filter((picture) => picture !== mainPicture);
@@ -112,7 +112,7 @@ const ProductScreen = () => {
           </CardFooter>
         </VStack>
       </Card>
-      {owner ? <Button marginTop={'20px'} onClick={() => handleEditClick()}>Edit Product</Button> : <></>}
+      {owner && <Button mt="20px" onClick={handleEditClick}>Edit Product</Button>}
     </Box>
   );
 };

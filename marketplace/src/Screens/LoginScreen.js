@@ -25,6 +25,7 @@ const LoginScreen = () => {
       localStorage.setItem('token', response.token);
       localStorage.setItem('username', username)
       navigate('/');
+      document.location.reload();
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }

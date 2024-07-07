@@ -18,7 +18,7 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'store', 'name', 'description', 'price', 'size', 'color', 
             'variations', 'barcode_number', 'model_number', 'manufacturer', 
-            'inventory_count', 'created_at', 'pictures', 'category'
+            'inventory_count', 'created_at', 'pictures', 'category', 'views', 'bought'
         ]
         extra_kwargs = {
             'description': {'required': False},
@@ -30,6 +30,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'manufacturer': {'required': False},
             'inventory_count': {'required': False},
             'category': {'required': False},
+            'views': {'required': False},
+            'bought': {'required': False},
         }
 
 class CreateProductSerializer(serializers.ModelSerializer):
@@ -63,7 +65,7 @@ class ReadProductsShortSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'description', 'pictures', 'store', 'category']
+        fields = ['id', 'name', 'price', 'description', 'pictures', 'store', 'category', 'views', 'bought']
 
     def get_pictures(self, obj):
         main_pic = Picture.objects.filter(product=obj, main=True).first()

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, SimpleGrid, Spinner, Alert, AlertIcon, Heading, Button } from "@chakra-ui/react";
+import { Box, SimpleGrid, Spinner, Alert, AlertIcon, Heading, Button, Center } from "@chakra-ui/react";
 import Api from "../utils/Api";
 import { useNavigate } from "react-router-dom";
 
@@ -25,7 +25,11 @@ const ListStoreScreen = () => {
     }, []);
 
     if (loading) {
-        return <Spinner size="xl" />;
+        return (
+            <Center height="100vh">
+                <Spinner size="xl" />
+            </Center>
+        );
     }
 
     if (error) {
@@ -43,20 +47,28 @@ const ListStoreScreen = () => {
 
     const handleCreateStore = () => {
         navigate("/create-store");
-    }
+    };
 
     return (
         <Box p={5}>
-            <Heading as="h1" mb={5}>
+            <Heading as="h1" mb={5} display="flex" justifyContent="space-between" alignItems="center">
                 Stores
-                <Button onClick={() => handleCreateStore()}>
+                <Button colorScheme="teal" onClick={handleCreateStore}>
                     Create Store
                 </Button>
             </Heading>
             {stores.length > 0 ? (
                 <SimpleGrid columns={{ sm: 1, md: 2, lg: 3, xl: 4 }} spacing={5}>
-                    {stores.map(store => (
-                        <Box key={store.id} p={5} shadow="md" borderWidth="1px" borderRadius="md" onClick={() => handleStoreClick(store.id)}>
+                    {stores.map((store) => (
+                        <Box 
+                            key={store.id} 
+                            p={5} 
+                            shadow="md" 
+                            borderWidth="1px" 
+                            borderRadius="md" 
+                            onClick={() => handleStoreClick(store.id)}
+                            _hover={{ cursor: "pointer", bg: "gray.100" }}
+                        >
                             <Heading fontSize="xl">{store.name}</Heading>
                         </Box>
                     ))}

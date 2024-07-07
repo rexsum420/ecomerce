@@ -51,8 +51,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not self.request.user == instance.store.owner and not self.request.user.is_superuser:
-            raise PermissionDenied("You do not have permission to view this product.")
+        instance.views += 1
+        instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
