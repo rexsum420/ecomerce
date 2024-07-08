@@ -6,16 +6,19 @@ import {
   Box,
   Container,
   FormControl,
-  FormLabel,
-  Select,
   Grid,
   GridItem,
   Heading,
   Spinner,
   Text,
   Flex,
+  Image,
 } from '@chakra-ui/react';
 import CategoryScroll from '../components/CategoryScroll';
+import PriceAscending from '../assets/price-ascending.png';
+import PriceDescending from '../assets/price-descending.png';
+import AlphaAscending from '../assets/alpha-ascending.png';
+import AlphaDescending from '../assets/alpha-descending.png';
 
 const HomeScreen = ({ category }) => {
   const [products, setProducts] = useState([]);
@@ -40,9 +43,9 @@ const HomeScreen = ({ category }) => {
     }
   }, [data]);
 
-  const handleSortChange = (event) => {
-    setSortOption(event.target.value);
-  };
+  const handleSortChange = (sortType) => {
+    setSortOption(sortType);
+};
 
   const sortedProducts = [...products].sort((a, b) => {
     if (sortOption === 'price_asc') {
@@ -69,20 +72,48 @@ const HomeScreen = ({ category }) => {
   return (
     <Container maxW="container.xl" mt={4}>
       <CategoryScroll />
-      <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" mb={4}>
-        <Heading size="lg">
+      <Box marginTop={'20px'} display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" mb={4}>
+        <Heading size="sm">
           {getCategoryValue(category) != null ? `${category}` : `Products`}
         </Heading>
         <FormControl width={{ base: "250px", md: "400px" }}>
-          <Flex justifyContent="space-between" alignItems="center">
-            <FormLabel>Sort By</FormLabel>
-            <Select width={{ base: "180px", md: "300px" }} value={sortOption} onChange={handleSortChange} placeholder="None">
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-              <option value="name_asc">Name: A to Z</option>
-              <option value="name_desc">Name: Z to A</option>
-            </Select>
-          </Flex>
+        <Flex justifyContent="end" alignItems="center">
+                    <Image 
+                        src={PriceAscending} 
+                        alt="Price Ascending" 
+                        boxSize="16px" 
+                        cursor="pointer" 
+                        onClick={() => handleSortChange('price_asc')} 
+                        opacity={sortOption === 'price_asc' ? 0.5 : 1}
+                    />
+                    <Image 
+                        src={PriceDescending} 
+                        alt="Price Descending" 
+                        boxSize="16px" 
+                        cursor="pointer" 
+                        onClick={() => handleSortChange('price_desc')} 
+                        opacity={sortOption === 'price_desc' ? 0.5 : 1}
+                        ml={2}
+                    />
+                    <Image 
+                        src={AlphaAscending} 
+                        alt="Alpha Ascending" 
+                        boxSize="16px" 
+                        cursor="pointer" 
+                        onClick={() => handleSortChange('name_asc')} 
+                        opacity={sortOption === 'name_asc' ? 0.5 : 1}
+                        ml={2}
+                    />
+                    <Image 
+                        src={AlphaDescending} 
+                        alt="Alpha Descending" 
+                        boxSize="16px" 
+                        cursor="pointer" 
+                        onClick={() => handleSortChange('name_desc')} 
+                        opacity={sortOption === 'name_desc' ? 0.5 : 1}
+                        ml={2}
+                    />
+                </Flex>
         </FormControl>
       </Box>
       <Box display='flex' flexDirection='column' height='100vh' padding='8px 16px'>

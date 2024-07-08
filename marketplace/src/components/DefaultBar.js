@@ -59,17 +59,17 @@ function DefaultAppBar({ category, setCategory }) {
     <Box 
       bg={colorMode === 'dark' ? 'black' : 'blue.500'} 
       px={2}
-      boxShadow='lg'
+      shadow='lg'
       borderBottom='1px solid'
       borderColor='gray.500'
       >
       <Container maxW="container.xl">
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <HStack spacing={4} alignItems="center">
-            <Text fontSize="lg" color="white">
+            <Text display={{base:'none', lg:'flex'}} fontSize="lg" color="white">
               <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
             </Text>
-            <Flex display={{base:'none', lg:'flex'}} alignItems="center" bg="whiteAlpha.200" borderRadius="md" p={1}>
+            <Flex alignItems="center" bg="whiteAlpha.200" borderRadius="md" p={1}>
               <IconButton
                 aria-label="Search database"
                 icon={<SearchIcon />}
@@ -100,6 +100,7 @@ function DefaultAppBar({ category, setCategory }) {
                 color={colorMode === 'dark' ? "white" : "black"}
                 flex="1"
                 marginLeft='50px'
+                display={{base:'none', lg:'flex'}}
               >
                 {categories.map((categorie) => (
                   <option key={categorie} value={categorie}>
@@ -107,7 +108,7 @@ function DefaultAppBar({ category, setCategory }) {
                   </option>
                 ))}
               </Select>
-          <Flex>
+          <Flex display={{base:'none', lg:'flex'}}>
           <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
           <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
           </Flex>
@@ -130,11 +131,17 @@ function DefaultAppBar({ category, setCategory }) {
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>
-            <Heading size="md">
+          <DrawerHeader bg={colorMode === 'dark' ? 'black' : 'blue.500'} borderBottom='1px solid' borderColor="gray.500">
+            <Text fontSize="lg">
               <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
-            </Heading>
+            </Text>
           </DrawerHeader>
+          <Flex flexDirection="column" p={'10px'}>
+          <Flex justifyContent='center' my='10px'>
+          <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
+          <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
+          </Flex>
+          <hr />
           <DrawerBody>
             <VStack>
               <Button colorScheme="blue" onClick={() => { navigate('/signup'); onClose(); }}>
@@ -145,6 +152,7 @@ function DefaultAppBar({ category, setCategory }) {
               </Button>
             </VStack>
           </DrawerBody>
+          </Flex>
         </DrawerContent>
       </Drawer>
     </Box>

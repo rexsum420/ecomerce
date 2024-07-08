@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Spinner, Alert, AlertIcon, Heading, Grid, GridItem, Image, Button, Badge, Text, Flex, FormControl, Select, FormLabel } from "@chakra-ui/react";
+import { Box, Spinner, Alert, AlertIcon, Heading, Grid, GridItem, Image, Badge, Text, Flex, Button } from "@chakra-ui/react";
 import Api from "../utils/Api";
 import { getCategoryValue } from '../utils/CategoryEncoder';
 import getCategoryLabel from '../utils/CategoryDecoder';
 import CategoryScroll from '../components/CategoryScroll';
+import PriceAscending from '../assets/price-ascending.png';
+import PriceDescending from '../assets/price-descending.png';
+import AlphaAscending from '../assets/alpha-ascending.png';
+import AlphaDescending from '../assets/alpha-descending.png';
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
@@ -20,11 +24,12 @@ const SearchScreen = () => {
     const navigate = useNavigate();
     const [sortOption, setSortOption] = useState('');
 
-    const fetchProducts = async() => {
+    const fetchProducts = async () => {
         try {
             let apiUrl = `http://192.168.1.75:8000/api/search/?`;
             if (term) apiUrl += `search=${term}&`;
             if (category) apiUrl += `category=${category}&`;
+            if (sortOption) apiUrl += `sort=${sortOption}&`;
             const res = await Api(apiUrl.slice(0, -1)); // Remove the last '&'
             setProds(res.results);
             setLoading(false);
@@ -37,11 +42,11 @@ const SearchScreen = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [term, category]);
+    }, [term, category, sortOption]);
 
-    const handleSortChange = (event) => {
-        setSortOption(event.target.value);
-      };
+    const handleSortChange = (sortType) => {
+        setSortOption(sortType);
+    };
 
     const handleViewDetails = (id) => {
         navigate(`/view-product/${id}`);
@@ -63,22 +68,48 @@ const SearchScreen = () => {
     return (
         <Box p={5}>
             <CategoryScroll term={term} />
-            <Flex flexDirection={'row'} justifyContent={'space-between'}>
-                <Flex flexDirection={'column'}>
-            {term && term.trim() !== '' && <Heading fontSize={'20'} mb={5}>Search Results for "{term}"</Heading>}
-            {category && category.trim() !== '' && <Heading fontSize={'20'} mb={5}>Results in category: {getCategoryLabel(category)}</Heading>}
+            <Flex flexDirection="row" justifyContent="space-between" marginTop={'20px'}>
+                <Flex flexDirection="column">
+                    {term && term.trim() !== '' && <Heading size="sm" mb={5}>Search Results for "{term}"</Heading>}
+                    {category && category.trim() !== '' && <Heading size="sm" mb={5}>Results in category: {getCategoryLabel(category)}</Heading>}
                 </Flex>
-                <FormControl width={{ base: "250px", md: "400px" }}>
-                <Flex justifyContent="space-between" alignItems="center">
-                    <FormLabel>Sort By</FormLabel>
-                    <Select width={{ base: "180px", md: "300px" }} value={sortOption} onChange={handleSortChange} placeholder="None">
-                    <option value="price_asc">Price: Low to High</option>
-                    <option value="price_desc">Price: High to Low</option>
-                    <option value="name_asc">Name: A to Z</option>
-                    <option value="name_desc">Name: Z to A</option>
-                    </Select>
+                <Flex justifyContent="end" alignItems="center">
+                    <Image 
+                        src={PriceAscending} 
+                        alt="Price Ascending" 
+                        boxSize="16px" 
+                        cursor="pointer" 
+                        onClick={() => handleSortChange('price_asc')} 
+                        opacity={sortOption === 'price_asc' ? 0.5 : 1}
+                    />
+                    <Image 
+                        src={PriceDescending} 
+                        alt="Price Descending" 
+                        boxSize="16px" 
+                        cursor="pointer" 
+                        onClick={() => handleSortChange('price_desc')} 
+                        opacity={sortOption === 'price_desc' ? 0.5 : 1}
+                        ml={2}
+                    />
+                    <Image 
+                        src={AlphaAscending} 
+                        alt="Alpha Ascending" 
+                        boxSize="16px" 
+                        cursor="pointer" 
+                        onClick={() => handleSortChange('name_asc')} 
+                        opacity={sortOption === 'name_asc' ? 0.5 : 1}
+                        ml={2}
+                    />
+                    <Image 
+                        src={AlphaDescending} 
+                        alt="Alpha Descending" 
+                        boxSize="16px" 
+                        cursor="pointer" 
+                        onClick={() => handleSortChange('name_desc')} 
+                        opacity={sortOption === 'name_desc' ? 0.5 : 1}
+                        ml={2}
+                    />
                 </Flex>
-                </FormControl>
             </Flex>
             <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
                 {prods.map((product) => (

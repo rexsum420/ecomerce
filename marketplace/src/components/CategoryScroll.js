@@ -65,7 +65,12 @@ const CategoryScroll = ({term}) => {
   });
 
   return (
-    <Box id="category-scroll-container" overflowX="auto" padding="8px 16px" {...swipeHandlers}>
+    <Box 
+      id="category-scroll-container" 
+      overflowX="auto" 
+      padding="8px 16px" 
+      boxShadow="lg"
+      {...swipeHandlers}>
       <style>
         {`
           #category-scroll-container::-webkit-scrollbar {
@@ -76,7 +81,7 @@ const CategoryScroll = ({term}) => {
       <HStack spacing={4}>
         {categoryIcons.map((category, index) => (
           <Box key={index} textAlign="center" onClick={() => handleCategoryClick(category.name)} cursor="pointer" mx={"20px"}>
-            <Image src={category.icon} alt={category.name} boxSize="50px" marginBottom="8px" />
+            <Image src={category.icon} alt={category.name} boxSize="64px" marginBottom="12px" />
             <Text fontSize="12px">{category.name}</Text>
           </Box>
         ))}

@@ -13,7 +13,6 @@ const ProductCard = ({ product }) => {
     <Box
       borderWidth="1px"
       borderRadius="lg"
-      overflow="hidden"
       p={4}
       m={2}
       display="flex"
@@ -21,6 +20,7 @@ const ProductCard = ({ product }) => {
       justifyContent="space-between"
       height="100%"
       position="relative"
+      shadow='lg'
     >
       <Box position="relative" textAlign="left">
         <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="bold" mb={2}>
