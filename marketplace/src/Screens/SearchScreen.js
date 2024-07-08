@@ -29,7 +29,6 @@ const SearchScreen = () => {
             let apiUrl = `http://192.168.1.75:8000/api/search/?`;
             if (term) apiUrl += `search=${term}&`;
             if (category) apiUrl += `category=${category}&`;
-            if (sortOption) apiUrl += `sort=${sortOption}&`;
             const res = await Api(apiUrl.slice(0, -1)); // Remove the last '&'
             setProds(res.results);
             setLoading(false);
@@ -42,7 +41,26 @@ const SearchScreen = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [term, category, sortOption]);
+    }, [term, category]);
+
+    useEffect(() => {
+        if (sortOption) {
+            const sortedProducts = [...prods].sort((a, b) => {
+                if (sortOption === 'price_asc') {
+                    return a.price - b.price;
+                } else if (sortOption === 'price_desc') {
+                    return b.price - a.price;
+                } else if (sortOption === 'name_asc') {
+                    return a.name.localeCompare(b.name);
+                } else if (sortOption === 'name_desc') {
+                    return b.name.localeCompare(a.name);
+                } else {
+                    return 0;
+                }
+            });
+            setProds(sortedProducts);
+        }
+    }, [sortOption]);
 
     const handleSortChange = (sortType) => {
         setSortOption(sortType);
