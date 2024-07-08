@@ -56,7 +56,13 @@ function DefaultAppBar({ category, setCategory }) {
   };
 
   return (
-    <Box bg={colorMode === 'dark' ? 'gray.800' : 'blue.500'} px={4}>
+    <Box 
+      bg={colorMode === 'dark' ? 'black' : 'blue.500'} 
+      px={2}
+      boxShadow='lg'
+      borderBottom='1px solid'
+      borderColor='gray.500'
+      >
       <Container maxW="container.xl">
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <HStack spacing={4} alignItems="center">
@@ -81,13 +87,19 @@ function DefaultAppBar({ category, setCategory }) {
                 onChange={handleSearchText}
                 value={searchValue}
               />
-              <Select
+              <Button marginLeft='10px' onClick={handleSearchClick}>
+                Search
+              </Button>
+            </Flex>
+          </HStack>
+          <Select
                 value={category}
                 onChange={handleCategoryChange}
                 placeholder="Category"
                 variant="unstyled"
                 color={colorMode === 'dark' ? "white" : "black"}
                 flex="1"
+                marginLeft='50px'
               >
                 {categories.map((categorie) => (
                   <option key={categorie} value={categorie}>
@@ -95,13 +107,10 @@ function DefaultAppBar({ category, setCategory }) {
                   </option>
                 ))}
               </Select>
-              <Button onClick={handleSearchClick}>
-                Search
-              </Button>
-            </Flex>
-          </HStack>
+          <Flex>
           <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
           <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
+          </Flex>
           <HStack spacing={4} alignItems="center">
             <CartImage onClick={handleCartClick} />
             <Tooltip label="Open settings" aria-label="A tooltip">

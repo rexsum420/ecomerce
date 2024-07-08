@@ -14,6 +14,7 @@ import {
   Center,
   Flex,
 } from '@chakra-ui/react';
+import CategoryScroll from '../components/CategoryScroll';
 
 const LandingPage = ({ category }) => {
   const [products, setProducts] = useState([]);
@@ -66,6 +67,7 @@ const LandingPage = ({ category }) => {
 
   return (
     <Container maxW="container.xl">
+      <CategoryScroll />
       <Box display="flex" flexDirection="row" justifyContent="space-between" mb={4}>
         <Heading size="lg">{getCategoryValue(category) ? `${category}` : `Products`}</Heading>
         <Box flex="1" ml={4}>

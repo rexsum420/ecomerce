@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image, Button, Badge } from "@chakra-ui/react";
+import { Box, Spinner, Alert, AlertIcon, Heading, Grid, GridItem, Image, Button, Badge, Text, Flex, FormControl, Select, FormLabel } from "@chakra-ui/react";
 import Api from "../utils/Api";
 import { getCategoryValue } from '../utils/CategoryEncoder';
+import getCategoryLabel from '../utils/CategoryDecoder';
+import CategoryScroll from '../components/CategoryScroll';
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
@@ -16,6 +18,7 @@ const SearchScreen = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const navigate = useNavigate();
+    const [sortOption, setSortOption] = useState('');
 
     const fetchProducts = async() => {
         try {
@@ -36,6 +39,10 @@ const SearchScreen = () => {
         fetchProducts();
     }, [term, category]);
 
+    const handleSortChange = (event) => {
+        setSortOption(event.target.value);
+      };
+
     const handleViewDetails = (id) => {
         navigate(`/view-product/${id}`);
     };
@@ -55,7 +62,24 @@ const SearchScreen = () => {
 
     return (
         <Box p={5}>
-            <Heading as="h1" mb={5}>Search Results for "{term}"</Heading>
+            <CategoryScroll term={term} />
+            <Flex flexDirection={'row'} justifyContent={'space-between'}>
+                <Flex flexDirection={'column'}>
+            {term && term.trim() !== '' && <Heading fontSize={'20'} mb={5}>Search Results for "{term}"</Heading>}
+            {category && category.trim() !== '' && <Heading fontSize={'20'} mb={5}>Results in category: {getCategoryLabel(category)}</Heading>}
+                </Flex>
+                <FormControl width={{ base: "250px", md: "400px" }}>
+                <Flex justifyContent="space-between" alignItems="center">
+                    <FormLabel>Sort By</FormLabel>
+                    <Select width={{ base: "180px", md: "300px" }} value={sortOption} onChange={handleSortChange} placeholder="None">
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                    <option value="name_asc">Name: A to Z</option>
+                    <option value="name_desc">Name: Z to A</option>
+                    </Select>
+                </Flex>
+                </FormControl>
+            </Flex>
             <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
                 {prods.map((product) => (
                     <GridItem key={product.id}>
@@ -70,39 +94,39 @@ const SearchScreen = () => {
                             justifyContent="space-between"
                             height="100%"
                             position="relative"
-                            >
+                        >
                             <Box position="relative" textAlign="left">
                                 <Text fontSize="xl" fontWeight="bold" mb={2}>
-                                {product.name}
+                                    {product.name}
                                 </Text>
                                 <Text fontSize="sm" color="gray.500" mb={2}>
-                                {product.description}
+                                    {product.description}
                                 </Text>
                                 <Badge position="absolute" top={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
-                                <Text fontSize="sm">
-                                    {product.store}
-                                </Text>
+                                    <Text fontSize="sm">
+                                        {product.store}
+                                    </Text>
                                 </Badge>
                             </Box>
                             <Box position="relative">
                                 <Image
-                                src={product.pictures}
-                                alt={product.name}
-                                maxW="100%"
-                                maxH="200px"
-                                objectFit="contain"
-                                mb={2}
+                                    src={product.pictures}
+                                    alt={product.name}
+                                    maxW="100%"
+                                    maxH="200px"
+                                    objectFit="contain"
+                                    mb={2}
                                 />
                                 <Badge position="absolute" bottom={2} right={2} p={1} bg="rgba(0, 0, 0, 0.3)" borderRadius="md" color="white">
-                                <Text fontSize="sm">{getCategoryValue(product.category)}</Text>
+                                    <Text fontSize="sm">{getCategoryValue(product.category)}</Text>
                                 </Badge>
                                 <Box display="flex" flexDirection="row" justifyContent="space-between" mt={2}>
-                                <Text fontSize="xl" color="green.500" ml={2}>
-                                    ${product.price}
-                                </Text>
-                                <Button colorScheme="blue" onClick={() => handleViewDetails(product.id)}>
-                                    View Details
-                                </Button>
+                                    <Text fontSize="xl" color="green.500" ml={2}>
+                                        ${product.price}
+                                    </Text>
+                                    <Button colorScheme="blue" onClick={() => handleViewDetails(product.id)}>
+                                        View Details
+                                    </Button>
                                 </Box>
                             </Box>
                         </Box>

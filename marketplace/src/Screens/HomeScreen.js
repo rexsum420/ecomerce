@@ -15,6 +15,7 @@ import {
   Text,
   Flex,
 } from '@chakra-ui/react';
+import CategoryScroll from '../components/CategoryScroll';
 
 const HomeScreen = ({ category }) => {
   const [products, setProducts] = useState([]);
@@ -67,6 +68,7 @@ const HomeScreen = ({ category }) => {
 
   return (
     <Container maxW="container.xl" mt={4}>
+      <CategoryScroll />
       <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" mb={4}>
         <Heading size="lg">
           {getCategoryValue(category) != null ? `${category}` : `Products`}
@@ -83,16 +85,18 @@ const HomeScreen = ({ category }) => {
           </Flex>
         </FormControl>
       </Box>
+      <Box display='flex' flexDirection='column' height='100vh' padding='8px 16px'>
       <Grid 
         templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} 
         gap={6}
       >
         {sortedProducts.map((product) => (
           <GridItem key={product.id}>
-            <ProductCard product={product} />
+            <ProductCard product={product}/>
           </GridItem>
         ))}
       </Grid>
+      </Box>
     </Container>
   );
 };
