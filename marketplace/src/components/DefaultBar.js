@@ -67,7 +67,7 @@ function DefaultAppBar({ category, setCategory }) {
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <HStack spacing={4} alignItems="center">
             <Text display={{base:'none', lg:'flex'}} fontSize="lg" color="white">
-              <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
+            {colorMode == 'dark' ? <Image cursor="pointer" onClick={() => {navigate('/'); onClose();}} src={LogoWhite} height={'32px'} width={'auto'} /> : <Image cursor="pointer" onClick={() => {navigate('/'); onClose();}} src={Logo} height={'32px'} width={'auto'} />}
             </Text>
             <Flex alignItems="center" bg="whiteAlpha.200" borderRadius="md" p={1}>
               <IconButton

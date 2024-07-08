@@ -29,7 +29,7 @@ const SearchScreen = () => {
             let apiUrl = `http://192.168.1.75:8000/api/search/?`;
             if (term) apiUrl += `search=${term}&`;
             if (category) apiUrl += `category=${category}&`;
-            const res = await Api(apiUrl.slice(0, -1)); // Remove the last '&'
+            const res = await Api(apiUrl.slice(0, -1));
             setProds(res.results);
             setLoading(false);
         } catch (error) {
@@ -63,7 +63,11 @@ const SearchScreen = () => {
     }, [sortOption]);
 
     const handleSortChange = (sortType) => {
+        if (sortOption !== sortType) {
         setSortOption(sortType);
+        } else {
+        setSortOption('');
+        }    
     };
 
     const handleViewDetails = (id) => {

@@ -12,6 +12,7 @@ import {
   VStack,
   HStack,
   Button,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import AddToCartButton from "../components/AddToCartButton";
 import getCategoryLabel from "../utils/CategoryDecoder";
@@ -58,6 +59,8 @@ const ProductScreen = () => {
     fetchProduct(id);
   }, [id]);
 
+  const flexDirection = useBreakpointValue({ base: "column", md: "row" });
+
   if (loading) {
     return <Spinner />;
   }
@@ -68,17 +71,17 @@ const ProductScreen = () => {
 
   const handleEditClick = () => {
     navigate(`/edit-product/${id}`);
-  }
+  };
 
   const category = getCategoryLabel(product.category);
   const mainPicture = product.pictures.find((picture) => picture.main) || product.pictures[0];
   const otherPictures = product.pictures.filter((picture) => picture !== mainPicture);
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" mt="100px" flexDirection={'column'}>
-      <Card display="flex" flexDirection="row" width="80%" height="60%" shadow="md">
-        <VStack width="50%">
-          <Image src={mainPicture.image} alt={mainPicture.alt} height="400px" objectFit="contain" />
+    <Box display="flex" justifyContent="center" alignItems="center" mt="100px" flexDirection="column">
+      <Card display="flex" flexDirection={flexDirection} width="80%" shadow="md">
+        <VStack width={{ base: "100%", md: "50%" }} mb={{ base: 4, md: 0 }}>
+          <Image src={mainPicture.image} alt={mainPicture.alt} height={{ base: "200px", md: "400px" }} objectFit="contain" />
           <HStack mt="10px">
             {otherPictures.map((picture, index) => (
               <Image
@@ -93,7 +96,7 @@ const ProductScreen = () => {
             ))}
           </HStack>
         </VStack>
-        <VStack width="50%" padding="50px" justifyContent="space-between" alignItems="flex-start">
+        <VStack width={{ base: "100%", md: "50%" }} justifyContent="space-between" alignItems="flex-start">
           <CardBody style={{ textAlign: 'left' }}>
             <Text color="#FF8000" fontSize="1rem" letterSpacing="2px" mb="4">
               <small>{product.store.name}</small>
@@ -107,7 +110,7 @@ const ProductScreen = () => {
               ${product.price}
             </Heading>
           </CardBody>
-          <CardFooter justifyContent="center" alignItems="center">
+          <CardFooter justifyContent="center" alignItems="center" width="100%">
             <AddToCartButton product={product} />
           </CardFooter>
         </VStack>

@@ -145,7 +145,7 @@ function LoggedInAppBar({ category, setCategory }) {
           <DrawerCloseButton />
           <DrawerHeader bg={colorMode === 'dark' ? 'black' : 'blue.500'} borderBottom='1px solid' borderColor="gray.500">
             <Text fontSize="lg">
-              <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
+              {colorMode == 'dark' ? <Image cursor="pointer" onClick={() => {navigate('/'); onClose();}} src={LogoWhite} height={'32px'} width={'auto'} /> : <Image cursor="pointer" onClick={() => {navigate('/'); onClose();}} src={Logo} height={'32px'} width={'auto'} />}
             </Text>
           </DrawerHeader>
           <Flex flexDirection="column" p={'10px'}>
