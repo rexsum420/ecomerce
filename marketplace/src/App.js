@@ -74,7 +74,7 @@ function App() {
           <Route path="/view-product/:id" element={<ProductScreen />} />
           <Route path="/stores" element={isLoggedIn ? <ListStoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />
           <Route path="/stores/:name" element={<PublicViewStore />} />
-          <Route path="/store/:id/edit" element={isLoggedIn ? <EditStore /> : <HomeScreen category={category} setCategory={setCategory}/>} />
+          <Route path="/store/:storeId/edit" element={isLoggedIn ? <EditStore /> : <HomeScreen category={category} setCategory={setCategory}/>} />
           <Route path="/store/:id/add-product" element={isLoggedIn ? <AddProduct /> : <HomeScreen category={category} setCategory={setCategory}/>} />          
           <Route path="/store/:id" element={isLoggedIn ? <StoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />
           <Route path="/search" element={<SearchScreen />} />

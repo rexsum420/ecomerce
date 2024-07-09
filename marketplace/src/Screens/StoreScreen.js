@@ -43,7 +43,7 @@ const StoreScreen = () => {
         }
     } 
 
-    const fetchProducts = async() => {
+    const fetchProducts = async () => {
         try {
             const res = await Api(`http://192.168.1.75:8000/api/products/?store=${id}`);
             setProds(res.results);
@@ -93,31 +93,48 @@ const StoreScreen = () => {
     return (
         <Box p={5}>
             <Heading as="h1" mb={5}>Store Details</Heading>
-            <Box p={5} shadow="md" borderWidth="1px" borderRadius="md" display='flex' flexDirection='row' justifyContent='space-between'>
-                <Heading fontSize="xl">
-                    {store.name}
-                </Heading>
-                <Button onClick={() => handleEditStore()} colorScheme="blue">Edit Store</Button>
-            </Box>
-    
-            <Box display='flex' flexDirection='row' justifyContent='space-between' mt={4}>
-                <Box>
-                    <Heading size="md">Description:</Heading>
-                    <Text>{store.description}</Text>
+            <Box p={5} shadow="md" borderWidth="1px" borderRadius="md">
+                <Box display='flex' flexDirection='row' justifyContent='space-between'>
+                    <Box>
+                        <Heading fontSize="xl">
+                            {store.name}
+                        </Heading>
+                        <Text fontSize="md" color="gray.500">
+                            {store.description}
+                        </Text>
+                    </Box>
+                    <Button onClick={handleEditStore} colorScheme="blue">Edit Store</Button>
                 </Box>
-                <Button onClick={() => handleAddProduct()} colorScheme="green">Add Product</Button>
+                <Box display='flex' flexDirection='row' justifyContent='space-between' mt={4}>
+                    <Box>
+                        <Text fontSize="md"><a href={store.website} target="_blank" rel="noopener noreferrer">{store.website}</a> </Text>
+                    </Box>
+                    <Box>
+                        <Text fontSize="md"><a href={`tel:${store.phone}`}>{store.phone}</a></Text>
+                    </Box>
+                </Box>
             </Box>
-            <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} gap={6} marginTop={10}>
+
+            <Box display='flex' flexDirection='row' justifyContent='end' mt={'40px'}>
+                <Button onClick={handleAddProduct} colorScheme="green">Add Product</Button>
+            </Box>
+            <Grid px='20px' templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} gap={6}>
                 {prods.map((product) => {
                     const mainPicture = product.pictures.find(picture => picture.main);
                     return (
                         <GridItem key={product.id}>
-                            <Box shadow="md" borderWidth="1px" borderRadius="md" p={5}>
-                                <Heading fontSize="xl" mb={2}>{product.name}</Heading>
-                                {mainPicture && <Image src={mainPicture.image} alt={mainPicture.alt || product.name} />}
-                                <Text mt={2}>{product.description}</Text>
-                                <Text mt={2} color="green.500">${product.price}</Text>
-                                <Button mt={2} colorScheme="teal" onClick={() => navigate(`/view-product/${product.id}`)}>View Product</Button>
+                            <Box shadow="md" borderWidth="1px" borderRadius="md" p={5} height="100%">
+                                <Box display="flex" flexDirection="column" justifyContent="space-between" height="100%">
+                                    <Box>
+                                        <Heading fontSize="xl" mb={2}>{product.name}</Heading>
+                                        {mainPicture && <Image src={mainPicture.image} alt={mainPicture.alt || product.name} />}
+                                        <Text mt={2}>{product.description}</Text>
+                                    </Box>
+                                    <Box>
+                                        <Text mt={2} color="green.500">${product.price}</Text>
+                                        <Button mt={2} colorScheme="teal" onClick={() => navigate(`/view-product/${product.id}`)}>View Product</Button>
+                                    </Box>
+                                </Box>
                             </Box>
                         </GridItem>
                     );

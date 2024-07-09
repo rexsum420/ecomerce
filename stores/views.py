@@ -14,7 +14,7 @@ import logging
 
 class StoreViewSet(viewsets.ModelViewSet):
     serializer_class = StoreSerializer
-    permission_classes = [IsStoreOwnerOrReadOnly, IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
     def get_queryset(self):
