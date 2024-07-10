@@ -21,6 +21,7 @@ import ProductScreen from './Screens/ProductScreen';
 import EditStore from './Screens/EditStore';
 import ViewCart from './Screens/ViewCart';
 import PublicViewStore from './Screens/PublicViewStore';
+import EditProduct from './Screens/EditProduct';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
@@ -72,6 +73,7 @@ function App() {
           <Route path="/login" element={isLoggedIn ? <HomeScreen category={category} setCategory={setCategory}/> : <LoginScreen />} />
           <Route path="/signup" element={isLoggedIn ? <HomeScreen category={category} setCategory={setCategory}/> : <SignUpScreen />} />
           <Route path="/view-product/:id" element={<ProductScreen />} />
+          <Route path="/edit-product/:id" element={<EditProduct />} />
           <Route path="/stores" element={isLoggedIn ? <ListStoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />
           <Route path="/stores/:name" element={<PublicViewStore />} />
           <Route path="/store/:storeId/edit" element={isLoggedIn ? <EditStore /> : <HomeScreen category={category} setCategory={setCategory}/>} />
