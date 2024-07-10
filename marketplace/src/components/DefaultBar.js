@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody,
-  DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, Heading, VStack, Switch,
+  Box, Flex, Container, HStack, IconButton, Input, Select, useDisclosure, Drawer, DrawerBody,
+  DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, Button, Tooltip, VStack, Switch,
   useColorMode, Text, Image
 } from '@chakra-ui/react';
 import { SearchIcon } from '@chakra-ui/icons';
@@ -10,6 +10,8 @@ import CartImage from './Cart';
 import { getCategoryValue } from '../utils/CategoryEncoder';
 import Logo from '../assets/freemarket.png';
 import LogoWhite from '../assets/freemarket-white.png';
+import smLogo from '../assets/fm.png';
+import smLogoWhite from '../assets/fm-white.png';
 
 
 const categories = [
@@ -66,9 +68,16 @@ function DefaultAppBar({ category, setCategory }) {
       <Container maxW="container.xl">
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <HStack spacing={4} alignItems="center">
-            <Text display={{base:'none', lg:'flex'}} fontSize="lg" color="white">
-            {colorMode == 'dark' ? <Image cursor="pointer" onClick={() => {navigate('/'); onClose();}} src={LogoWhite} height={'32px'} width={'auto'} /> : <Image cursor="pointer" onClick={() => {navigate('/'); onClose();}} src={Logo} height={'32px'} width={'auto'} />}
-            </Text>
+          <Box display={{ base: 'none', lg: 'block' }}>
+            <Link to="/">
+              <Image src={colorMode === 'dark' ? LogoWhite : Logo} height="32px" width="auto" />
+            </Link>
+          </Box>
+          <Box display={{ base: 'block', lg: 'none' }}>
+            <Link to="/">
+              <Image src={colorMode === 'dark' ? smLogoWhite : smLogo} height="32px" width="auto" />
+            </Link>
+          </Box>
             <Flex alignItems="center" bg="whiteAlpha.200" borderRadius="md" p={1}>
               <IconButton
                 aria-label="Search database"
@@ -116,7 +125,7 @@ function DefaultAppBar({ category, setCategory }) {
             <CartImage onClick={handleCartClick} />
             <Tooltip label="Open settings" aria-label="A tooltip">
               <IconButton
-                icon={<Avatar size="sm" src="/static/images/avatar/2.jpg" />}
+                icon={colorMode === 'dark' ? <Image src="../assets/3lines-white.png" boxSize="20px" /> :<Image src="../assets/3lines.png" boxSize="20px" />}
                 onClick={onOpen}
                 variant="outline"
                 borderColor="whiteAlpha.300"
@@ -133,7 +142,7 @@ function DefaultAppBar({ category, setCategory }) {
           <DrawerCloseButton />
           <DrawerHeader bg={colorMode === 'dark' ? 'black' : 'blue.500'} borderBottom='1px solid' borderColor="gray.500">
             <Text fontSize="lg">
-              <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
+              <Link to="/">{colorMode === 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
             </Text>
           </DrawerHeader>
           <Flex flexDirection="column" p={'10px'}>

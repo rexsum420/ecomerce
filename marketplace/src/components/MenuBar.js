@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  Box, Flex, Avatar, Container, HStack, IconButton, Input, Select, useDisclosure,
+  Box, Flex, Container, HStack, IconButton, Input, Select, useDisclosure,
   Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
   Button, Tooltip, Text, Switch, useColorMode, VStack, Image
 } from '@chakra-ui/react';
@@ -14,7 +14,9 @@ import StoreImage from '../assets/store.png';
 import OrderImage from '../assets/order.png';
 import PurchaseImage from '../assets/purchase.png';
 import Logo from '../assets/freemarket.png';
-import LogoWhite from '../assets/freemarket-white.png'
+import LogoWhite from '../assets/freemarket-white.png';
+import smLogo from '../assets/fm.png';
+import smLogoWhite from '../assets/fm-white.png';
 
 const categories = [
   'All Categories', 'Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Personal Care', 'Health & Wellness',
@@ -32,7 +34,7 @@ function LoggedInAppBar({ category, setCategory }) {
   const { colorMode, toggleColorMode } = useColorMode();
 
   const handleLogOut = () => {
-    const temp = localStorage.getItem('chakra-ui-color-mode')
+    const temp = localStorage.getItem('chakra-ui-color-mode');
     localStorage.clear();
     localStorage.setItem('chakra-ui-color-mode', temp);
     navigate('/');
@@ -74,13 +76,20 @@ function LoggedInAppBar({ category, setCategory }) {
       shadow='lg'
       borderBottom='1px solid'
       borderColor='gray.500'
-      >
+    >
       <Container maxW="container.xl">
         <Flex h={16} alignItems="center" justifyContent="space-between">
           <HStack spacing={4} alignItems="center">
-            <Text display={{base:'none', lg:'flex'}} fontSize="lg" color="white">
-              <Link to="/">{colorMode == 'dark' ? <Image src={LogoWhite} height={'32px'} width={'auto'} /> : <Image src={Logo} height={'32px'} width={'auto'} />}</Link>
-            </Text>
+            <Box display={{ base: 'none', lg: 'block' }}>
+              <Link to="/">
+                <Image src={colorMode === 'dark' ? LogoWhite : Logo} height="32px" width="auto" />
+              </Link>
+            </Box>
+            <Box display={{ base: 'block', lg: 'none' }}>
+              <Link to="/">
+                <Image src={colorMode === 'dark' ? smLogoWhite : smLogo} height="32px" width="auto" />
+              </Link>
+            </Box>
             <Flex alignItems="center" bg="whiteAlpha.200" borderRadius="md" p={1}>
               <IconButton
                 aria-label="Search database"
@@ -105,30 +114,30 @@ function LoggedInAppBar({ category, setCategory }) {
             </Flex>
           </HStack>
           <Select
-                value={category}
-                onChange={handleCategoryChange}
-                placeholder="Category"
-                variant="unstyled"
-                color={colorMode === 'dark' ? "white" : "black"}
-                flex="1"
-                marginLeft='50px'
-                display={{base:'none', lg:'flex'}}
-              >
-                {categories.map((categorie) => (
-                  <option key={categorie} value={categorie}>
-                    {categorie}
-                  </option>
-                ))}
-              </Select>
-          <Flex display={{base:'none', lg:'flex'}}>
-          <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
-          <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
+            value={category}
+            onChange={handleCategoryChange}
+            placeholder="Category"
+            variant="unstyled"
+            color={colorMode === 'dark' ? "white" : "black"}
+            flex="1"
+            marginLeft='50px'
+            display={{ base: 'none', lg: 'flex' }}
+          >
+            {categories.map((categorie) => (
+              <option key={categorie} value={categorie}>
+                {categorie}
+              </option>
+            ))}
+          </Select>
+          <Flex display={{ base: 'none', lg: 'flex' }}>
+            <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
+            <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
           </Flex>
           <HStack spacing={4} alignItems="center">
             <CartImage onClick={handleCartClick} />
             <Tooltip label="Open settings" aria-label="A tooltip">
               <IconButton
-                icon={<Avatar size="sm" src="/static/images/avatar/2.jpg" />}
+                icon={colorMode === 'dark' ? <Image src="../assets/3lines-white.png" boxSize="20px" /> : <Image src="../assets/3lines.png" boxSize="20px" />}
                 onClick={onOpen}
                 variant="outline"
                 borderColor="whiteAlpha.300"
@@ -145,63 +154,63 @@ function LoggedInAppBar({ category, setCategory }) {
           <DrawerCloseButton />
           <DrawerHeader bg={colorMode === 'dark' ? 'black' : 'blue.500'} borderBottom='1px solid' borderColor="gray.500">
             <Text fontSize="lg">
-              {colorMode == 'dark' ? <Image cursor="pointer" onClick={() => {navigate('/'); onClose();}} src={LogoWhite} height={'32px'} width={'auto'} /> : <Image cursor="pointer" onClick={() => {navigate('/'); onClose();}} src={Logo} height={'32px'} width={'auto'} />}
+              {colorMode === 'dark' ? <Image cursor="pointer" onClick={() => { navigate('/'); onClose(); }} src={LogoWhite} height={'32px'} width={'auto'} /> : <Image cursor="pointer" onClick={() => { navigate('/'); onClose(); }} src={Logo} height={'32px'} width={'auto'} />}
             </Text>
           </DrawerHeader>
           <Flex flexDirection="column" p={'10px'}>
-          <Flex justifyContent='center' my='10px'>
-          <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
-          <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
-          </Flex>
-          <hr />
-          <DrawerBody>
-            <Flex justifyContent="space-between" height="84vh" direction="column">
-              <VStack align="start">
-                <Flex display='flex' flexDirection='row'>
-                  <Image src={HomeImage} alt='home' boxSize={'32px'} marginRight={'20px'} />
-                <Button onClick={() => { navigate('/'); onClose(); }}>
-                  Home
-                </Button>
-                </Flex>
-                <br />
-                <Flex display='flex' flexDirection='row'>
-                  <Image src={ProfileImage} alt='profile' boxSize={'32px'} marginRight={'20px'}  />
-                <Button onClick={() => { navigate('/profile'); onClose(); }}>
-                  Profile
-                </Button>
-                </Flex>
-                <br />
-                <Flex display='flex' flexDirection='row'>
-                  <Image src={StoreImage} alt='store' boxSize={'32px'} marginRight={'20px'} />
-                <Button onClick={() => { navigate('/stores'); onClose(); }}>
-                  Stores
-                </Button>
-                </Flex>
-                <br />
-                <Flex display='flex' flexDirection='row'>
-                  <Image src={OrderImage} alt='order'boxSize={'32px'} marginRight={'20px'} />
-                <Button onClick={() => { navigate('/orders'); onClose(); }}>
-                  Orders
-                </Button>
-                </Flex>
-                <br />
-                <Flex display='flex' flexDirection='row'>
-                  <Image src={PurchaseImage} alt='purchase' boxSize={'32px'} marginRight={'20px'} />
-                <Button onClick={() => { navigate('/purchases'); onClose(); }}>
-                  Purchases
-                </Button>
-                </Flex>
-              </VStack>
-              <VStack align="center">
-                <Flex direction='column'>
-                  <hr />
-                  <Button colorScheme="blue" onClick={handleLogOut}>
-                    Sign Out
-                  </Button>
-                </Flex>
-              </VStack>
+            <Flex justifyContent='center' my='10px'>
+              <Text fontWeight="bold" marginRight={'10px'}>Dark Mode</Text>
+              <Switch isChecked={colorMode === 'dark'} onChange={toggleColorMode} />
             </Flex>
-          </DrawerBody>
+            <hr />
+            <DrawerBody>
+              <Flex justifyContent="space-between" height="84vh" direction="column">
+                <VStack align="start">
+                  <Flex display='flex' flexDirection='row'>
+                    <Image src={HomeImage} alt='home' boxSize={'32px'} marginRight={'20px'} />
+                    <Button onClick={() => { navigate('/'); onClose(); }}>
+                      Home
+                    </Button>
+                  </Flex>
+                  <br />
+                  <Flex display='flex' flexDirection='row'>
+                    <Image src={ProfileImage} alt='profile' boxSize={'32px'} marginRight={'20px'} />
+                    <Button onClick={() => { navigate('/profile'); onClose(); }}>
+                      Profile
+                    </Button>
+                  </Flex>
+                  <br />
+                  <Flex display='flex' flexDirection='row'>
+                    <Image src={StoreImage} alt='store' boxSize={'32px'} marginRight={'20px'} />
+                    <Button onClick={() => { navigate('/stores'); onClose(); }}>
+                      Stores
+                    </Button>
+                  </Flex>
+                  <br />
+                  <Flex display='flex' flexDirection='row'>
+                    <Image src={OrderImage} alt='order' boxSize={'32px'} marginRight={'20px'} />
+                    <Button onClick={() => { navigate('/orders'); onClose(); }}>
+                      Orders
+                    </Button>
+                  </Flex>
+                  <br />
+                  <Flex display='flex' flexDirection='row'>
+                    <Image src={PurchaseImage} alt='purchase' boxSize={'32px'} marginRight={'20px'} />
+                    <Button onClick={() => { navigate('/purchases'); onClose(); }}>
+                      Purchases
+                    </Button>
+                  </Flex>
+                </VStack>
+                <VStack align="center">
+                  <Flex direction='column'>
+                    <hr />
+                    <Button colorScheme="blue" onClick={handleLogOut}>
+                      Sign Out
+                    </Button>
+                  </Flex>
+                </VStack>
+              </Flex>
+            </DrawerBody>
           </Flex>
         </DrawerContent>
       </Drawer>

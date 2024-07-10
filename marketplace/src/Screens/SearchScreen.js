@@ -41,7 +41,7 @@ const SearchScreen = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [term, category]);
+    });
 
     useEffect(() => {
         if (sortOption) {

@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
 import { CartContext } from '../components/CartProvider';
 import { Box, Button, Flex, Image, Text } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 
 const ViewCart = () => {
     const { cart, setCart, removeFromCart, clearCart } = useContext(CartContext);
+    const navigate = useNavigate();
 
     const handleQuantityChange = (product, change) => {
         const newCart = cart.map(item => 
@@ -53,7 +55,10 @@ const ViewCart = () => {
                 <Box mt={4} textAlign="right">
                     <Text fontWeight="bold">Tax: ${calculateTax()}</Text>
                     <Text fontWeight="bold">Total: ${(parseFloat(calculateTotal()) + parseFloat(calculateTax())).toFixed(2)}</Text>
-                    <Button mt={4} colorScheme="blue" onClick={clearCart}>Clear Cart</Button>
+                    <Box mt={4} display='flex' flexDirection='row' justifyContent={'end'}>
+                        <Button marginRight={'20px'} colorScheme='blue' onClick={() => {navigate('/checkout')}}>Checkout</Button> 
+                        <Button colorScheme="blue" onClick={clearCart}>Clear Cart</Button>
+                    </Box>
                 </Box>
             )}
         </Box>
