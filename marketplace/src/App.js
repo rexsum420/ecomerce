@@ -22,6 +22,8 @@ import EditStore from './Screens/EditStore';
 import ViewCart from './Screens/ViewCart';
 import PublicViewStore from './Screens/PublicViewStore';
 import EditProduct from './Screens/EditProduct';
+import Profile from './Screens/Profile';
+import EditProfile from './Screens/EditProfile';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
@@ -30,35 +32,34 @@ function App() {
 
   useEffect(() => {
     const checkToken = async () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const response = await fetch(`http://192.168.1.75:8000/check/${token}/`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await fetch(`http://192.168.1.75:8000/check/${token}/`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
 
-                if (response.status === 200) {
-                    const data = await response.json();
-                    setIsLoggedIn(true);
-                    setData(data);
-                    localStorage.setItem('username', data.user);
-                } else {
-                    localStorage.removeItem('token');
-                    setIsLoggedIn(false);
-                }
-            } catch (error) {
-                localStorage.removeItem('token');
-                setIsLoggedIn(false);
-            }
+          if (response.status === 200) {
+            const resdata = await response.json();
+            setIsLoggedIn(true);
+            setData(resdata);
+            localStorage.setItem('username', resdata.user);
+          } else {
+            localStorage.removeItem('token');
+            setIsLoggedIn(false);
+          }
+        } catch (error) {
+          localStorage.removeItem('token');
+          setIsLoggedIn(false);
         }
+      }
     };
 
     checkToken();
-}, []);
-
+  }, []);
 
   return (
     <Router>
@@ -82,6 +83,10 @@ function App() {
           <Route path="/search" element={<SearchScreen />} />
           <Route path="/create-store" element={isLoggedIn ? <AddStore /> : <HomeScreen category={category} setCategory={setCategory}/>} />
           <Route path="/cart" element={isLoggedIn ? <ViewCart /> : <HomeScreen category={category} setCategory={setCategory}/>} />
+          <Route 
+            path="/profile" 
+            element={window.location.search.includes(`user=${localStorage.getItem('username')}`) ? <EditProfile /> : <Profile />} 
+          />
         </Routes>
       </div>
     </Router>

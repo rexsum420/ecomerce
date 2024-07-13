@@ -32,6 +32,7 @@ function LoggedInAppBar({ category, setCategory }) {
   const navigate = useNavigate();
   const [searchValue, setSearchValue] = useState('');
   const { colorMode, toggleColorMode } = useColorMode();
+  const username = localStorage.getItem('username');
 
   const handleLogOut = () => {
     const temp = localStorage.getItem('chakra-ui-color-mode');
@@ -175,7 +176,7 @@ function LoggedInAppBar({ category, setCategory }) {
                   <br />
                   <Flex display='flex' flexDirection='row'>
                     <Image src={ProfileImage} alt='profile' boxSize={'32px'} marginRight={'20px'} />
-                    <Button onClick={() => { navigate('/profile'); onClose(); }}>
+                    <Button onClick={() => { navigate(`/profile?user=${username}`); onClose(); }}>
                       Profile
                     </Button>
                   </Flex>

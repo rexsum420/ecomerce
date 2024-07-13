@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
+from rest_framework import permissions
 
 from rest_framework.authtoken.models import Token
 
@@ -82,22 +83,19 @@ class UserViewSet(UserModelMixin, viewsets.ModelViewSet):
 
 class ProfileViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     queryset = Profile.objects.all()
+    lookup_field = 'user__username'
 
     def get_queryset(self):
-        user = self.request.user
-        if user and user.is_authenticated:
-            if user.is_staff:
-                return Profile.objects.all()
-            else:
-                return Profile.objects.filter(user=user)
-        return Profile.objects.none()
+        username = self.request.query_params.get('user')
+        if username:
+            return Profile.objects.filter(user__username=username)
+        return Profile.objects.all()
 
     def perform_create(self, serializer):
         raise PermissionDenied('Profiles are created by the server automatically')
-    
+
     def perform_update(self, serializer):
         instance = self.get_object()
         if instance.user != self.request.user:
@@ -111,11 +109,9 @@ class ProfileViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def perform_destroy(self, serializer):
-        raise PermissionDenied('Profiles can not be deleted')
+        raise PermissionDenied('Profiles cannot be deleted')
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        if not self.request.user == instance.user:
-            raise PermissionDenied("You do not have permission to view this product.")
         serializer = self.get_serializer(instance)
         return Response(serializer.data)

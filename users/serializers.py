@@ -24,12 +24,13 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class ProfileSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ['user', 'email', 'first_name', 'last_name', 'phone_number']
 
     def get_user(self, obj):
         return obj.user.username
