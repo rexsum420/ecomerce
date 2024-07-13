@@ -8,6 +8,7 @@ from products.views import ProductViewSet, PictureViewSet, ProductListView
 from orders.views import OrderViewSet, LineItemViewSet
 from django.conf import settings
 from django.conf.urls.static import static
+from shipping.views import ShippingViewSet
 from . import views
 
 router = DefaultRouter()
@@ -22,6 +23,7 @@ router.register(r'homepage', ProductListView, basename='homepage')
 router.register(r'my-stores', StoreListView, basename='storemy')
 router.register(r'search', ProductListView, basename='search')
 router.register(r'get-store', ReadStoreViewSet, basename='storeget')
+router.register(r'shipping', ShippingViewSet, basename='shipping')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
