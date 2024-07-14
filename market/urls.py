@@ -6,12 +6,14 @@ from users.views import UserViewSet, ProfileViewSet, activate, CheckTokenView
 from stores.views import StoreViewSet, StoreListView, ReadStoreViewSet
 from products.views import ProductViewSet, PictureViewSet, ProductListView
 from orders.views import OrderViewSet, LineItemViewSet
+from creditcards.views import CreditCardViewSet
 from django.conf import settings
 from django.conf.urls.static import static
 from shipping.views import ShippingViewSet
 from . import views
 
 router = DefaultRouter()
+router.register(r'credit-cards', CreditCardViewSet, basename='creditcard')
 router.register(r'users', UserViewSet, basename='user')
 router.register(r'profiles', ProfileViewSet, basename='profile')
 router.register(r'stores', StoreViewSet, basename='store')

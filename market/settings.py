@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'storages',
     'corsheaders',
     'shipping',
+    'creditcards',
 ]
 
 MIDDLEWARE = [
