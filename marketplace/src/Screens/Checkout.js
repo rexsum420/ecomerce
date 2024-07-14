@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { CartContext } from '../components/CartProvider';
-import { Box, Button, Flex, Image, Text, Spinner, IconButton, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, Image, Text, Spinner, IconButton, useToast, useColorModeValue } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { AddIcon } from '@chakra-ui/icons';
 
@@ -85,7 +85,7 @@ const Checkout = () => {
                             <Text fontWeight="bold">{product.name}</Text>
                             <Text>${product.price} each</Text>
                             <Flex alignItems="center" mt={2}>
-                                <Text mx={2}>Quantity: {product.quantity}</Text>
+                                <Text mx={2}>{product.quantity}</Text>
                             </Flex>
                         </Box>
                         <Box textAlign="right">
@@ -116,13 +116,13 @@ const Checkout = () => {
                                     shadow="md"
                                     cursor="pointer"
                                     onClick={() => handleAddressSelect(address.id)}
-                                    bg={selectedAddress === address.id ? 'blue.100' : 'white'}
+                                    bg={selectedAddress === address.id ? 'blue.100' : 'transparent'}
                                     textAlign="left"
                                 >
-                                    <Text>{address.name}</Text>
-                                    <Text>{address.address1}</Text>
-                                    <Text>{address.address2}</Text>
-                                    <Text>{address.city}, {address.state} {address.zip}</Text>
+                                    <Text color={selectedAddress === address.id ? 'black' : 'inherit'}>{address.name}</Text>
+                                    <Text color={selectedAddress === address.id ? 'black' : 'inherit'}>{address.address1}</Text>
+                                    <Text color={selectedAddress === address.id ? 'black' : 'inherit'}>{address.address2}</Text>
+                                    <Text color={selectedAddress === address.id ? 'black' : 'inherit'}>{address.city}, {address.state} {address.zip}</Text>
                                 </Box>
                             ))}
                         </Flex>

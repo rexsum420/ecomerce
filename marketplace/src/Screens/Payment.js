@@ -1,6 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Box, Text, Flex, Button, Input, FormControl, FormLabel, FormHelperText, useColorModeValue } from '@chakra-ui/react';
+import { Box, Text, Flex, Button, Input, FormControl, FormLabel, useColorModeValue } from '@chakra-ui/react';
+import Confirm from './Confirm';
+import AddCreditCardModal from '../components/AddCreditCardModal';
+
+const BillingAddressInput = ({ address, setAddress }) => (
+    <Box>
+        <Text fontWeight="bold">Billing Address</Text>
+        <FormControl id="billing_name" isRequired mt={2}>
+            <FormLabel>Name</FormLabel>
+            <Input type="text" value={address.name} onChange={(e) => setAddress({ ...address, name: e.target.value })} />
+        </FormControl>
+        <FormControl id="billing_address1" isRequired mt={2}>
+            <FormLabel>Address Line 1</FormLabel>
+            <Input type="text" value={address.address1} onChange={(e) => setAddress({ ...address, address1: e.target.value })} />
+        </FormControl>
+        <FormControl id="billing_address2" mt={2}>
+            <FormLabel>Address Line 2</FormLabel>
+            <Input type="text" value={address.address2} onChange={(e) => setAddress({ ...address, address2: e.target.value })} />
+        </FormControl>
+        <FormControl id="billing_city" isRequired mt={2}>
+            <FormLabel>City</FormLabel>
+            <Input type="text" value={address.city} onChange={(e) => setAddress({ ...address, city: e.target.value })} />
+        </FormControl>
+        <FormControl id="billing_state" isRequired mt={2}>
+            <FormLabel>State</FormLabel>
+            <Input type="text" value={address.state} onChange={(e) => setAddress({ ...address, state: e.target.value })} />
+        </FormControl>
+        <FormControl id="billing_zip" isRequired mt={2}>
+            <FormLabel>ZIP Code</FormLabel>
+            <Input type="text" value={address.zip} onChange={(e) => setAddress({ ...address, zip: e.target.value })} />
+        </FormControl>
+    </Box>
+);
 
 const Payment = () => {
     const location = useLocation();
@@ -8,23 +40,20 @@ const Payment = () => {
 
     const [creditCards, setCreditCards] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
-    const [showNewCardForm, setShowNewCardForm] = useState(false);
-
-    // State for new credit card form fields
-    const [newCardData, setNewCardData] = useState({
-        card_number: '',
-        expiration_date: '',
-        cvv: '',
-        cardholder_name: '',
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [billingAddress, setBillingAddress] = useState({
+        name: '',
+        address1: '',
+        address2: '',
+        city: '',
+        state: '',
+        zip: '',
     });
 
-    // State for form validation errors
-    const [formErrors, setFormErrors] = useState({});
-
-    // Hook to get appropriate background color based on color mode
     const newCardFormBg = useColorModeValue('#C0C0C0', 'gray.700');
     const selectedCardTextColor = useColorModeValue('black', 'black');
-    const unselectedCardTextColor = useColorModeValue('white', 'white');
+    const unselectedCardTextColor = useColorModeValue('black', 'white');
 
     useEffect(() => {
         const fetchCreditCards = async () => {
@@ -39,7 +68,7 @@ const Payment = () => {
                 });
 
                 const data = await response.json();
-                setCreditCards(data.results);  // Updated to extract results array
+                setCreditCards(data.results);
             } catch (error) {
                 console.error('Error fetching credit cards:', error);
             }
@@ -60,15 +89,7 @@ const Payment = () => {
         setSelectedCard(cardId);
     };
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewCardData({
-            ...newCardData,
-            [name]: value
-        });
-    };
-
-    const handleSubmitNewCard = async () => {
+    const handleAddCard = async (newCardData) => {
         const token = localStorage.getItem('token');
         try {
             const response = await fetch('http://192.168.1.75:8000/api/credit-cards/', {
@@ -83,119 +104,101 @@ const Payment = () => {
             if (response.status === 201) {
                 const newCard = await response.json();
                 setCreditCards([...creditCards, newCard]);
-                setNewCardData({
-                    card_number: '',
-                    expiration_date: '',
-                    cvv: '',
-                    cardholder_name: '',
-                });
-                setFormErrors({});
+                return Promise.resolve();
             } else {
                 const errorData = await response.json();
-                setFormErrors(errorData);
+                return Promise.reject(errorData);
             }
         } catch (error) {
             console.error('Error adding new credit card:', error);
+            return Promise.reject({ general: 'Error adding new credit card' });
         }
+    };
+
+    const handleConfirmPayment = () => {
+        setShowConfirm(true);
     };
 
     return (
         <Box p={5}>
-            <Text fontWeight="bold" mb={4}>Payment</Text>
-            <Box shadow="md" borderWidth={1} borderRadius="md" mb={4}>
-                <Text fontWeight="bold">Shipping Address</Text>
-                <Text>{selectedShippingAddress.name}</Text>
-                <Text>{selectedShippingAddress.address1}</Text>
-                <Text>{selectedShippingAddress.address2}</Text>
-                <Text>{selectedShippingAddress.city}, {selectedShippingAddress.state} {selectedShippingAddress.zip}</Text>
-            </Box>
-            <Box mb={4}>
-                <Text fontWeight="bold">Order Summary</Text>
-                {cart.map(product => (
-                    <Flex key={product.id} p={4} borderWidth={1} borderRadius="md" mb={2} alignItems="center" shadow="md">
-                        <Text mx={2}>Quantity: {product.quantity}</Text>
-                        <Text flex="1">{product.name}</Text>
-                        <Text>${(product.price * product.quantity).toFixed(2)}</Text>
-                    </Flex>
-                ))}
-                <Text textAlign={'right'} fontWeight="bold" mt={4}>Tax: ${calculateTax()}</Text>
-                <Text textAlign={'right'} fontWeight="bold">Total: ${(parseFloat(calculateTotal()) + parseFloat(calculateTax())).toFixed(2)}</Text>
-            </Box>
-            <Box mb={4}>
-                <Text fontWeight="bold">Select Credit Card</Text>
-                {creditCards.length > 0 ? (
-                    <Flex direction="column" gap={4}>
-                        {creditCards.map(card => (
-                            <Box
-                                key={card.id}
-                                p={4}
-                                borderWidth={1}
-                                borderRadius="md"
-                                shadow="md"
-                                cursor="pointer"
-                                onClick={() => handleCardSelect(card.id)}
-                                bg={selectedCard === card.id ? 'blue.100' : 'transparent'}
-                                textAlign="left"
-                                color={selectedCard === card.id ? selectedCardTextColor : unselectedCardTextColor}
-                            >
-                                <Text>{card.cardholder_name}</Text>
-                                <Text>**** **** **** {card.card_number ? card.card_number.slice(-4) : '****'}</Text>
-                                <Text>Expires: {card.expiration_date}</Text>
-                            </Box>
-                        ))}
-                    </Flex>
-                ) : (
-                    <Text>No credit cards available.</Text>
-                )}
-            </Box>
-            <Box mb={4}>
-                {showNewCardForm && (
-                    <Box borderWidth={'1px'} borderColor={'black'} borderRadius={'lg'} bg={newCardFormBg}>
-                        <Text fontWeight="bold" mt={4}>Add New Credit Card</Text>
-                        <FormControl id="card_number" isRequired mt={2} isInvalid={formErrors.card_number}>
-                            <FormLabel>Card Number</FormLabel>
-                            <Input type="text" name="card_number" value={newCardData.card_number} onChange={handleInputChange} />
-                            <FormHelperText>{formErrors.card_number}</FormHelperText>
-                        </FormControl>
-                        <FormControl id="expiration_date" isRequired mt={2} isInvalid={formErrors.expiration_date}>
-                            <FormLabel>Expiration Date</FormLabel>
-                            <Input type="text" name="expiration_date" value={newCardData.expiration_date} onChange={handleInputChange} />
-                            <FormHelperText>{formErrors.expiration_date}</FormHelperText>
-                        </FormControl>
-                        <FormControl id="cvv" isRequired mt={2} isInvalid={formErrors.cvv}>
-                            <FormLabel>CVV</FormLabel>
-                            <Input type="text" name="cvv" value={newCardData.cvv} onChange={handleInputChange} />
-                            <FormHelperText>{formErrors.cvv}</FormHelperText>
-                        </FormControl>
-                        <FormControl id="cardholder_name" isRequired mt={2} isInvalid={formErrors.cardholder_name}>
-                            <FormLabel>Cardholder Name</FormLabel>
-                            <Input type="text" name="cardholder_name" value={newCardData.cardholder_name} onChange={handleInputChange} />
-                            <FormHelperText>{formErrors.cardholder_name}</FormHelperText>
-                        </FormControl>
-                        <Flex justify="flex-end">
-                            <Button colorScheme="blue" m={4} onClick={handleSubmitNewCard}>
-                                Add Card
-                            </Button>
-                        </Flex>
+            {showConfirm ? (
+                <Confirm
+                    selectedShippingAddress={selectedShippingAddress}
+                    cart={cart}
+                    selectedCard={selectedCard}
+                    creditCards={creditCards}
+                    billingAddress={billingAddress} // Pass billingAddress here
+                    onBack={() => setShowConfirm(false)}
+                />
+            ) : (
+                <>
+                    <Text fontWeight="bold" mb={4}>Payment</Text>
+                    <Box textAlign={'left'} shadow="md" borderWidth={1} borderRadius="md" mb={4}>
+                        <Text textAlign='center' fontWeight="bold">Shipping Address</Text>
+                        <Text>{selectedShippingAddress.name}</Text>
+                        <Text>{selectedShippingAddress.address1}</Text>
+                        <Text>{selectedShippingAddress.address2}</Text>
+                        <Text>{selectedShippingAddress.city}, {selectedShippingAddress.state} {selectedShippingAddress.zip}</Text>
                     </Box>
-                )}
-                {showNewCardForm ? (
-                    <Button colorScheme="red" onClick={() => setShowNewCardForm(!showNewCardForm)}>
-                        <small>Hide New Card Form</small>
-                    </Button>
-                ) : (
-                    <Button colorScheme="green" onClick={() => setShowNewCardForm(!showNewCardForm)}>
-                        <small>Show New Card Form</small>
-                    </Button>
-                )}
-            </Box>
-            {selectedCard && (
-                <Box mt={4} textAlign="right">
-                    <Button colorScheme="blue" mt={4}>
-                        Confirm Payment
-                    </Button>
-                </Box>
+                    <Box mb={4}>
+                        <Text fontWeight="bold">Order Summary</Text>
+                        {cart.map(product => (
+                            <Flex key={product.id} p={4} borderWidth={1} borderRadius="md" mb={2} alignItems="center" shadow="md">
+                                <Text mx={2}>{product.quantity}</Text>
+                                <Text flex="1">{product.name}</Text>
+                                <Text>${(product.price * product.quantity).toFixed(2)}</Text>
+                            </Flex>
+                        ))}
+                        <Text textAlign={'right'} fontWeight="bold" mt={4}>Tax: ${calculateTax()}</Text>
+                        <Text textAlign={'right'} fontWeight="bold">Total: ${(parseFloat(calculateTotal()) + parseFloat(calculateTax())).toFixed(2)}</Text>
+                    </Box>
+                    <Box mb={4}>
+                        <Text fontWeight="bold">Select Credit Card</Text>
+                        {creditCards.length > 0 ? (
+                            <Flex direction="column" gap={4}>
+                                {creditCards.map(card => (
+                                    <Box
+                                        key={card.id}
+                                        p={4}
+                                        borderWidth={1}
+                                        borderRadius="md"
+                                        shadow="md"
+                                        cursor="pointer"
+                                        onClick={() => handleCardSelect(card.id)}
+                                        bg={selectedCard === card.id ? 'blue.100' : 'transparent'}
+                                        textAlign="left"
+                                        color={selectedCard === card.id ? selectedCardTextColor : unselectedCardTextColor}
+                                    >
+                                        <Text>{card.cardholder_name}</Text>
+                                        <Text>**** **** **** {card.card_number.slice(-4)}</Text>
+                                        <Text>Expires: {card.expiration_date}</Text>
+                                    </Box>
+                                ))}
+                            </Flex>
+                        ) : (
+                            <Text>No credit cards available.</Text>
+                        )}
+                        <Button colorScheme="green" mt={4} onClick={() => setIsModalOpen(true)}>
+                            Add New Credit Card
+                        </Button>
+                    </Box>
+                    {selectedCard && (
+                        <>
+                            <BillingAddressInput address={billingAddress} setAddress={setBillingAddress} />
+                            <Box mt={4} textAlign="right">
+                                <Button colorScheme="blue" mt={4} onClick={handleConfirmPayment}>
+                                    Confirm Payment
+                                </Button>
+                            </Box>
+                        </>
+                    )}
+                </>
             )}
+            <AddCreditCardModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleAddCard}
+            />
         </Box>
     );
 };
