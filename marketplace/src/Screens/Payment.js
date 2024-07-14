@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Box, Text, Flex, Button, Input, FormControl, FormLabel, FormHelperText } from '@chakra-ui/react';
+import { Box, Text, Flex, Button, Input, FormControl, FormLabel, FormHelperText, useColorModeValue } from '@chakra-ui/react';
 
 const Payment = () => {
     const location = useLocation();
@@ -8,6 +8,7 @@ const Payment = () => {
 
     const [creditCards, setCreditCards] = useState([]);
     const [selectedCard, setSelectedCard] = useState(null);
+    const [showNewCardForm, setShowNewCardForm] = useState(false);
 
     // State for new credit card form fields
     const [newCardData, setNewCardData] = useState({
@@ -19,6 +20,11 @@ const Payment = () => {
 
     // State for form validation errors
     const [formErrors, setFormErrors] = useState({});
+
+    // Hook to get appropriate background color based on color mode
+    const newCardFormBg = useColorModeValue('#C0C0C0', 'gray.700');
+    const selectedCardTextColor = useColorModeValue('black', 'black');
+    const unselectedCardTextColor = useColorModeValue('white', 'white');
 
     useEffect(() => {
         const fetchCreditCards = async () => {
@@ -33,7 +39,7 @@ const Payment = () => {
                 });
 
                 const data = await response.json();
-                setCreditCards(data);
+                setCreditCards(data.results);  // Updated to extract results array
             } catch (error) {
                 console.error('Error fetching credit cards:', error);
             }
@@ -128,11 +134,12 @@ const Payment = () => {
                                 shadow="md"
                                 cursor="pointer"
                                 onClick={() => handleCardSelect(card.id)}
-                                bg={selectedCard === card.id ? 'blue.100' : 'white'}
+                                bg={selectedCard === card.id ? 'blue.100' : 'transparent'}
                                 textAlign="left"
+                                color={selectedCard === card.id ? selectedCardTextColor : unselectedCardTextColor}
                             >
                                 <Text>{card.cardholder_name}</Text>
-                                <Text>**** **** **** {card.card_number.slice(-4)}</Text>
+                                <Text>**** **** **** {card.card_number ? card.card_number.slice(-4) : '****'}</Text>
                                 <Text>Expires: {card.expiration_date}</Text>
                             </Box>
                         ))}
@@ -142,30 +149,45 @@ const Payment = () => {
                 )}
             </Box>
             <Box mb={4}>
-                <Text fontWeight="bold">Add New Credit Card</Text>
-                <FormControl id="card_number" isRequired mt={2} isInvalid={formErrors.card_number}>
-                    <FormLabel>Card Number</FormLabel>
-                    <Input type="text" name="card_number" value={newCardData.card_number} onChange={handleInputChange} />
-                    <FormHelperText>{formErrors.card_number}</FormHelperText>
-                </FormControl>
-                <FormControl id="expiration_date" isRequired mt={2} isInvalid={formErrors.expiration_date}>
-                    <FormLabel>Expiration Date</FormLabel>
-                    <Input type="text" name="expiration_date" value={newCardData.expiration_date} onChange={handleInputChange} />
-                    <FormHelperText>{formErrors.expiration_date}</FormHelperText>
-                </FormControl>
-                <FormControl id="cvv" isRequired mt={2} isInvalid={formErrors.cvv}>
-                    <FormLabel>CVV</FormLabel>
-                    <Input type="text" name="cvv" value={newCardData.cvv} onChange={handleInputChange} />
-                    <FormHelperText>{formErrors.cvv}</FormHelperText>
-                </FormControl>
-                <FormControl id="cardholder_name" isRequired mt={2} isInvalid={formErrors.cardholder_name}>
-                    <FormLabel>Cardholder Name</FormLabel>
-                    <Input type="text" name="cardholder_name" value={newCardData.cardholder_name} onChange={handleInputChange} />
-                    <FormHelperText>{formErrors.cardholder_name}</FormHelperText>
-                </FormControl>
-                <Button colorScheme="blue" mt={4} onClick={handleSubmitNewCard}>
-                    Add Card
-                </Button>
+                {showNewCardForm && (
+                    <Box borderWidth={'1px'} borderColor={'black'} borderRadius={'lg'} bg={newCardFormBg}>
+                        <Text fontWeight="bold" mt={4}>Add New Credit Card</Text>
+                        <FormControl id="card_number" isRequired mt={2} isInvalid={formErrors.card_number}>
+                            <FormLabel>Card Number</FormLabel>
+                            <Input type="text" name="card_number" value={newCardData.card_number} onChange={handleInputChange} />
+                            <FormHelperText>{formErrors.card_number}</FormHelperText>
+                        </FormControl>
+                        <FormControl id="expiration_date" isRequired mt={2} isInvalid={formErrors.expiration_date}>
+                            <FormLabel>Expiration Date</FormLabel>
+                            <Input type="text" name="expiration_date" value={newCardData.expiration_date} onChange={handleInputChange} />
+                            <FormHelperText>{formErrors.expiration_date}</FormHelperText>
+                        </FormControl>
+                        <FormControl id="cvv" isRequired mt={2} isInvalid={formErrors.cvv}>
+                            <FormLabel>CVV</FormLabel>
+                            <Input type="text" name="cvv" value={newCardData.cvv} onChange={handleInputChange} />
+                            <FormHelperText>{formErrors.cvv}</FormHelperText>
+                        </FormControl>
+                        <FormControl id="cardholder_name" isRequired mt={2} isInvalid={formErrors.cardholder_name}>
+                            <FormLabel>Cardholder Name</FormLabel>
+                            <Input type="text" name="cardholder_name" value={newCardData.cardholder_name} onChange={handleInputChange} />
+                            <FormHelperText>{formErrors.cardholder_name}</FormHelperText>
+                        </FormControl>
+                        <Flex justify="flex-end">
+                            <Button colorScheme="blue" m={4} onClick={handleSubmitNewCard}>
+                                Add Card
+                            </Button>
+                        </Flex>
+                    </Box>
+                )}
+                {showNewCardForm ? (
+                    <Button colorScheme="red" onClick={() => setShowNewCardForm(!showNewCardForm)}>
+                        <small>Hide New Card Form</small>
+                    </Button>
+                ) : (
+                    <Button colorScheme="green" onClick={() => setShowNewCardForm(!showNewCardForm)}>
+                        <small>Show New Card Form</small>
+                    </Button>
+                )}
             </Box>
             {selectedCard && (
                 <Box mt={4} textAlign="right">
