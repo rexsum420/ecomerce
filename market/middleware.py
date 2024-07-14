@@ -85,17 +85,19 @@ class EncryptionMiddleware(MiddlewareMixin):
     def process_request(self, request):
         if request.body:
             try:
-                decrypted_data = decrypt(request.body.decode())
-                request._body = decrypted_data.encode()
+                decrypted_data = decrypt(request.body.decode('utf-8'))
+                request._body = decrypted_data.encode('utf-8')
+                request.POST = request.POST.copy()
+                request.POST.update(request._body)
             except Exception as e:
                 print(f"Decryption error: {e}")
     
     def process_response(self, request, response):
         if response.content:
             try:
-                encrypted_data = encrypt(response.content.decode())
-                response.content = encrypted_data.encode()
-                response['Content-Length'] = len(response.content)
+                encrypted_data = encrypt(response.content.decode('utf-8'))
+                response.content = encrypted_data.encode('utf-8')
+                response['Content-Length'] = str(len(response.content))
             except Exception as e:
                 print(f"Encryption error: {e}")
         return response

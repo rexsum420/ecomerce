@@ -24,6 +24,9 @@ import PublicViewStore from './Screens/PublicViewStore';
 import EditProduct from './Screens/EditProduct';
 import Profile from './Screens/Profile';
 import EditProfile from './Screens/EditProfile';
+import Checkout from './Screens/Checkout';
+import AddShipping from './Screens/AddShipping';
+import Payment from './Screens/Payment';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
@@ -83,6 +86,9 @@ function App() {
           <Route path="/search" element={<SearchScreen />} />
           <Route path="/create-store" element={isLoggedIn ? <AddStore /> : <HomeScreen category={category} setCategory={setCategory}/>} />
           <Route path="/cart" element={isLoggedIn ? <ViewCart /> : <HomeScreen category={category} setCategory={setCategory}/>} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/add-shipping" element={<AddShipping />} />
+          <Route path="/payment" element={<Payment />} />
           <Route 
             path="/profile" 
             element={window.location.search.includes(`user=${localStorage.getItem('username')}`) ? <EditProfile /> : <Profile />} 
