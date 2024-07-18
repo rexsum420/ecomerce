@@ -19,11 +19,15 @@ import PriceAscending from '../assets/price-ascending.png';
 import PriceDescending from '../assets/price-descending.png';
 import AlphaAscending from '../assets/alpha-ascending.png';
 import AlphaDescending from '../assets/alpha-descending.png';
+import AlphaAscendingWhite from '../assets/alpha-ascending-white.png';
+import AlphaDescendingWhite from '../assets/alpha-descending-white.png';
+import { useColorMode } from '@chakra-ui/react';
 
 const LandingPage = ({ category }) => {
   const [products, setProducts] = useState([]);
   const [query, setQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
+  const { colorMode, toggleColorMode } = useColorMode();
 
   useEffect(() => {
     if (getCategoryValue(category) == null) {
@@ -95,7 +99,7 @@ const LandingPage = ({ category }) => {
                         ml={2}
                     />
                     <Image 
-                        src={AlphaAscending} 
+                        src={colorMode === 'dark' ? AlphaAscendingWhite : AlphaAscending} 
                         alt="Alpha Ascending" 
                         boxSize="16px" 
                         cursor="pointer" 
@@ -104,7 +108,7 @@ const LandingPage = ({ category }) => {
                         ml={2}
                     />
                     <Image 
-                        src={AlphaDescending} 
+                        src={colorMode === 'dark' ? AlphaDescendingWhite : AlphaDescending} 
                         alt="Alpha Descending" 
                         boxSize="16px" 
                         cursor="pointer" 

@@ -9,6 +9,9 @@ import PriceAscending from '../assets/price-ascending.png';
 import PriceDescending from '../assets/price-descending.png';
 import AlphaAscending from '../assets/alpha-ascending.png';
 import AlphaDescending from '../assets/alpha-descending.png';
+import AlphaAscendingWhite from '../assets/alpha-ascending-white.png';
+import AlphaDescendingWhite from '../assets/alpha-descending-white.png';
+import { useColorMode } from '@chakra-ui/react';
 
 const useQuery = () => {
     return new URLSearchParams(useLocation().search);
@@ -23,6 +26,7 @@ const SearchScreen = () => {
     const [error, setError] = useState(false);
     const navigate = useNavigate();
     const [sortOption, setSortOption] = useState('');
+    const { colorMode, toggleColorMode } = useColorMode();
 
     const fetchProducts = async () => {
         try {
@@ -114,7 +118,7 @@ const SearchScreen = () => {
                         ml={2}
                     />
                     <Image 
-                        src={AlphaAscending} 
+                        src={colorMode === 'dark' ? AlphaAscendingWhite : AlphaAscending} 
                         alt="Alpha Ascending" 
                         boxSize="16px" 
                         cursor="pointer" 
@@ -123,7 +127,7 @@ const SearchScreen = () => {
                         ml={2}
                     />
                     <Image 
-                        src={AlphaDescending} 
+                        src={colorMode === 'dark' ? AlphaDescendingWhite : AlphaDescending} 
                         alt="Alpha Descending" 
                         boxSize="16px" 
                         cursor="pointer" 
