@@ -1,8 +1,10 @@
 import React from 'react';
-import { Box, HStack, Text, Image } from '@chakra-ui/react';
+import { Box, HStack, Text, Image, IconButton } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { getCategoryValue } from '../utils/CategoryEncoder';
 import { useSwipeable } from 'react-swipeable';
+import { ArrowLeftIcon, ArrowRightIcon } from '@chakra-ui/icons';
+import { debounce } from 'lodash';
 
 const categoryIcons = [
   { name: 'All Categories', icon: require('../assets/category/everything.png') },
@@ -38,24 +40,24 @@ const categoryIcons = [
   { name: 'Watches', icon: require('../assets/category/watches.png') },
 ];
 
-const CategoryScroll = ({term}) => {
+const CategoryScroll = ({ term }) => {
   const navigate = useNavigate();
 
-  const handleCategoryClick = (category) => {
+  const handleCategoryClick = debounce((category) => {
     if (term) {
-        if (getCategoryValue(category)) {
-            navigate(`/search?term=${term}&category=${getCategoryValue(category)}`);
-            } else {
-            navigate(`/search?term=${term}`);
-        }
-    }else {
-    if (getCategoryValue(category)) {
-    navigate(`/search?category=${getCategoryValue(category)}`);
+      if (getCategoryValue(category)) {
+        navigate(`/search?term=${term}&category=${getCategoryValue(category)}`);
+      } else {
+        navigate(`/search?term=${term}`);
+      }
     } else {
-    navigate('/');
+      if (getCategoryValue(category)) {
+        navigate(`/search?category=${getCategoryValue(category)}`);
+      } else {
+        navigate('/');
+      }
     }
-}
-  }
+  }, 300); // 300ms debounce time
 
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => document.getElementById('category-scroll-container').scrollBy({ left: 200, behavior: 'smooth' }),
@@ -64,28 +66,59 @@ const CategoryScroll = ({term}) => {
     trackMouse: true
   });
 
+  const scrollLeft = () => {
+    document.getElementById('category-scroll-container').scrollBy({ left: -200, behavior: 'smooth' });
+  };
+
+  const scrollRight = () => {
+    document.getElementById('category-scroll-container').scrollBy({ left: 200, behavior: 'smooth' });
+  };
+
   return (
-    <Box 
-      id="category-scroll-container" 
-      overflowX="auto" 
-      padding="8px 16px" 
-      boxShadow="lg"
-      {...swipeHandlers}>
-      <style>
-        {`
-          #category-scroll-container::-webkit-scrollbar {
-            display: none;
-          }
-        `}
-      </style>
-      <HStack spacing={4}>
-        {categoryIcons.map((category, index) => (
-          <Box key={index} textAlign="center" onClick={() => handleCategoryClick(category.name)} cursor="pointer" mx={"20px"}>
-            <Image src={category.icon} alt={category.name} boxSize="64px" marginBottom="12px" />
-            <Text fontSize="12px">{category.name}</Text>
-          </Box>
-        ))}
-      </HStack>
+    <Box position="relative">
+      <IconButton
+        icon={<ArrowLeftIcon />}
+        position="absolute"
+        left="0"
+        top="50%"
+        transform="translateY(-50%)"
+        zIndex="1"
+        onClick={scrollLeft}
+        display={['none', 'flex']}
+      />
+      <Box
+        id="category-scroll-container"
+        overflowX="auto"
+        padding="8px 16px"
+        boxShadow="lg"
+        whiteSpace="nowrap"
+        {...swipeHandlers}>
+        <style>
+          {`
+            #category-scroll-container::-webkit-scrollbar {
+              display: none;
+            }
+          `}
+        </style>
+        <HStack spacing={4} display="inline-flex">
+          {categoryIcons.map((category, index) => (
+            <Box key={index} textAlign="center" onClick={() => handleCategoryClick(category.name)} cursor="pointer" mx={"20px"}>
+              <Image src={category.icon} alt={category.name} boxSize="64px" marginBottom="12px" />
+              <Text fontSize="12px">{category.name}</Text>
+            </Box>
+          ))}
+        </HStack>
+      </Box>
+      <IconButton
+        icon={<ArrowRightIcon />}
+        position="absolute"
+        right="0"
+        top="50%"
+        transform="translateY(-50%)"
+        zIndex="1"
+        onClick={scrollRight}
+        display={['none', 'flex']}
+      />
     </Box>
   );
 };
