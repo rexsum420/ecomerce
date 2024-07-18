@@ -10,6 +10,7 @@ import CartImage from './Cart';
 import { getCategoryValue } from '../utils/CategoryEncoder';
 import HomeImage from '../assets/home.png';
 import ProfileImage from '../assets/profile.png';
+import ProfileLight from '../assets/profile-black.png';
 import StoreImage from '../assets/store.png';
 import OrderImage from '../assets/order.png';
 import PurchaseImage from '../assets/purchase.png';
@@ -175,7 +176,7 @@ function LoggedInAppBar({ category, setCategory }) {
                   </Flex>
                   <br />
                   <Flex display='flex' flexDirection='row'>
-                    <Image src={ProfileImage} alt='profile' boxSize={'32px'} marginRight={'20px'} />
+                    <Image src={colorMode == 'light' ? ProfileLight : ProfileImage} alt='profile' boxSize={'32px'} marginRight={'20px'} />
                     <Button onClick={() => { navigate(`/profile?user=${username}`); onClose(); }}>
                       Profile
                     </Button>
