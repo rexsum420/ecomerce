@@ -14,3 +14,11 @@ class CreditCard(models.Model):
 
     def __str__(self):
         return f"{self.cardholder_name} - **** **** **** {self.card_number[-4:]}"
+
+class BillingAddress(models.Model):
+    card = models.ForeignKey(CreditCard, on_delete=models.CASCADE)
+    address1 = models.CharField(max_length=250)
+    address2 = models.CharField(max_length=250, blank=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=50)
+    zip_code = models.CharField(max_length=10)
