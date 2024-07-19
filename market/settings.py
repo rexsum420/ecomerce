@@ -55,10 +55,11 @@ if not DEBUG and USE_ENCRYPTION: MIDDLEWARE += ['market.middleware.EncryptionMid
 
 ROOT_URLCONF = 'market.urls'
 
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'marketplace' / 'public'],
+        'DIRS': [BASE_DIR / 'marketplace' / 'build'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,6 +71,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'market.wsgi.application'
 
@@ -111,7 +113,8 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    BASE_DIR / 'static',
+    BASE_DIR / 'marketplace' / 'build' / 'static',
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

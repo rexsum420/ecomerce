@@ -18,6 +18,8 @@ import Logo from '../assets/freemarket.png';
 import LogoWhite from '../assets/freemarket-white.png';
 import smLogo from '../assets/fm.png';
 import smLogoWhite from '../assets/fm-white.png';
+import threeLines from '../assets/3lines.png';
+import threeLinesWhite from '../assets/3lines-white.png';
 
 const categories = [
   'All Categories', 'Electronics', 'Clothing', 'Home & Kitchen', 'Beauty & Personal Care', 'Health & Wellness',
@@ -139,7 +141,7 @@ function LoggedInAppBar({ category, setCategory }) {
             <CartImage onClick={handleCartClick} />
             <Tooltip label="Open settings" aria-label="A tooltip">
               <IconButton
-                icon={colorMode === 'dark' ? <Image src="../assets/3lines-white.png" boxSize="20px" /> : <Image src="../assets/3lines.png" boxSize="20px" />}
+                icon={colorMode === 'dark' ? <Image src={threeLinesWhite} boxSize="20px" /> : <Image src={threeLines} boxSize="20px" />}
                 onClick={onOpen}
                 variant="outline"
                 borderColor="whiteAlpha.300"

@@ -10,7 +10,7 @@ from creditcards.views import CreditCardViewSet, BillingViewSet
 from django.conf import settings
 from django.conf.urls.static import static
 from shipping.views import ShippingViewSet
-from . import views
+from .views import IndexView
 
 router = DefaultRouter()
 router.register(r'credit-cards', CreditCardViewSet, basename='creditcard')
@@ -34,7 +34,7 @@ urlpatterns = [
     path('auth/', ObtainAuthToken.as_view()),
     path('activate/<token>/', activate, name='activate'),
     path('check/<token>/', CheckTokenView.as_view(), name='check'),
-    path('', views.index, name='react')
+    path('', IndexView.as_view(), name='index'),
 ]
 
 if settings.DEBUG:
