@@ -16,9 +16,7 @@ else:
 DEBUG = True
 USE_ENCRYPTION = False
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '')
-ALLOWED_HOSTS = ALLOWED_HOSTS.strip("[]").replace("'", "").split(',')
-ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.1', '192.168.1.75', '0.0.0.0']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -53,8 +51,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-if not DEBUG and USE_ENCRYPTION: 
-    MIDDLEWARE += ['market.middleware.EncryptionMiddleware']
+if not DEBUG and USE_ENCRYPTION: MIDDLEWARE += ['market.middleware.EncryptionMiddleware']
 
 ROOT_URLCONF = 'market.urls'
 
@@ -112,6 +109,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
@@ -148,7 +146,6 @@ AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
 AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN')
 
 CORS_ALLOW_ALL_ORIGINS = True
-
 
 # LOGGING = {
 #     'version': 1,
