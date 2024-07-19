@@ -2,6 +2,8 @@ from django.db import models
 from stores.models import Store
 import uuid
 from django.utils.deconstruct import deconstructible
+from django.conf import settings
+import boto3
 
 class Product(models.Model):
     SIZE_CHOICES = [
@@ -91,7 +93,6 @@ class PathAndRename:
 
     def __call__(self, instance, filename):
         ext = filename.split('.')[-1]
-        # Generate a unique filename
         filename = f'{uuid.uuid4()}.{ext}'
         return f'{self.path}/{filename}'
 
@@ -118,3 +119,16 @@ class Picture(models.Model):
             if len(pics) == 1:
                 pics[0].main = True
                 pics[0].save()
+
+    def delete(self, *args, **kwargs):
+        # Delete the file from S3
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME
+        )
+        s3.delete_object(Bucket=settings.AWS_STORAGE_BUCKET_NAME, Key=self.image.name)
+        
+        # Call the parent class delete method
+        super().delete(*args, **kwargs)

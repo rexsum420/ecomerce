@@ -4,10 +4,11 @@ import { Box, Text, Flex } from '@chakra-ui/react';
 const Transaction = ({ shippingAddress, billingAddress, cardDetails, cart }) => {
     const groupByStore = (cartItems) => {
         return cartItems.reduce((acc, item) => {
-            if (!acc[item.store]) {
-                acc[item.store] = [];
+            const storeName = item.store.name; // Assuming `store` is an object with a `name` property
+            if (!acc[storeName]) {
+                acc[storeName] = [];
             }
-            acc[item.store].push(item);
+            acc[storeName].push(item);
             return acc;
         }, {});
     };
@@ -49,10 +50,10 @@ const Transaction = ({ shippingAddress, billingAddress, cardDetails, cart }) => 
             </Box>
             <Box mb={4}>
                 <Text fontWeight="bold">Order Summary</Text>
-                {Object.keys(storeGroupedProducts).map(store => (
-                    <Box key={store} mb={4}>
-                        <Text fontWeight="bold">{store}</Text>
-                        {storeGroupedProducts[store].map(product => (
+                {Object.keys(storeGroupedProducts).map(storeName => (
+                    <Box key={storeName} mb={4}>
+                        <Text fontWeight="bold">{storeName}</Text>
+                        {storeGroupedProducts[storeName].map(product => (
                             <Flex key={product.id} p={4} borderWidth={1} borderRadius="md" mb={2} alignItems="center" shadow="md">
                                 <Text mx={2}>{product.quantity}</Text>
                                 <Text flex="1">{product.name}</Text>
