@@ -72,7 +72,12 @@ class UserActivityUpdateMiddleware(MiddlewareMixin):
 
     def update_ip_address(self, request):
         profile = Profile.objects.get(user=request.user)
-        ip_address = request.META.get('REMOTE_ADDR')
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip_address = x_forwarded_for.split(',')[0]
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
+
         if ip_address and profile.ip_address != ip_address:
             profile.ip_address = ip_address
             profile.save(update_fields=['ip_address'])

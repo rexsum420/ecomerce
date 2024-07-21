@@ -13,6 +13,7 @@ import {
   Center,
   Flex,
   Image,
+  Button
 } from '@chakra-ui/react';
 import CategoryScroll from '../components/CategoryScroll';
 import PriceAscending from '../assets/price-ascending.png';
@@ -27,7 +28,10 @@ const LandingPage = ({ category }) => {
   const [products, setProducts] = useState([]);
   const [query, setQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
-  const { colorMode, toggleColorMode } = useColorMode();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [nextPage, setNextPage] = useState(null);
+  const [previousPage, setPreviousPage] = useState(null);
+  const { colorMode } = useColorMode();
 
   useEffect(() => {
     if (getCategoryValue(category) == null) {
@@ -37,11 +41,18 @@ const LandingPage = ({ category }) => {
     }
   }, [category]);
 
-  const { data, loading, error } = useFetchList(`http://192.168.1.75:8000/api/homepage/${query}`, 'GET', '', false);
+  const { data, loading, error } = useFetchList(
+    `http://192.168.1.75:8000/api/homepage/${query ? query + `&page=${currentPage}` : `?page=${currentPage}`}`,
+    'GET',
+    '',
+    false
+  );
 
   useEffect(() => {
     if (data && Array.isArray(data.results)) {
       setProducts(data.results);
+      setNextPage(data.next);
+      setPreviousPage(data.previous);
     } else {
       setProducts([]);
     }
@@ -49,7 +60,7 @@ const LandingPage = ({ category }) => {
 
   const handleSortChange = (sortType) => {
     setSortOption(sortType);
-};
+  };
 
   const sortedProducts = [...products].sort((a, b) => {
     if (sortOption === 'price_asc') {
@@ -80,43 +91,43 @@ const LandingPage = ({ category }) => {
         <Heading size="sm">{getCategoryValue(category) ? `${category}` : `Products`}</Heading>
         <Box flex="1" ml={4}>
           <FormControl width={{ base: "250px", md: "400px" }}>
-          <Flex justifyContent="end" alignItems="center">
-                    <Image 
-                        src={PriceAscending} 
-                        alt="Price Ascending" 
-                        boxSize="16px" 
-                        cursor="pointer" 
-                        onClick={() => handleSortChange('price_asc')} 
-                        opacity={sortOption === 'price_asc' ? 0.5 : 1}
-                    />
-                    <Image 
-                        src={PriceDescending} 
-                        alt="Price Descending" 
-                        boxSize="16px" 
-                        cursor="pointer" 
-                        onClick={() => handleSortChange('price_desc')} 
-                        opacity={sortOption === 'price_desc' ? 0.5 : 1}
-                        ml={2}
-                    />
-                    <Image 
-                        src={colorMode === 'dark' ? AlphaAscendingWhite : AlphaAscending} 
-                        alt="Alpha Ascending" 
-                        boxSize="16px" 
-                        cursor="pointer" 
-                        onClick={() => handleSortChange('name_asc')} 
-                        opacity={sortOption === 'name_asc' ? 0.5 : 1}
-                        ml={2}
-                    />
-                    <Image 
-                        src={colorMode === 'dark' ? AlphaDescendingWhite : AlphaDescending} 
-                        alt="Alpha Descending" 
-                        boxSize="16px" 
-                        cursor="pointer" 
-                        onClick={() => handleSortChange('name_desc')} 
-                        opacity={sortOption === 'name_desc' ? 0.5 : 1}
-                        ml={2}
-                    />
-                </Flex>
+            <Flex justifyContent="end" alignItems="center">
+              <Image 
+                src={PriceAscending} 
+                alt="Price Ascending" 
+                boxSize="16px" 
+                cursor="pointer" 
+                onClick={() => handleSortChange('price_asc')} 
+                opacity={sortOption === 'price_asc' ? 0.5 : 1}
+              />
+              <Image 
+                src={PriceDescending} 
+                alt="Price Descending" 
+                boxSize="16px" 
+                cursor="pointer" 
+                onClick={() => handleSortChange('price_desc')} 
+                opacity={sortOption === 'price_desc' ? 0.5 : 1}
+                ml={2}
+              />
+              <Image 
+                src={colorMode === 'dark' ? AlphaAscendingWhite : AlphaAscending} 
+                alt="Alpha Ascending" 
+                boxSize="16px" 
+                cursor="pointer" 
+                onClick={() => handleSortChange('name_asc')} 
+                opacity={sortOption === 'name_asc' ? 0.5 : 1}
+                ml={2}
+              />
+              <Image 
+                src={colorMode === 'dark' ? AlphaDescendingWhite : AlphaDescending} 
+                alt="Alpha Descending" 
+                boxSize="16px" 
+                cursor="pointer" 
+                onClick={() => handleSortChange('name_desc')} 
+                opacity={sortOption === 'name_desc' ? 0.5 : 1}
+                ml={2}
+              />
+            </Flex>
           </FormControl>
         </Box>
       </Box>
@@ -130,6 +141,20 @@ const LandingPage = ({ category }) => {
           </GridItem>
         ))}
       </Grid>
+      <Flex justifyContent="space-between" mt={4}>
+        <Button 
+          onClick={() => setCurrentPage(currentPage - 1)} 
+          isDisabled={!previousPage}
+        >
+          Previous
+        </Button>
+        <Button 
+          onClick={() => setCurrentPage(currentPage + 1)} 
+          isDisabled={!nextPage}
+        >
+          Next
+        </Button>
+      </Flex>
     </Container>
   );
 };

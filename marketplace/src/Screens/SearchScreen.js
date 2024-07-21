@@ -24,17 +24,21 @@ const SearchScreen = () => {
     const [prods, setProds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const navigate = useNavigate();
     const [sortOption, setSortOption] = useState('');
-    const { colorMode, toggleColorMode } = useColorMode();
+    const [page, setPage] = useState(1);
+    const [hasNextPage, setHasNextPage] = useState(false);
+    const { colorMode } = useColorMode();
+    const navigate = useNavigate();
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (page = 1) => {
+        setLoading(true);
         try {
-            let apiUrl = `http://192.168.1.75:8000/api/search/?`;
+            let apiUrl = `http://192.168.1.75:8000/api/search/?page=${page}&`;
             if (term) apiUrl += `search=${term}&`;
             if (category) apiUrl += `category=${category}&`;
             const res = await Api(apiUrl.slice(0, -1));
-            setProds(res.results);
+            setProds((prevProds) => page === 1 ? res.results : [...prevProds, ...res.results]);
+            setHasNextPage(!!res.next);
             setLoading(false);
         } catch (error) {
             console.error("Error fetching products:", error);
@@ -44,8 +48,8 @@ const SearchScreen = () => {
     };
 
     useEffect(() => {
-        fetchProducts();
-    }, [term, category]);
+        fetchProducts(page);
+    }, [term, category, page]);
 
     useEffect(() => {
         if (sortOption) {
@@ -68,9 +72,9 @@ const SearchScreen = () => {
 
     const handleSortChange = (sortType) => {
         if (sortOption !== sortType) {
-        setSortOption(sortType);
+            setSortOption(sortType);
         } else {
-        setSortOption('');
+            setSortOption('');
         }    
     };
 
@@ -78,7 +82,11 @@ const SearchScreen = () => {
         navigate(`/view-product/${id}`);
     };
 
-    if (loading) {
+    const loadMore = () => {
+        setPage((prevPage) => prevPage + 1);
+    };
+
+    if (loading && page === 1) {
         return <Spinner size="xl" />;
     }
 
@@ -190,6 +198,13 @@ const SearchScreen = () => {
                     </GridItem>
                 ))}
             </Grid>
+            {hasNextPage && (
+                <Flex justifyContent="center" mt={4}>
+                    <Button onClick={loadMore} isLoading={loading}>
+                        Load More
+                    </Button>
+                </Flex>
+            )}
         </Box>
     );
 };
