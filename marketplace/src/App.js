@@ -73,19 +73,19 @@ function App() {
           <Route path="/" element={isLoggedIn ? <HomeScreen category={category} setCategory={setCategory}/> : <LandingPage category={category} />} />
           <Route path="/login" element={isLoggedIn ? <HomeScreen category={category} setCategory={setCategory}/> : <LoginScreen />} />
           <Route path="/signup" element={isLoggedIn ? <HomeScreen category={category} setCategory={setCategory}/> : <SignUpScreen />} />
-          <Route path="/view-product/:id" element={<ProductScreen />} />
-          <Route path="/edit-product/:id" element={<EditProduct />} />
-          <Route path="/stores" element={isLoggedIn ? <ListStoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />
+          <Route path="/view-product/:id" element={isLoggedIn ? <ProductScreen /> : <LoginScreen />} />
+          <Route path="/edit-product/:id" element={isLoggedIn ? <EditProduct /> : <LoginScreen />} />
+          <Route path="/stores" element={isLoggedIn ? <ListStoreScreen /> : <LoginScreen />} />
           <Route path="/stores/:name" element={<PublicViewStore />} />
-          <Route path="/store/:storeId/edit" element={isLoggedIn ? <EditStore /> : <HomeScreen category={category} setCategory={setCategory}/>} />
-          <Route path="/store/:id/add-product" element={isLoggedIn ? <AddProduct /> : <HomeScreen category={category} setCategory={setCategory}/>} />          
-          <Route path="/store/:id" element={isLoggedIn ? <StoreScreen /> : <HomeScreen category={category} setCategory={setCategory}/>} />
+          <Route path="/store/:storeId/edit" element={isLoggedIn ? <EditStore /> : <LoginScreen />} />
+          <Route path="/store/:id/add-product" element={isLoggedIn ? <AddProduct /> : <LoginScreen />} />          
+          <Route path="/store/:id" element={isLoggedIn ? <StoreScreen /> : <LoginScreen />} />
           <Route path="/search" element={<SearchScreen />} />
-          <Route path="/create-store" element={isLoggedIn ? <AddStore /> : <HomeScreen category={category} setCategory={setCategory}/>} />
-          <Route path="/cart" element={isLoggedIn ? <ViewCart /> : <HomeScreen category={category} setCategory={setCategory}/>} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/add-shipping" element={<AddShipping />} />
-          <Route path="/payment" element={<Payment />} />
+          <Route path="/create-store" element={isLoggedIn ? <AddStore /> : <LoginScreen />} />
+          <Route path="/cart" element={isLoggedIn ? <ViewCart /> : <LoginScreen />} />
+          <Route path="/checkout" element={isLoggedIn ? <Checkout /> : <LoginScreen />} />
+          <Route path="/add-shipping" element={isLoggedIn ? <AddShipping /> : <LoginScreen />} />
+          <Route path="/payment" element={isLoggedIn ? <Payment /> : <LoginScreen />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
