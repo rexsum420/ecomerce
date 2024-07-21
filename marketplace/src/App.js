@@ -23,7 +23,6 @@ import ViewCart from './Screens/ViewCart';
 import PublicViewStore from './Screens/PublicViewStore';
 import EditProduct from './Screens/EditProduct';
 import Profile from './Screens/Profile';
-import EditProfile from './Screens/EditProfile';
 import Checkout from './Screens/Checkout';
 import AddShipping from './Screens/AddShipping';
 import Payment from './Screens/Payment';
@@ -31,7 +30,6 @@ import Payment from './Screens/Payment';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [category, setCategory] = useState('');
-  const [data, setData] = useState('');
 
   useEffect(() => {
     const checkToken = async () => {
@@ -48,7 +46,6 @@ function App() {
           if (response.status === 200) {
             const resdata = await response.json();
             setIsLoggedIn(true);
-            setData(resdata);
             localStorage.setItem('username', resdata.user);
           } else {
             localStorage.removeItem('token');
@@ -89,10 +86,7 @@ function App() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/add-shipping" element={<AddShipping />} />
           <Route path="/payment" element={<Payment />} />
-          <Route 
-            path="/profile" 
-            element={window.location.search.includes(`user=${localStorage.getItem('username')}`) ? <EditProfile /> : <Profile />} 
-          />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </Router>

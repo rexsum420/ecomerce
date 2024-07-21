@@ -1,9 +1,11 @@
-// src/Screens/Profile.js
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import EditProfile from './EditProfile';
 
 const Profile = () => {
-  const { username } = useParams();
+  const [searchParams] = useSearchParams();
+  const username = searchParams.get('user');
+  const loggedInUsername = localStorage.getItem('username');
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
@@ -22,6 +24,10 @@ const Profile = () => {
 
   if (!profile) {
     return <div>Loading...</div>;
+  }
+
+  if (username === loggedInUsername) {
+    return <EditProfile />;
   }
 
   return (
