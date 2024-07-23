@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 const ViewCart = () => {
     const { cart, setCart, removeFromCart, clearCart } = useContext(CartContext);
     const navigate = useNavigate();
-    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const handleQuantityChange = (product, change) => {
         const newCart = cart.map(item => 

@@ -39,13 +39,14 @@ const NotFound = () => {
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [category, setCategory] = useState('');
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const checkToken = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await fetch(`http://192.168.1.75:8000/check/${token}/`, {
+          const response = await fetch(`${apiBaseUrl}/check/${token}/`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
