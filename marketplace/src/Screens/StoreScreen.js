@@ -10,8 +10,11 @@ const StoreScreen = () => {
     const [error, setError] = useState(false);
     const [unAuth, setUnAuth] = useState(false);
     const [prods, setProds] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const navigate = useNavigate();
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+    const baseUrl = process.env.REACT_APP_BASE_URL;
 
     const fetchStore = async (storeId) => {
         try {
@@ -42,12 +45,13 @@ const StoreScreen = () => {
             setError(true);
             setLoading(false);
         }
-    } 
+    }
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (page) => {
         try {
-            const res = await Api(`http://192.168.1.75:8000/api/products/?store=${id}`);
+            const res = await Api(`${apiBaseUrl}/api/products/?store=${id}&page=${page}`);
             setProds(res.results);
+            setTotalPages(Math.ceil(res.count / 25)); // Assuming 25 products per page
             console.log(res.results);
         } catch (error) {
             console.error("Error fetching products:", error);
@@ -58,8 +62,8 @@ const StoreScreen = () => {
 
     useEffect(() => {
         fetchStore(id);
-        fetchProducts();
-    }, []);
+        fetchProducts(currentPage);
+    }, [currentPage]);
 
     if (loading) {
         return <Spinner size="xl" />;
@@ -84,12 +88,16 @@ const StoreScreen = () => {
     }
 
     const handleAddProduct = () => {
-        window.location.href = `http://localhost:3000/store/${id}/add-product`;
+        window.location.href = `${baseUrl}/store/${id}/add-product`;
     };
 
     const handleEditStore = () => {
-        window.location.href = `http://localhost:3000/store/${id}/edit`;
+        window.location.href = `${baseUrl}/store/${id}/edit`;
     }
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
     return (
         <Box p={5}>
@@ -141,6 +149,23 @@ const StoreScreen = () => {
                     );
                 })}
             </Grid>
+            <Box display='flex' justifyContent='center' mt={5}>
+                <Button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    isDisabled={currentPage === 1}
+                    mr={2}
+                >
+                    Previous
+                </Button>
+                <Text mx={2}>{currentPage} of {totalPages}</Text>
+                <Button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    isDisabled={currentPage === totalPages}
+                    ml={2}
+                >
+                    Next
+                </Button>
+            </Box>
         </Box>
     );
 };

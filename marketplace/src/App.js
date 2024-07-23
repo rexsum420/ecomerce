@@ -26,6 +26,8 @@ import Profile from './Screens/Profile';
 import Checkout from './Screens/Checkout';
 import AddShipping from './Screens/AddShipping';
 import Payment from './Screens/Payment';
+import Orders from './Screens/Orders';
+import Purchases from './Screens/Purchases';
 
 const NotFound = () => {
   return (
@@ -97,6 +99,8 @@ function App() {
           <Route path="/add-shipping" element={isLoggedIn ? <AddShipping /> : <LoginScreen />} />
           <Route path="/payment" element={isLoggedIn ? <Payment /> : <LoginScreen />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/orders" element={isLoggedIn ? <Orders /> : <LoginScreen />} />
+          <Route path="/purchases" element={isLoggedIn ? <Purchases /> : <LoginScreen />}  />
           <Route path="*" element={<NotFound />} /> 
         </Routes>
       </div>

@@ -13,11 +13,15 @@ from django.db.models import Q
 from market.utils import trim_and_case
 from stores.utils import replace_spaces
 
+class ProductListPagination(PageNumberPagination):
+    page_size = 25
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
+    pagination_class = ProductListPagination
     
     def get_permissions(self):
         if self.request.method in ['GET', 'OPTIONS', 'HEAD']:
@@ -55,6 +59,21 @@ class ProductViewSet(viewsets.ModelViewSet):
         instance.save()
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        store = self.request.query_params.get('store', None)
+        
+        if store:
+            try:
+                store_id = int(store)
+                return queryset.filter(store__id=store_id)
+            except ValueError:
+                # If store is not an integer, fallback to filtering by name
+                store = replace_spaces(store)
+                return queryset.filter(store__name=store)
+        
+        return queryset
 
 class PictureViewSet(viewsets.ModelViewSet):
     serializer_class = PictureSerializer
@@ -97,10 +116,6 @@ class PictureViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You do not have permission to view this product.")
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-    
-class ProductListPagination(PageNumberPagination):
-    page_size = 25
-
 
 class ProductListView(viewsets.ReadOnlyModelViewSet):
     queryset = Product.objects.all().order_by('id')
@@ -113,12 +128,16 @@ class ProductListView(viewsets.ReadOnlyModelViewSet):
         category = self.request.query_params.get('category', None)
         search = self.request.query_params.get('search', None)
         store = self.request.query_params.get('store', None)
-        user = self.request.user
         queryset = super().get_queryset()
 
         if store:
-            store = replace_spaces(store)
-            return queryset.filter(store__name=store)
+            try:
+                store_id = int(store)
+                return queryset.filter(store__id=store_id)
+            except ValueError:
+                # If store is not an integer, fallback to filtering by name
+                store = replace_spaces(store)
+                return queryset.filter(store__name=store)
 
         if category:
             queryset = queryset.filter(category=category).order_by('id')

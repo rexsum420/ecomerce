@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Button, HStack } from "@chakra-ui/react";
 
-const Purchases = () => {
-    const [purchases, setPurchases] = useState([]);
+const Orders = () => {
+    const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
     const [nextPage, setNextPage] = useState(null);
@@ -10,7 +10,7 @@ const Purchases = () => {
     const [currentPage, setCurrentPage] = useState(`${process.env.REACT_APP_API_BASE_URL}/api/orders/`);
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
-    const fetchPurchases = async (url) => {
+    const fetchOrders = async (url) => {
         try {
             const token = localStorage.getItem('token');
             const username = localStorage.getItem('username');
@@ -26,23 +26,23 @@ const Purchases = () => {
             }
             const res = await response.json();
             if (res.results.length > 0) {
-                const customerPurchases = res.results.filter(order => order.customer.username === username);
-                setPurchases(customerPurchases);
+                const ownerOrders = res.results.filter(order => order.store.owner.username === username);
+                setOrders(ownerOrders);
             } else {
-                setPurchases([]);
+                setOrders([]);
             }
             setNextPage(res.next);
             setPreviousPage(res.previous);
             setLoading(false);
         } catch (error) {
-            console.error("Error fetching purchases:", error);
+            console.error("Error fetching orders:", error);
             setError(true);
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchPurchases(currentPage);
+        fetchOrders(currentPage);
     }, [currentPage]);
 
     const handleNextPage = () => {
@@ -65,25 +65,25 @@ const Purchases = () => {
         return (
             <Alert status="error">
                 <AlertIcon />
-                Error fetching purchases.
+                Error fetching orders.
             </Alert>
         );
     }
 
     return (
         <Box p={5}>
-            <Heading as="h1" mb={5}>Purchases</Heading>
-            {purchases.length === 0 ? (
-                <Text>No purchases found.</Text>
+            <Heading as="h1" mb={5}>Orders</Heading>
+            {orders.length === 0 ? (
+                <Text>No orders found.</Text>
             ) : (
                 <Grid templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} gap={6}>
-                    {purchases.map((purchase) => (
-                        <GridItem key={purchase.transaction_id}>
+                    {orders.map((order) => (
+                        <GridItem key={order.transaction_id}>
                             <Box shadow="md" borderWidth="1px" borderRadius="md" p={5} height="100%">
-                                <Heading fontSize="xl" mb={2}>Order ID: {purchase.transaction_id}</Heading>
-                                <Text mt={2}>Store: {purchase.store.name}</Text>
-                                <Text mt={2}>Total: ${purchase.total}</Text>
-                                <Button mt={2} colorScheme="teal" onClick={() => console.log('View Purchase Details')}>View Details</Button>
+                                <Heading fontSize="xl" mb={2}>Order ID: {order.transaction_id}</Heading>
+                                <Text mt={2}>Customer: {order.customer.first_name} {order.customer.last_name}</Text>
+                                <Text mt={2}>Total: ${order.total}</Text>
+                                <Button mt={2} colorScheme="teal" onClick={() => console.log('View Order Details')}>View Details</Button>
                             </Box>
                         </GridItem>
                     ))}
@@ -97,5 +97,4 @@ const Purchases = () => {
     );
 };
 
-export default Purchases;
-
+export default Orders;
