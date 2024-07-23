@@ -68,12 +68,13 @@ const Payment = () => {
     const newCardFormBg = useColorModeValue('#C0C0C0', 'gray.700');
     const selectedCardTextColor = useColorModeValue('black', 'black');
     const unselectedCardTextColor = useColorModeValue('black', 'white');
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const fetchCreditCards = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch('http://192.168.1.75:8000/api/credit-cards/', {
+                const response = await fetch(`${apiBaseUrl}/api/credit-cards/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Token ${token}`,
@@ -103,7 +104,7 @@ const Payment = () => {
         setSelectedCard(cardId);
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`http://192.168.1.75:8000/api/billing/?card=${cardNumber}`, {
+            const response = await fetch(`${apiBaseUrl}/api/billing/?card=${cardNumber}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Token ${token}`,
@@ -121,7 +122,7 @@ const Payment = () => {
     const handleAddCard = async (newCardData) => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('http://192.168.1.75:8000/api/credit-cards/', {
+            const response = await fetch(`${apiBaseUrl}/api/credit-cards/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Token ${token}`,
@@ -151,7 +152,7 @@ const Payment = () => {
             card_number: creditCards.find(card => card.id === selectedCard).card_number
         };
         try {
-            const response = await fetch('http://192.168.1.75:8000/api/billing/', {
+            const response = await fetch(`${apiBaseUrl}/api/billing/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Token ${token}`,

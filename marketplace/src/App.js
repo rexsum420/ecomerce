@@ -27,6 +27,15 @@ import Checkout from './Screens/Checkout';
 import AddShipping from './Screens/AddShipping';
 import Payment from './Screens/Payment';
 
+const NotFound = () => {
+  return (
+    <div>
+      <h1>404 - Page Not Found</h1>
+      <p>Sorry, the page you are looking for does not exist.</p>
+    </div>
+  );
+};
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
   const [category, setCategory] = useState('');
@@ -87,6 +96,7 @@ function App() {
           <Route path="/add-shipping" element={isLoggedIn ? <AddShipping /> : <LoginScreen />} />
           <Route path="/payment" element={isLoggedIn ? <Payment /> : <LoginScreen />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="*" element={<NotFound />} /> 
         </Routes>
       </div>
     </Router>

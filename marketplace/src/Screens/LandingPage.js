@@ -32,6 +32,7 @@ const LandingPage = ({ category }) => {
   const [nextPage, setNextPage] = useState(null);
   const [previousPage, setPreviousPage] = useState(null);
   const { colorMode } = useColorMode();
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     if (getCategoryValue(category) == null) {
@@ -42,7 +43,7 @@ const LandingPage = ({ category }) => {
   }, [category]);
 
   const { data, loading, error } = useFetchList(
-    `http://192.168.1.75:8000/api/homepage/${query ? query + `&page=${currentPage}` : `?page=${currentPage}`}`,
+    `${apiBaseUrl}/api/homepage/${query ? query + `&page=${currentPage}` : `?page=${currentPage}`}`,
     'GET',
     '',
     false

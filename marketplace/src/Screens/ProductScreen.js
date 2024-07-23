@@ -24,6 +24,7 @@ const ProductScreen = () => {
   const [error, setError] = useState(null);
   const [owner, setOwner] = useState(false);
   const navigate = useNavigate();
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("username");
@@ -33,7 +34,7 @@ const ProductScreen = () => {
   }
 
   const fetchProduct = async (id) => {
-    const url = `http://192.168.1.75:8000/api/products/${id}/`;
+    const url = `${apiBaseUrl}/api/products/${id}/`;
     const headers = {
       Authorization: `Token ${token}`,
     };

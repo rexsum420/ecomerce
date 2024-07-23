@@ -24,6 +24,7 @@ const AddProduct = () => {
     const [pictureURLs, setPictureURLs] = useState([]);
     const [mainIndex, setMainIndex] = useState(0);
     const toast = useToast();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -44,7 +45,7 @@ const AddProduct = () => {
         formDataToSend.price = parseFloat(formDataToSend.price);
         formDataToSend.inventory_count = parseInt(formDataToSend.inventory_count, 10);
 
-        const response = await fetch('http://192.168.1.75:8000/api/products/', {
+        const response = await fetch(`${apiBaseUrl}/api/products/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ const AddProduct = () => {
             formData.append('alt', pictures[i].name);
             formData.append('main', i === mainIndex);
 
-            const response = await fetch('http://192.168.1.75:8000/api/pictures/', {
+            const response = await fetch(`${apiBaseUrl}/api/pictures/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Token ${token}`

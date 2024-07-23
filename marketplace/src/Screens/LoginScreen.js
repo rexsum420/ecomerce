@@ -17,11 +17,12 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   const handleLogin = async () => {
     setError('');
     try {
-      const response = await Api('http://192.168.1.75:8000/auth/', 'POST', { username, password }, false);
+      const response = await Api(`${apiBaseUrl}/auth/`, 'POST', { username, password }, false);
       localStorage.setItem('token', response.token);
       localStorage.setItem('username', username)
       navigate('/');

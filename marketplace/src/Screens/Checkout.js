@@ -11,13 +11,14 @@ const Checkout = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
     const toast = useToast();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const fetchShippingAddresses = async () => {
             const username = localStorage.getItem('username');
             const token = localStorage.getItem('token');
             try {
-                const response = await fetch(`http://192.168.1.75:8000/api/shipping/${username}/`, {
+                const response = await fetch(`${apiBaseUrl}/api/shipping/${username}/`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Token ${token}`,

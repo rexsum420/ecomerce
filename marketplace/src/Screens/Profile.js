@@ -7,11 +7,12 @@ const Profile = () => {
   const username = searchParams.get('user');
   const loggedInUsername = localStorage.getItem('username');
   const [profile, setProfile] = useState(null);
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await fetch(`http://192.168.1.75:8000/api/profiles/${username}/`);
+        const response = await fetch(`${apiBaseUrl}/api/profiles/${username}/`);
         const data = await response.json();
         setProfile(data);
       } catch (error) {

@@ -18,12 +18,13 @@ const EditProfile = () => {
   });
 
   const toast = useToast();
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchProfile = async () => {
       const username = localStorage.getItem('username');
       try {
-        const response = await fetch(`http://192.168.1.75:8000/api/profiles/?user=${username}`);
+        const response = await fetch(`${apiBaseUrl}/api/profiles/?user=${username}`);
         const data = await response.json();
         if (data.results && data.results.length > 0) {
           const profileData = data.results[0];
@@ -54,7 +55,7 @@ const EditProfile = () => {
     e.preventDefault();
     const username = localStorage.getItem('username');
     try {
-      const response = await fetch(`http://192.168.1.75:8000/api/profiles/${username}/`, {
+      const response = await fetch(`${apiBaseUrl}/api/profiles/${username}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

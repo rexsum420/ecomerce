@@ -23,10 +23,12 @@ const EditStore = () => {
     const { storeId } = useParams();
     const [store, setStore] = useState({});
     const token = localStorage.getItem('token');
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+    const baseUrl = process.env.REACT_APP_BASE_URL
 
     useEffect(() => {
         const fetchStore = async () => {
-            const response = await fetch(`http://192.168.1.75:8000/api/stores/${storeId}/`, {
+            const response = await fetch(`${apiBaseUrl}/api/stores/${storeId}/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -45,7 +47,7 @@ const EditStore = () => {
 
     useEffect(() => {
         const fetchStoreList = async () => {
-            const response = await fetch('http://192.168.1.75:8000/api/get-store/?list=True');
+            const response = await fetch(`${apiBaseUrl}/api/get-store/?list=True`);
 
             if (response.ok) {
                 const data = await response.json();
@@ -71,7 +73,7 @@ const EditStore = () => {
     };
 
     const handleSave = async () => {
-        const response = await fetch(`http://192.168.1.75:8000/api/stores/${storeId}/`, {
+        const response = await fetch(`${apiBaseUrl}/api/stores/${storeId}/`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -89,7 +91,7 @@ const EditStore = () => {
             const updatedStore = await response.json();
             setStore(updatedStore);
             alert('Store updated successfully');
-            document.location.href = `http://localhost:3000/store/${storeId}`
+            document.location.href = `${baseUrl}/store/${storeId}`
         } else {
             alert('Failed to update store');
         }

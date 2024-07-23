@@ -10,11 +10,12 @@ const PublicViewStore = () => {
     const [unAuth, setUnAuth] = useState(false);
     const [prods, setProds] = useState([]);
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const fetchStore = async (storeName) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.75:8000/api/get-store/?store=${storeName}`, {
+            const response = await fetch(`${apiBaseUrl}/api/get-store/?store=${storeName}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +56,7 @@ const PublicViewStore = () => {
 
     const fetchProducts = async (storeName) => {
         try {
-            const res = await fetch(`http://192.168.1.75:8000/api/homepage/?store=${storeName}`);
+            const res = await fetch(`${apiBaseUrl}/api/homepage/?store=${storeName}`);
             const data = await res.json();
             setProds(data.results);
             setLoading(false);

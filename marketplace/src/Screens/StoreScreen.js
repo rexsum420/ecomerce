@@ -11,11 +11,12 @@ const StoreScreen = () => {
     const [unAuth, setUnAuth] = useState(false);
     const [prods, setProds] = useState([]);
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const fetchStore = async (storeId) => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch(`http://192.168.1.75:8000/api/stores/${storeId}/`, {
+            const response = await fetch(`${apiBaseUrl}/api/stores/${storeId}/`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

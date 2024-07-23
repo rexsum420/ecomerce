@@ -14,6 +14,7 @@ const EditProduct = () => {
     const [owner, setOwner] = useState(false);
     const toast = useToast();
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("username");
@@ -23,7 +24,7 @@ const EditProduct = () => {
     }
   
     const fetchProduct = async (id) => {
-      const url = `http://192.168.1.75:8000/api/products/${id}/`;
+      const url = `${apiBaseUrl}/api/products/${id}/`;
       const headers = {
         Authorization: `Token ${token}`,
       };
@@ -70,7 +71,7 @@ const EditProduct = () => {
         formDataToSend.price = parseFloat(formDataToSend.price);
         formDataToSend.inventory_count = parseInt(formDataToSend.inventory_count, 10);
 
-        const response = await fetch(`http://192.168.1.75:8000/api/products/${id}/`, {
+        const response = await fetch(`${apiBaseUrl}/api/products/${id}/`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -115,7 +116,7 @@ const EditProduct = () => {
             formData.append('alt', pictures[i].name);
             formData.append('main', i === mainIndex);
 
-            const response = await fetch('http://192.168.1.75:8000/api/pictures/', {
+            const response = await fetch(`${apiBaseUrl}/api/pictures/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Token ${token}`

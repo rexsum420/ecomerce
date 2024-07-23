@@ -8,10 +8,11 @@ const ListStoreScreen = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const fetchStores = async () => {
         try {
-            const response = await Api("http://192.168.1.75:8000/api/my-stores/");
+            const response = await Api(`${apiBaseUrl}/api/my-stores/`);
             setStores(response.results); // Assuming results is the array of stores in your response
         } catch (err) {
             setError(err.message);

@@ -14,6 +14,7 @@ const AddShipping = () => {
     const navigate = useNavigate();
     const toast = useToast();
     const token = localStorage.getItem('token');
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -30,7 +31,7 @@ const AddShipping = () => {
         };
 
         try {
-            const response = await fetch(`http://192.168.1.75:8000/api/shipping/`, {
+            const response = await fetch(`${apiBaseUrl}/api/shipping/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Token ${token}`,

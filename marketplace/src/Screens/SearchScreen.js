@@ -29,11 +29,12 @@ const SearchScreen = () => {
     const [hasNextPage, setHasNextPage] = useState(false);
     const { colorMode } = useColorMode();
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const fetchProducts = async (page = 1) => {
         setLoading(true);
         try {
-            let apiUrl = `http://192.168.1.75:8000/api/search/?page=${page}&`;
+            let apiUrl = `${apiBaseUrl}/api/search/?page=${page}&`;
             if (term) apiUrl += `search=${term}&`;
             if (category) apiUrl += `category=${category}&`;
             const res = await Api(apiUrl.slice(0, -1));

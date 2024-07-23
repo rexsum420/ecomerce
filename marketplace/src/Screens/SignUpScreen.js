@@ -18,6 +18,7 @@ const SignUpScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -51,7 +52,7 @@ const SignUpScreen = () => {
     }
 
     try {
-      await Api('http://192.168.1.75:8000/api/users/', 'POST', { username, email, password }, false);
+      await Api(`${apiBaseUrl}/api/users/`, 'POST', { username, email, password }, false);
       setSuccess('Sign up successful!');
     } catch (err) {
       setError('Sign up failed. Please try again.');

@@ -14,10 +14,11 @@ const AddStore = () => {
     const [description, setDescription] = useState('');
     const [storeList, setStoreList] = useState([]);
     const [nameError, setNameError] = useState('');
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
         const fetchStoreList = async () => {
-            const response = await fetch('http://192.168.1.75:8000/api/get-store/?list=True');
+            const response = await fetch(`${apiBaseUrl}/api/get-store/?list=True`);
             if (response.ok) {
                 const data = await response.json();
                 setStoreList(data);
@@ -46,7 +47,7 @@ const AddStore = () => {
         if (nameError) return;
 
         const token = localStorage.getItem('token');
-        const response = await fetch('http://192.168.1.75:8000/api/stores/', {
+        const response = await fetch(`${apiBaseUrl}/api/stores/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

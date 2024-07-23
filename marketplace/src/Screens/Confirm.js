@@ -5,6 +5,7 @@ import Transaction from '../components/Transaction'; // Adjust the import path a
 
 const Confirm = ({ selectedShippingAddress, cart, selectedCard, creditCards, billingAddress, onBack }) => {
     const navigate = useNavigate();
+    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const handleFinalConfirmation = () => {
         // Handle final payment confirmation logic here
