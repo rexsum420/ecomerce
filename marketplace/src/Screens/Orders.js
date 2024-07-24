@@ -8,7 +8,6 @@ const Orders = () => {
     const [nextPage, setNextPage] = useState(null);
     const [previousPage, setPreviousPage] = useState(null);
     const [currentPage, setCurrentPage] = useState(`${process.env.REACT_APP_API_BASE_URL}/api/orders/`);
-    const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     const fetchOrders = async (url) => {
         try {
@@ -90,8 +89,8 @@ const Orders = () => {
                 </Grid>
             )}
             <HStack mt={5} justifyContent="space-between">
-                <Button onClick={handlePreviousPage} disabled={!previousPage}>Previous</Button>
-                <Button onClick={handleNextPage} disabled={!nextPage}>Next</Button>
+                <Button onClick={handlePreviousPage} isDisabled={!previousPage}>Previous</Button>
+                <Button onClick={handleNextPage} isDisabled={!nextPage}>Next</Button>
             </HStack>
         </Box>
     );

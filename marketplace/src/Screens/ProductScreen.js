@@ -22,6 +22,7 @@ const ProductScreen = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
   const [owner, setOwner] = useState(false);
   const navigate = useNavigate();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
@@ -49,6 +50,7 @@ const ProductScreen = () => {
       if (userId === data.store.owner.username) {
         setOwner(true);
       }
+      setSelectedImage(data.pictures.find((picture) => picture.main) || data.pictures[0]);
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -75,16 +77,14 @@ const ProductScreen = () => {
   };
 
   const category = getCategoryLabel(product.category);
-  const mainPicture = product.pictures.find((picture) => picture.main) || product.pictures[0];
-  const otherPictures = product.pictures.filter((picture) => picture !== mainPicture);
 
   return (
     <Box display="flex" justifyContent="center" alignItems="center" mt="100px" flexDirection="column">
       <Card display="flex" flexDirection={flexDirection} width="80%" shadow="md">
         <VStack width={{ base: "100%", md: "50%" }} mb={{ base: 4, md: 0 }}>
-          <Image src={mainPicture.image} alt={mainPicture.alt} height={{ base: "200px", md: "400px" }} objectFit="contain" />
+          <Image src={selectedImage.image} alt={selectedImage.alt} height={{ base: "200px", md: "400px" }} objectFit="contain" />
           <HStack mt="10px">
-            {otherPictures.map((picture, index) => (
+            {product.pictures.map((picture, index) => (
               <Image
                 key={index}
                 src={picture.image}
@@ -93,6 +93,9 @@ const ProductScreen = () => {
                 height="100px"
                 objectFit="contain"
                 mx="10px"
+                cursor="pointer"
+                border={selectedImage.image === picture.image ? "2px solid #3182CE" : "none"}
+                onClick={() => setSelectedImage(picture)}
               />
             ))}
           </HStack>

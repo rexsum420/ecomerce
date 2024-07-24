@@ -71,7 +71,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             except ValueError:
                 # If store is not an integer, fallback to filtering by name
                 store = replace_spaces(store)
-                return queryset.filter(store__name=store)
+                return queryset.filter(store__name=store).order_by('id')
         
         return queryset
 

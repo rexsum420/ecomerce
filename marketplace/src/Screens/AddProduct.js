@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, FormControl, FormLabel, Input, Textarea, Image, VStack, useToast, Select, Grid, IconButton } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { CloseIcon } from '@chakra-ui/icons';
@@ -25,6 +25,33 @@ const AddProduct = () => {
     const [mainIndex, setMainIndex] = useState(0);
     const toast = useToast();
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+    const [existingPictures, setExistingPictures] = useState([]);
+
+    useEffect(() => {
+        if (productId) {
+            fetchExistingPictures();
+        }
+    }, [productId]);
+
+    const fetchExistingPictures = async () => {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${apiBaseUrl}/api/products/${productId}/pictures/`, {
+            headers: {
+                'Authorization': `Token ${token}`
+            }
+        });
+        if (response.ok) {
+            const data = await response.json();
+            setExistingPictures(data);
+        } else {
+            toast({
+                title: 'Error fetching existing pictures.',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+            });
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -115,6 +142,40 @@ const AddProduct = () => {
                 });
             }
         }
+
+        // Delete removed pictures
+        const existingIds = existingPictures.map(p => p.id);
+        const currentIds = pictureURLs.map((_, index) => existingIds[index]);
+        const deletedIds = existingIds.filter(id => !currentIds.includes(id));
+        for (let id of deletedIds) {
+            await deletePicture(id);
+        }
+    };
+
+    const deletePicture = async (id) => {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${apiBaseUrl}/api/pictures/${id}/`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Token ${token}`
+            }
+        });
+
+        if (response.ok) {
+            toast({
+                title: 'Picture deleted.',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+            });
+        } else {
+            toast({
+                title: 'Error deleting picture.',
+                status: 'error',
+                duration: 2000,
+                isClosable: true,
+            });
+        }
     };
 
     const handleRemovePicture = (index) => {
@@ -192,31 +253,11 @@ const AddProduct = () => {
                                 <option value="home_kitchen">Home & Kitchen</option>
                                 <option value="beauty_personal_care">Beauty & Personal Care</option>
                                 <option value="health_wellness">Health & Wellness</option>
-                                <option value="toys_games">Toys & Games</option>
                                 <option value="sports_outdoors">Sports & Outdoors</option>
-                                <option value="automotive">Automotive</option>
+                                <option value="toys_games">Toys & Games</option>
                                 <option value="books">Books</option>
-                                <option value="music_movies">Music & Movies</option>
-                                <option value="office_supplies">Office Supplies</option>
-                                <option value="pet_supplies">Pet Supplies</option>
-                                <option value="baby_products">Baby Products</option>
-                                <option value="garden_outdoor">Garden & Outdoor</option>
-                                <option value="jewelry_accessories">Jewelry & Accessories</option>
-                                <option value="shoes_footwear">Shoes & Footwear</option>
-                                <option value="handmade_products">Handmade Products</option>
-                                <option value="groceries">Groceries</option>
-                                <option value="furniture">Furniture</option>
-                                <option value="appliances">Appliances</option>
-                                <option value="tools_home_improvement">Tools & Home Improvement</option>
-                                <option value="arts_crafts">Arts & Crafts</option>
-                                <option value="travel_luggage">Travel & Luggage</option>
-                                <option value="smart_home_devices">Smart Home Devices</option>
-                                <option value="software">Software</option>
-                                <option value="industrial_scientific">Industrial & Scientific</option>
-                                <option value="collectibles_fine_art">Collectibles & Fine Art</option>
-                                <option value="musical_instruments">Musical Instruments</option>
-                                <option value="gift_cards">Gift Cards</option>
-                                <option value="watches">Watches</option>
+                                <option value="automotive">Automotive</option>
+                                <option value="others">Others</option>
                             </Select>
                         </FormControl>
                         <FormControl>
@@ -231,46 +272,40 @@ const AddProduct = () => {
                             <FormLabel>Manufacturer</FormLabel>
                             <Input name="manufacturer" value={formData.manufacturer} onChange={handleChange} />
                         </FormControl>
-                        <FormControl>
+                        <FormControl isRequired>
                             <FormLabel>Inventory Count</FormLabel>
                             <Input name="inventory_count" type="number" value={formData.inventory_count} onChange={handleChange} />
                         </FormControl>
-                        <Button mt={4} colorScheme="teal" type="submit">Add Product</Button>
+                        <FormControl>
+                            <FormLabel>Pictures</FormLabel>
+                            <Input type="file" multiple onChange={handleFilesChangeAppend} />
+                        </FormControl>
+                        <Grid templateColumns="repeat(auto-fit, minmax(100px, 1fr))" gap={4}>
+                            {pictureURLs.map((url, index) => (
+                                <Box key={index} position="relative">
+                                    <Image
+                                        src={url}
+                                        alt={`Product ${index + 1}`}
+                                        objectFit="cover"
+                                        boxSize="100px"
+                                        border={index === mainIndex ? "2px solid green" : "none"}
+                                        onClick={() => setMainIndex(index)}
+                                        cursor="pointer"
+                                    />
+                                    <IconButton
+                                        icon={<CloseIcon />}
+                                        size="xs"
+                                        position="absolute"
+                                        top="2px"
+                                        right="2px"
+                                        onClick={() => handleRemovePicture(index)}
+                                    />
+                                </Box>
+                            ))}
+                        </Grid>
+                        <Button type="submit" colorScheme="blue">Submit</Button>
                     </VStack>
                 </form>
-                <Box mt={5}>
-                    <FormControl isRequired>
-                        <FormLabel>Upload Pictures</FormLabel>
-                        <Input type="file" multiple onChange={handleFilesChangeAppend} />
-                    </FormControl>
-                    <Grid mt={4} templateColumns="repeat(3, 1fr)" gap={4}>
-                        {pictureURLs.map((url, index) => (
-                            <Box key={index} position="relative" boxSize="100px">
-                                <Image
-                                    src={url}
-                                    alt={`Picture ${index + 1}`}
-                                    boxSize="100%"
-                                    objectFit="cover"
-                                    cursor="pointer"
-                                    border={index === mainIndex ? "2px solid teal" : "none"}
-                                    onClick={() => setMainIndex(index)}
-                                />
-                                <IconButton
-                                    icon={<CloseIcon />}
-                                    size="xs"
-                                    position="absolute"
-                                    top="2px"
-                                    right="2px"
-                                    onClick={() => handleRemovePicture(index)}
-                                    bg="red.500"
-                                    color="white"
-                                    borderRadius="50%"
-                                    aria-label={`Remove picture ${index + 1}`}
-                                />
-                            </Box>
-                        ))}
-                    </Grid>
-                </Box>
             </Box>
         </center>
     );
