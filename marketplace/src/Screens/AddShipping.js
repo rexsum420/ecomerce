@@ -1,35 +1,27 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Button, FormControl, FormLabel, Input, Stack, useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 
 const AddShipping = () => {
-    const [name, setName] = useState('');
-    const [address1, setAddress1] = useState('');
-    const [address2, setAddress2] = useState('');
-    const [city, setCity] = useState('');
-    const [state, setState] = useState('');
-    const [zip, setZip] = useState('');
-    const [phone, setPhone] = useState('');
-    const [email, setEmail] = useState('');
+    const { register, handleSubmit } = useForm({
+        defaultValues: {
+            name: '',
+            address1: '',
+            address2: '',
+            city: '',
+            state: '',
+            zip: '',
+            phone: '',
+            email: ''
+        }
+    });
     const navigate = useNavigate();
     const toast = useToast();
     const token = localStorage.getItem('token');
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        const newAddress = {
-            name,
-            address1,
-            address2,
-            city,
-            state,
-            zip,
-            phone,
-            email,
-        };
-
+    const onSubmit = async (data) => {
         try {
             const response = await fetch(`${apiBaseUrl}/api/shipping/`, {
                 method: 'POST',
@@ -37,7 +29,7 @@ const AddShipping = () => {
                     'Authorization': `Token ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newAddress)
+                body: JSON.stringify(data)
             });
 
             if (response.ok) {
@@ -77,39 +69,39 @@ const AddShipping = () => {
             width={["100%", "100%", "50%", "33.33%"]}
             mx="auto"
         >
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 <Stack spacing={4}>
                     <FormControl isRequired>
                         <FormLabel>Name</FormLabel>
-                        <Input value={name} onChange={(e) => setName(e.target.value)} />
+                        <Input {...register('name')} />
                     </FormControl>
                     <FormControl isRequired>
                         <FormLabel>Address 1</FormLabel>
-                        <Input value={address1} onChange={(e) => setAddress1(e.target.value)} />
+                        <Input {...register('address1')} />
                     </FormControl>
                     <FormControl>
                         <FormLabel>Address 2</FormLabel>
-                        <Input value={address2} onChange={(e) => setAddress2(e.target.value)} />
+                        <Input {...register('address2')} />
                     </FormControl>
                     <FormControl isRequired>
                         <FormLabel>City</FormLabel>
-                        <Input value={city} onChange={(e) => setCity(e.target.value)} />
+                        <Input {...register('city')} />
                     </FormControl>
                     <FormControl isRequired>
                         <FormLabel>State</FormLabel>
-                        <Input value={state} onChange={(e) => setState(e.target.value)} />
+                        <Input {...register('state')} />
                     </FormControl>
                     <FormControl isRequired>
                         <FormLabel>Zip Code</FormLabel>
-                        <Input value={zip} onChange={(e) => setZip(e.target.value)} />
+                        <Input {...register('zip')} />
                     </FormControl>
                     <FormControl>
                         <FormLabel>Phone</FormLabel>
-                        <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        <Input {...register('phone')} />
                     </FormControl>
                     <FormControl>
                         <FormLabel>Email</FormLabel>
-                        <Input value={email} onChange={(e) => setEmail(e.target.value)} />
+                        <Input {...register('email')} />
                     </FormControl>
                     <Button type="submit" colorScheme="blue" mt={4}>
                         Add Address

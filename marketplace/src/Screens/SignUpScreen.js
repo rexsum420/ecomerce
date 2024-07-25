@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -9,53 +9,25 @@ import {
   Heading,
   Text,
 } from '@chakra-ui/react';
+import { useForm } from 'react-hook-form';
 import Api from '../utils/Api';
 
 const SignUpScreen = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
-
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!re.test(email)) {
-      setError('Invalid email address.');
-    } else {
-      setError('');
-    }
-  };
-
-  const validatePassword = (password) => {
-    const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-    if (!re.test(password)) {
-      setError('Password must be at least 8 characters long, contain a capital letter, a lower case letter, and a number or symbol.');
-    } else {
-      setError('');
-    }
-  };
-
-  const handleSignUp = async () => {
-    setError('');
-    setSuccess('');
-
-    if (error !== '') {
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      return;
-    }
-
+  const password = watch('password');
+  
+  const onSubmit = async (data) => {
     try {
-      await Api(`${apiBaseUrl}/api/users/`, 'POST', { username, email, password }, false);
-      setSuccess('Sign up successful!');
+      await Api(`${apiBaseUrl}/api/users/`, 'POST', data, false);
+      alert('Sign up successful!');
     } catch (err) {
-      setError('Sign up failed. Please try again.');
+      alert('Sign up failed. Please try again.');
     }
   };
 
@@ -71,61 +43,72 @@ const SignUpScreen = () => {
         <Heading as="h2" size="xl" mb={6} textAlign="center">
           Sign Up
         </Heading>
-        <FormControl mb={4}>
-          <FormLabel>Username</FormLabel>
-          <Input
-            type="text"
-            variant="filled"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </FormControl>
-        <FormControl mb={4}>
-          <FormLabel>Email</FormLabel>
-          <Input
-            type="email"
-            variant="filled"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              validateEmail(e.target.value);
-            }}
-          />
-        </FormControl>
-        <FormControl mb={4}>
-          <FormLabel>Password</FormLabel>
-          <Input
-            type="password"
-            variant="filled"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              validatePassword(e.target.value);
-            }}
-          />
-        </FormControl>
-        <FormControl mb={4}>
-          <FormLabel>Confirm Password</FormLabel>
-          <Input
-            type="password"
-            variant="filled"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </FormControl>
-        {error && (
-          <Text color="red.500" mb={4}>
-            {error}
-          </Text>
-        )}
-        {success && (
-          <Text color="green.500" mb={4}>
-            {success}
-          </Text>
-        )}
-        <Button colorScheme="blue" onClick={handleSignUp} mb={4} w="100%">
-          Sign Up
-        </Button>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormControl mb={4} isInvalid={errors.username}>
+            <FormLabel>Username</FormLabel>
+            <Input
+              type="text"
+              variant="filled"
+              {...register('username', { required: 'Username is required' })}
+            />
+            {errors.username && (
+              <Text color="red.500" mt={2}>{errors.username.message}</Text>
+            )}
+          </FormControl>
+          <FormControl mb={4} isInvalid={errors.email}>
+            <FormLabel>Email</FormLabel>
+            <Input
+              type="email"
+              variant="filled"
+              {...register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Invalid email address',
+                },
+              })}
+            />
+            {errors.email && (
+              <Text color="red.500" mt={2}>{errors.email.message}</Text>
+            )}
+          </FormControl>
+          <FormControl mb={4} isInvalid={errors.password}>
+            <FormLabel>Password</FormLabel>
+            <Input
+              type="password"
+              variant="filled"
+              {...register('password', {
+                required: 'Password is required',
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
+                  message: 'Password must be at least 8 characters long, contain a capital letter, a lower case letter, and a number or symbol.',
+                },
+              })}
+            />
+            {errors.password && (
+              <Text color="red.500" mt={2}>{errors.password.message}</Text>
+            )}
+          </FormControl>
+          <FormControl mb={4} isInvalid={errors.confirmPassword}>
+            <FormLabel>Confirm Password</FormLabel>
+            <Input
+              type="password"
+              variant="filled"
+              {...register('confirmPassword', {
+                validate: value => value === password || 'Passwords do not match'
+              })}
+            />
+            {errors.confirmPassword && (
+              <Text color="red.500" mt={2}>{errors.confirmPassword.message}</Text>
+            )}
+          </FormControl>
+          {errors.submit && (
+            <Text color="red.500" mb={4}>{errors.submit.message}</Text>
+          )}
+          <Button colorScheme="blue" type="submit" mb={4} w="100%">
+            Sign Up
+          </Button>
+        </form>
       </Box>
     </Container>
   );

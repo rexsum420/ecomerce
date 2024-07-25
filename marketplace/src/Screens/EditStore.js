@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import {
     Box,
     Button,
@@ -11,20 +11,18 @@ import {
     Heading,
     Alert,
     AlertIcon,
-} from "@chakra-ui/react";
+} from '@chakra-ui/react';
+import { useForm, Controller } from 'react-hook-form';
 
 const EditStore = () => {
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
-    const [website, setWebsite] = useState('');
-    const [phone, setPhone] = useState('');
+    const { storeId } = useParams();
     const [storeList, setStoreList] = useState([]);
     const [nameError, setNameError] = useState('');
-    const { storeId } = useParams();
-    const [store, setStore] = useState({});
     const token = localStorage.getItem('token');
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
-    const baseUrl = process.env.REACT_APP_BASE_URL
+    const baseUrl = process.env.REACT_APP_BASE_URL;
+
+    const { handleSubmit, setValue, control, formState: { errors } } = useForm();
 
     useEffect(() => {
         const fetchStore = async () => {
@@ -32,39 +30,32 @@ const EditStore = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                }
+                    'Authorization': `Token ${token}`,
+                },
             });
             const data = await response.json();
-            setStore(data);
-            setName(data.name);
-            setDescription(data.description);
-            setWebsite(data.website);
-            setPhone(data.phone);
+            setValue('name', data.name);
+            setValue('description', data.description);
+            setValue('website', data.website);
+            setValue('phone', data.phone);
         };
         fetchStore();
-    }, [storeId, token]);
+    }, [storeId, token, setValue]);
 
     useEffect(() => {
         const fetchStoreList = async () => {
             const response = await fetch(`${apiBaseUrl}/api/get-store/?list=True`);
-
             if (response.ok) {
                 const data = await response.json();
-                const filteredStoreList = data.filter(s => s.id !== parseInt(storeId));
+                const filteredStoreList = data.filter((s) => s.id !== parseInt(storeId));
                 setStoreList(filteredStoreList);
             }
         };
-
         fetchStoreList();
-    }, [storeId]);
+    }, [storeId, apiBaseUrl]);
 
-    const handleNameChange = (e) => {
-        const newName = e.target.value;
-        setName(newName);
-
-        const storeExists = storeList.some(store => store.name.toLowerCase() === newName.toLowerCase());
-
+    const handleNameChange = (name) => {
+        const storeExists = storeList.some((store) => store.name.toLowerCase() === name.toLowerCase());
         if (storeExists) {
             setNameError('Store name already exists. Please choose a different name.');
         } else {
@@ -72,26 +63,20 @@ const EditStore = () => {
         }
     };
 
-    const handleSave = async () => {
+    const onSubmit = async (data) => {
         const response = await fetch(`${apiBaseUrl}/api/stores/${storeId}/`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Token ${token}`
+                'Authorization': `Token ${token}`,
             },
-            body: JSON.stringify({
-                name,
-                description,
-                website,
-                phone
-            })
+            body: JSON.stringify(data),
         });
 
         if (response.ok) {
             const updatedStore = await response.json();
-            setStore(updatedStore);
             alert('Store updated successfully');
-            document.location.href = `${baseUrl}/store/${storeId}`
+            document.location.href = `${baseUrl}/store/${storeId}`;
         } else {
             alert('Failed to update store');
         }
@@ -102,14 +87,23 @@ const EditStore = () => {
             <Heading as="h2" size="lg" mb={6} textAlign="center">
                 Edit Store
             </Heading>
-            <VStack spacing={4}>
+            <VStack spacing={4} as="form" onSubmit={handleSubmit(onSubmit)}>
                 <FormControl id="name" isRequired>
                     <FormLabel>Store Name</FormLabel>
-                    <Input
-                        type="text"
-                        value={name}
-                        onChange={handleNameChange}
-                        placeholder="Enter store name"
+                    <Controller
+                        name="name"
+                        control={control}
+                        render={({ field }) => (
+                            <Input
+                                type="text"
+                                {...field}
+                                placeholder="Enter store name"
+                                onChange={(e) => {
+                                    field.onChange(e);
+                                    handleNameChange(e.target.value);
+                                }}
+                            />
+                        )}
                     />
                     {nameError && (
                         <Alert status="error" mt={2}>
@@ -120,31 +114,35 @@ const EditStore = () => {
                 </FormControl>
                 <FormControl id="description">
                     <FormLabel>Description</FormLabel>
-                    <Textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Enter store description"
+                    <Controller
+                        name="description"
+                        control={control}
+                        render={({ field }) => (
+                            <Textarea {...field} placeholder="Enter store description" />
+                        )}
                     />
                 </FormControl>
                 <FormControl id="website">
                     <FormLabel>Website</FormLabel>
-                    <Input
-                        type="url"
-                        value={website}
-                        onChange={(e) => setWebsite(e.target.value)}
-                        placeholder="Enter store website"
+                    <Controller
+                        name="website"
+                        control={control}
+                        render={({ field }) => (
+                            <Input {...field} type="url" placeholder="Enter store website" />
+                        )}
                     />
                 </FormControl>
                 <FormControl id="phone">
                     <FormLabel>Phone</FormLabel>
-                    <Input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="Enter store phone"
+                    <Controller
+                        name="phone"
+                        control={control}
+                        render={({ field }) => (
+                            <Input {...field} type="tel" placeholder="Enter store phone" />
+                        )}
                     />
                 </FormControl>
-                <Button colorScheme="blue" onClick={handleSave} width="full">
+                <Button colorScheme="blue" type="submit" width="full">
                     Save
                 </Button>
             </VStack>

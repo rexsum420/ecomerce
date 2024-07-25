@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -8,12 +8,11 @@ import {
     Textarea,
     FormErrorMessage,
 } from '@chakra-ui/react';
+import { useForm, Controller } from 'react-hook-form';
 
 const AddStore = () => {
-    const [name, setName] = useState('');
-    const [description, setDescription] = useState('');
+    const { register, handleSubmit, control, setError, clearErrors, formState: { errors }, reset } = useForm();
     const [storeList, setStoreList] = useState([]);
-    const [nameError, setNameError] = useState('');
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
@@ -26,25 +25,10 @@ const AddStore = () => {
         };
 
         fetchStoreList();
-    }, []);
+    }, [apiBaseUrl]);
 
-    const handleNameChange = (e) => {
-        const newName = e.target.value;
-        setName(newName);
-
-        // Check if the store name already exists
-        const storeExists = storeList.some(store => store.name.toLowerCase() === newName.toLowerCase());
-
-        if (storeExists) {
-            setNameError('Store name already exists. Please choose a different name.');
-        } else {
-            setNameError('');
-        }
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (nameError) return;
+    const onSubmit = async (data) => {
+        if (errors.name) return;
 
         const token = localStorage.getItem('token');
         const response = await fetch(`${apiBaseUrl}/api/stores/`, {
@@ -53,42 +37,57 @@ const AddStore = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Token ${token}`
             },
-            body: JSON.stringify({
-                name,
-                description,
-            })
+            body: JSON.stringify(data)
         });
 
         if (response.ok) {
-            // Reset form fields
-            setName('');
-            setDescription('');
-            setStoreList([...storeList, { name }]); // Add new store to the list
+            reset();
+            setStoreList([...storeList, { name: data.name }]);
         } else {
             const errorData = await response.json();
-            setNameError(errorData.detail || 'An error occurred while creating the store.');
+            setError('name', { type: 'manual', message: errorData.detail || 'An error occurred while creating the store.' });
+        }
+    };
+
+    const handleNameChange = (e) => {
+        const newName = e.target.value;
+        const storeExists = storeList.some(store => store.name.toLowerCase() === newName.toLowerCase());
+
+        if (storeExists) {
+            setError('name', { type: 'manual', message: 'Store name already exists. Please choose a different name.' });
+        } else {
+            clearErrors('name');
         }
     };
 
     return (
         <Box p={5} maxW="500px" mx="auto" boxShadow="lg" borderRadius="md" bg="transparent" mt={8}>
-            <form onSubmit={handleSubmit}>
-                <FormControl id="name" mb={4} isInvalid={nameError}>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <FormControl id="name" mb={4} isInvalid={errors.name}>
                     <FormLabel>Store Name</FormLabel>
-                    <Input
-                        type="text"
-                        value={name}
-                        onChange={handleNameChange}
-                        placeholder="Enter store name"
-                        size="lg"
+                    <Controller
+                        name="name"
+                        control={control}
+                        rules={{ required: 'Store name is required.' }}
+                        render={({ field }) => (
+                            <Input
+                                {...field}
+                                type="text"
+                                onChange={(e) => {
+                                    field.onChange(e);
+                                    handleNameChange(e);
+                                }}
+                                placeholder="Enter store name"
+                                size="lg"
+                            />
+                        )}
                     />
-                    {nameError && <FormErrorMessage>{nameError}</FormErrorMessage>}
+                    {errors.name && <FormErrorMessage>{errors.name.message}</FormErrorMessage>}
                 </FormControl>
                 <FormControl id="description" mb={4}>
                     <FormLabel>Description</FormLabel>
                     <Textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
+                        {...register('description')}
                         placeholder="Enter store description"
                         size="lg"
                     />
@@ -99,7 +98,7 @@ const AddStore = () => {
                     isFullWidth
                     size="lg"
                     mt={4}
-                    disabled={nameError}
+                    disabled={Boolean(errors.name)}
                 >
                     Add Store
                 </Button>

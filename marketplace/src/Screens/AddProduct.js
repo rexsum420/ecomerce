@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Button, FormControl, FormLabel, Input, Textarea, Image, VStack, useToast, Select, Grid, IconButton } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { CloseIcon } from '@chakra-ui/icons';
 
 const AddProduct = () => {
     const { id } = useParams();
-    const [formData, setFormData] = useState({
-        store: parseInt(id, 10),
-        name: '',
-        description: '',
-        price: '',
-        size: '',
-        color: '',
-        variations: '',
-        category: '',
-        barcode_number: '',
-        model_number: '',
-        manufacturer: '',
-        inventory_count: '',
+    const { register, handleSubmit, setValue, watch, reset } = useForm({
+        defaultValues: {
+            store: parseInt(id, 10),
+            name: '',
+            description: '',
+            price: '',
+            size: '',
+            color: '',
+            variations: '',
+            category: '',
+            barcode_number: '',
+            model_number: '',
+            manufacturer: '',
+            inventory_count: '',
+        }
     });
     const [productId, setProductId] = useState(null);
     const [pictures, setPictures] = useState([]);
@@ -53,24 +56,11 @@ const AddProduct = () => {
         }
     };
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (data) => {
         const token = localStorage.getItem('token');
 
-        const formDataToSend = Object.fromEntries(
-            Object.entries(formData).filter(([_, value]) => value !== '')
-        );
-
-        formDataToSend.price = parseFloat(formDataToSend.price);
-        formDataToSend.inventory_count = parseInt(formDataToSend.inventory_count, 10);
+        data.price = parseFloat(data.price);
+        data.inventory_count = parseInt(data.inventory_count, 10);
 
         const response = await fetch(`${apiBaseUrl}/api/products/`, {
             method: 'POST',
@@ -78,11 +68,11 @@ const AddProduct = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Token ${token}`
             },
-            body: JSON.stringify(formDataToSend)
+            body: JSON.stringify(data)
         });
-        const data = await response.json();
+        const responseData = await response.json();
         if (response.ok) {
-            setProductId(data.id);
+            setProductId(responseData.id);
             toast({
                 title: 'Product created.',
                 description: "Adding pictures now.",
@@ -94,7 +84,7 @@ const AddProduct = () => {
         } else {
             toast({
                 title: 'Error creating product.',
-                description: data.detail,
+                description: responseData.detail,
                 status: 'error',
                 duration: 5000,
                 isClosable: true,
@@ -193,23 +183,23 @@ const AddProduct = () => {
     return (
         <center>
             <Box p={5} width={{ base: '100%', md: '60%' }} mt="20px">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <VStack spacing={4} align="stretch">
                         <FormControl isRequired>
                             <FormLabel>Name</FormLabel>
-                            <Input name="name" value={formData.name} onChange={handleChange} />
+                            <Input {...register('name')} />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Description</FormLabel>
-                            <Textarea name="description" value={formData.description} onChange={handleChange} />
+                            <Textarea {...register('description')} />
                         </FormControl>
                         <FormControl isRequired>
                             <FormLabel>Price</FormLabel>
-                            <Input name="price" type="number" step="0.01" value={formData.price} onChange={handleChange} />
+                            <Input {...register('price')} type="number" step="0.01" />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Size</FormLabel>
-                            <Select name="size" value={formData.size} onChange={handleChange}>
+                            <Select {...register('size')}>
                                 <option value="">Select size...</option>
                                 <option value="XS">Extra Small</option>
                                 <option value="S">Small</option>
@@ -222,7 +212,7 @@ const AddProduct = () => {
                         </FormControl>
                         <FormControl>
                             <FormLabel>Color</FormLabel>
-                            <Select name="color" value={formData.color} onChange={handleChange}>
+                            <Select {...register('color')}>
                                 <option value="">Select color...</option>
                                 <option value="RED">Red</option>
                                 <option value="BLU">Blue</option>
@@ -242,11 +232,11 @@ const AddProduct = () => {
                         </FormControl>
                         <FormControl>
                             <FormLabel>Variations</FormLabel>
-                            <Textarea name="variations" value={formData.variations} onChange={handleChange} />
+                            <Textarea {...register('variations')} />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Category</FormLabel>
-                            <Select name="category" value={formData.category} onChange={handleChange}>
+                            <Select {...register('category')}>
                                 <option value="">Select category...</option>
                                 <option value="electronics">Electronics</option>
                                 <option value="clothing">Clothing</option>
@@ -257,53 +247,80 @@ const AddProduct = () => {
                                 <option value="toys_games">Toys & Games</option>
                                 <option value="books">Books</option>
                                 <option value="automotive">Automotive</option>
-                                <option value="others">Others</option>
+                                <option value="music_movies">Music & Movies</option>
+                                <option value="office_supplies">Office Supplies</option>
+                                <option value="pet_supplies">Pet Supplies</option>
+                                <option value="baby_products">Baby Products</option>
+                                <option value="garden_outdoor">Garden & Outdoor</option>
+                                <option value="jewelry_accessories">Jewelry & Accessories</option>
+                                <option value="shoes_footwear">Shoes & Footwear</option>
+                                <option value="handmade_products">Handmade Products</option>
+                                <option value="groceries">Groceries</option>
+                                <option value="furniture">Furniture</option>
+                                <option value="appliances">Appliances</option>
+                                <option value="tools_home_improvement">Tools & Home Improvement</option>
+                                <option value="arts_crafts">Arts & Crafts</option>
+                                <option value="travel_luggage">Travel & Luggage</option>
+                                <option value="smart_home_devices">Smart Home Devices</option>
+                                <option value="software">Software</option>
+                                <option value="industrial_scientific">Industrial & Scientific</option>
+                                <option value="collectibles_fine_art">Collectibles & Fine Art</option>
+                                <option value="musical_instruments">Musical Instruments</option>
+                                <option value="gift_cards">Gift Cards</option>
+                                <option value="watches">Watches</option>
                             </Select>
                         </FormControl>
                         <FormControl>
                             <FormLabel>Barcode Number</FormLabel>
-                            <Input name="barcode_number" value={formData.barcode_number} onChange={handleChange} />
+                            <Input {...register('barcode_number')} />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Model Number</FormLabel>
-                            <Input name="model_number" value={formData.model_number} onChange={handleChange} />
+                            <Input {...register('model_number')} />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Manufacturer</FormLabel>
-                            <Input name="manufacturer" value={formData.manufacturer} onChange={handleChange} />
+                            <Input {...register('manufacturer')} />
                         </FormControl>
-                        <FormControl isRequired>
+                        <FormControl>
                             <FormLabel>Inventory Count</FormLabel>
-                            <Input name="inventory_count" type="number" value={formData.inventory_count} onChange={handleChange} />
+                            <Input {...register('inventory_count')} type="number" />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Pictures</FormLabel>
-                            <Input type="file" multiple onChange={handleFilesChangeAppend} />
+                            <Input
+                                type="file"
+                                multiple
+                                accept="image/*"
+                                onChange={handleFilesChangeAppend}
+                            />
+                            <Grid templateColumns="repeat(auto-fill, minmax(100px, 1fr))" gap={2} mt={4}>
+                                {pictureURLs.map((url, index) => (
+                                    <Box key={index} position="relative">
+                                        <Image
+                                            src={url}
+                                            alt={`Picture ${index + 1}`}
+                                            boxSize="100px"
+                                            objectFit="cover"
+                                            borderRadius="md"
+                                            cursor="pointer"
+                                            border={mainIndex === index ? '2px solid teal' : 'none'}
+                                            onClick={() => setMainIndex(index)}
+                                        />
+                                        <IconButton
+                                            icon={<CloseIcon />}
+                                            size="xs"
+                                            position="absolute"
+                                            top="2px"
+                                            right="2px"
+                                            onClick={() => handleRemovePicture(index)}
+                                            aria-label="Remove picture"
+                                        />
+                                    </Box>
+                                ))}
+                            </Grid>
                         </FormControl>
-                        <Grid templateColumns="repeat(auto-fit, minmax(100px, 1fr))" gap={4}>
-                            {pictureURLs.map((url, index) => (
-                                <Box key={index} position="relative">
-                                    <Image
-                                        src={url}
-                                        alt={`Product ${index + 1}`}
-                                        objectFit="cover"
-                                        boxSize="100px"
-                                        border={index === mainIndex ? "2px solid green" : "none"}
-                                        onClick={() => setMainIndex(index)}
-                                        cursor="pointer"
-                                    />
-                                    <IconButton
-                                        icon={<CloseIcon />}
-                                        size="xs"
-                                        position="absolute"
-                                        top="2px"
-                                        right="2px"
-                                        onClick={() => handleRemovePicture(index)}
-                                    />
-                                </Box>
-                            ))}
-                        </Grid>
-                        <Button type="submit" colorScheme="blue">Submit</Button>
+                        <Button type="submit" colorScheme="teal">Add Product</Button>
                     </VStack>
                 </form>
             </Box>

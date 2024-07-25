@@ -1,22 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Heading,
-  useToast,
-} from '@chakra-ui/react';
+import React, { useEffect } from 'react';
+import { Box, Button, FormControl, FormLabel, Input, Heading, useToast } from '@chakra-ui/react';
+import { useForm, Controller } from 'react-hook-form';
 
 const EditProfile = () => {
-  const [profile, setProfile] = useState({
-    email: '',
-    first_name: '',
-    last_name: '',
-    phone_number: '',
-  });
-
+  const { register, handleSubmit, setValue, control, formState: { errors } } = useForm();
   const toast = useToast();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
@@ -28,12 +15,9 @@ const EditProfile = () => {
         const data = await response.json();
         if (data.results && data.results.length > 0) {
           const profileData = data.results[0];
-          setProfile({
-            email: profileData.email,
-            first_name: profileData.first_name,
-            last_name: profileData.last_name,
-            phone_number: profileData.phone_number,
-          });
+          for (const key in profileData) {
+            setValue(key, profileData[key]);
+          }
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -41,18 +25,9 @@ const EditProfile = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, [apiBaseUrl, setValue]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfile({
-      ...profile,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (profile) => {
     const username = localStorage.getItem('username');
     try {
       const response = await fetch(`${apiBaseUrl}/api/profiles/${username}/`, {
@@ -96,42 +71,37 @@ const EditProfile = () => {
   return (
     <Box maxW="md" mx="auto" mt={10} p={5} borderWidth={1} borderRadius="lg" boxShadow="lg">
       <Heading as="h1" size="lg" mb={6}>Edit Profile</Heading>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <FormControl mb={4}>
           <FormLabel>Email</FormLabel>
-          <Input
-            type="email"
+          <Controller
             name="email"
-            value={profile.email}
-            onChange={handleChange}
-            required
+            control={control}
+            render={({ field }) => <Input type="email" {...field} />}
           />
         </FormControl>
         <FormControl mb={4}>
           <FormLabel>First Name</FormLabel>
-          <Input
-            type="text"
+          <Controller
             name="first_name"
-            value={profile.first_name}
-            onChange={handleChange}
+            control={control}
+            render={({ field }) => <Input type="text" {...field} />}
           />
         </FormControl>
         <FormControl mb={4}>
           <FormLabel>Last Name</FormLabel>
-          <Input
-            type="text"
+          <Controller
             name="last_name"
-            value={profile.last_name}
-            onChange={handleChange}
+            control={control}
+            render={({ field }) => <Input type="text" {...field} />}
           />
         </FormControl>
         <FormControl mb={4}>
           <FormLabel>Phone Number</FormLabel>
-          <Input
-            type="tel"
+          <Controller
             name="phone_number"
-            value={profile.phone_number || ''}
-            onChange={handleChange}
+            control={control}
+            render={({ field }) => <Input type="tel" {...field} />}
           />
         </FormControl>
         <Button type="submit" colorScheme="teal" width="full">Save</Button>

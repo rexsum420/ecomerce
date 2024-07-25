@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -9,26 +9,24 @@ import {
   Heading,
   Text,
 } from '@chakra-ui/react';
+import { useForm } from 'react-hook-form';
 import Api from '../utils/Api';
 import { useNavigate } from 'react-router-dom';
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const navigate = useNavigate();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 
-  const handleLogin = async () => {
-    setError('');
+  const onSubmit = async (data) => {
     try {
-      const response = await Api(`${apiBaseUrl}/auth/`, 'POST', { username, password }, false);
+      const response = await Api(`${apiBaseUrl}/auth/`, 'POST', data, false);
       localStorage.setItem('token', response.token);
-      localStorage.setItem('username', username)
+      localStorage.setItem('username', data.username);
       navigate('/');
       document.location.reload();
     } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      alert('Login failed. Please check your credentials.');
     }
   };
 
@@ -44,32 +42,33 @@ const LoginScreen = () => {
         <Heading as="h2" size="xl" mb={6} textAlign="center">
           Login
         </Heading>
-        <FormControl mb={4}>
-          <FormLabel>Username</FormLabel>
-          <Input
-            type="text"
-            variant="filled"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </FormControl>
-        <FormControl mb={4}>
-          <FormLabel>Password</FormLabel>
-          <Input
-            type="password"
-            variant="filled"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </FormControl>
-        {error && (
-          <Text color="red.500" mb={4}>
-            {error}
-          </Text>
-        )}
-        <Button colorScheme="blue" onClick={handleLogin} mb={4} w="100%">
-          Login
-        </Button>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <FormControl mb={4} isInvalid={errors.username}>
+            <FormLabel>Username</FormLabel>
+            <Input
+              type="text"
+              variant="filled"
+              {...register('username', { required: 'Username is required' })}
+            />
+            {errors.username && (
+              <Text color="red.500" mt={2}>{errors.username.message}</Text>
+            )}
+          </FormControl>
+          <FormControl mb={4} isInvalid={errors.password}>
+            <FormLabel>Password</FormLabel>
+            <Input
+              type="password"
+              variant="filled"
+              {...register('password', { required: 'Password is required' })}
+            />
+            {errors.password && (
+              <Text color="red.500" mt={2}>{errors.password.message}</Text>
+            )}
+          </FormControl>
+          <Button colorScheme="blue" type="submit" mb={4} w="100%">
+            Login
+          </Button>
+        </form>
       </Box>
     </Container>
   );

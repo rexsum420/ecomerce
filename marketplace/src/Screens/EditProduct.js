@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, FormControl, FormLabel, Input, Textarea, Image, VStack, useToast, Select, Grid, IconButton, Spinner, Text } from '@chakra-ui/react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CloseIcon } from '@chakra-ui/icons';
+import { useForm, Controller } from 'react-hook-form';
 
 const EditProduct = () => {
     const { id } = useParams();
-    const [formData, setFormData] = useState(null);
+    const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm();
     const [pictures, setPictures] = useState([]);
     const [pictureURLs, setPictureURLs] = useState([]);
     const [mainIndex, setMainIndex] = useState(0);
@@ -15,61 +16,49 @@ const EditProduct = () => {
     const toast = useToast();
     const navigate = useNavigate();
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
-  
+
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("username");
     if (!token) {
-      navigate("/login");
-      document.location.reload();
+        navigate("/login");
+        document.location.reload();
     }
-  
+
     const fetchProduct = async (id) => {
-      const url = `${apiBaseUrl}/api/products/${id}/`;
-      const headers = {
-        Authorization: `Token ${token}`,
-      };
-  
-      try {
-        const response = await fetch(url, { headers });
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        const url = `${apiBaseUrl}/api/products/${id}/`;
+        const headers = {
+            Authorization: `Token ${token}`,
+        };
+
+        try {
+            const response = await fetch(url, { headers });
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            const data = await response.json();
+            for (const key in data) {
+                setValue(key, data[key]);
+            }
+            setPictures(data.pictures);
+            setPictureURLs(data.pictures.map(pic => pic.image));
+            if (userId === data.store.owner.username) {
+                setOwner(true);
+            }
+            setLoading(false);
+        } catch (err) {
+            setError(err.message);
+            setLoading(false);
         }
-        const data = await response.json();
-        setFormData(data);
-        setPictures(data.pictures);
-        setPictureURLs(data.pictures.map(pic => pic.image));
-        if (userId === data.store.owner.username) {
-          setOwner(true);
-        }
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
     };
 
     useEffect(() => {
         fetchProduct(id);
     }, [id]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const onSubmit = async (formData) => {
         const token = localStorage.getItem('token');
-
-        const formDataToSend = Object.fromEntries(
-            Object.entries(formData).filter(([_, value]) => value !== '')
-        );
-
-        formDataToSend.price = parseFloat(formDataToSend.price);
-        formDataToSend.inventory_count = parseInt(formDataToSend.inventory_count, 10);
+        formData.price = parseFloat(formData.price);
+        formData.inventory_count = parseInt(formData.inventory_count, 10);
 
         const response = await fetch(`${apiBaseUrl}/api/products/${id}/`, {
             method: 'PUT',
@@ -77,7 +66,7 @@ const EditProduct = () => {
                 'Content-Type': 'application/json',
                 'Authorization': `Token ${token}`
             },
-            body: JSON.stringify(formDataToSend)
+            body: JSON.stringify(formData)
         });
         const data = await response.json();
         if (response.ok) {
@@ -157,7 +146,7 @@ const EditProduct = () => {
     if (loading) {
         return <Spinner />;
     }
-    
+
     if (error) {
         return <Text>Error: {error}</Text>;
     }
@@ -169,87 +158,142 @@ const EditProduct = () => {
     return (
         <center>
             <Box p={5} width={{ base: '100%', md: '60%' }} mt="20px">
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit(onSubmit)}>
                     <VStack spacing={4} align="stretch">
                         <FormControl isRequired>
                             <FormLabel>Name</FormLabel>
-                            <Input name="name" value={formData.name} onChange={handleChange} />
+                            <Controller
+                                name="name"
+                                control={control}
+                                render={({ field }) => <Input {...field} />}
+                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Description</FormLabel>
-                            <Textarea name="description" value={formData.description} onChange={handleChange} />
+                            <Controller
+                                name="description"
+                                control={control}
+                                render={({ field }) => <Textarea {...field} />}
+                            />
                         </FormControl>
                         <FormControl isRequired>
                             <FormLabel>Price</FormLabel>
-                            <Input name="price" type="number" step="0.01" value={formData.price} onChange={handleChange} />
+                            <Controller
+                                name="price"
+                                control={control}
+                                render={({ field }) => <Input type="number" step="0.01" {...field} />}
+                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Size</FormLabel>
-                            <Select name="size" value={formData.size} onChange={handleChange}>
-                                <option value="">Select size...</option>
-                                <option value="XS">Extra Small</option>
-                                <option value="S">Small</option>
-                                <option value="M">Medium</option>
-                                <option value="L">Large</option>
-                                <option value="XL">Extra Large</option>
-                                <option value="XXL">Double XL</option>
-                                <option value="XXXL">Triple XL</option>
-                            </Select>
+                            <Controller
+                                name="size"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select {...field}>
+                                        <option value="">Select size...</option>
+                                        <option value="XS">Extra Small</option>
+                                        <option value="S">Small</option>
+                                        <option value="M">Medium</option>
+                                        <option value="L">Large</option>
+                                        <option value="XL">Extra Large</option>
+                                        <option value="XXL">Double XL</option>
+                                        <option value="XXXL">Triple XL</option>
+                                    </Select>
+                                )}
+                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Color</FormLabel>
-                            <Select name="color" value={formData.color} onChange={handleChange}>
-                                <option value="">Select color...</option>
-                                <option value="RED">Red</option>
-                                <option value="BLU">Blue</option>
-                                <option value="GRN">Green</option>
-                                <option value="BLK">Black</option>
-                                <option value="WHT">White</option>
-                                <option value="YEL">Yellow</option>
-                                <option value="ORN">Orange</option>
-                                <option value="PUR">Purple</option>
-                                <option value="PNK">Pink</option>
-                                <option value="NVY">Navy</option>
-                                <option value="GRY">Grey</option>
-                                <option value="BRN">Brown</option>
-                                <option value="TAN">Tan</option>
-                                <option value="OTH">Other</option>
-                            </Select>
+                            <Controller
+                                name="color"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select {...field}>
+                                        <option value="">Select color...</option>
+                                        <option value="RED">Red</option>
+                                        <option value="BLU">Blue</option>
+                                        <option value="GRN">Green</option>
+                                        <option value="BLK">Black</option>
+                                        <option value="WHT">White</option>
+                                        <option value="YEL">Yellow</option>
+                                        <option value="ORN">Orange</option>
+                                        <option value="PUR">Purple</option>
+                                        <option value="PNK">Pink</option>
+                                        <option value="NVY">Navy</option>
+                                        <option value="GRY">Grey</option>
+                                        <option value="BRN">Brown</option>
+                                        <option value="TAN">Tan</option>
+                                        <option value="OTH">Other</option>
+                                    </Select>
+                                )}
+                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Variations</FormLabel>
-                            <Textarea name="variations" value={formData.variations} onChange={handleChange} />
+                            <Controller
+                                name="variations"
+                                control={control}
+                                render={({ field }) => <Textarea {...field} />}
+                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Category</FormLabel>
-                            <Select name="category" value={formData.category} onChange={handleChange}>
-                                <option value="">Select category...</option>
-                                <option value="electronics">Electronics</option>
-                                <option value="clothing">Clothing</option>
-                                <option value="home_kitchen">Home & Kitchen</option>
-                                <option value="beauty_personal_care">Beauty & Personal Care</option>
-                                <option value="health_wellness">Health & Wellness</option>
-                                <option value="toys_games">Toys & Games</option>
-                                <option value="sports_outdoors">Sports & Outdoors</option>
-                                <option value="automotive">Automotive</option>
-                                <option value="books">Books</option>
-                                <option value="music_movies">Music & Movies</option>
-                                <option value="office_supplies">Office Supplies</option>
-                                <option value="pet_supplies">Pet Supplies</option>
-                                <option value="baby_products">Baby Products</option>
-                                <option value="grocery">Grocery</option>
-                                <option value="tools_home_improvement">Tools & Home Improvement</option>
-                                <option value="garden_outdoor">Garden & Outdoor</option>
-                                <option value="other">Other</option>
-                            </Select>
+                            <Controller
+                                name="category"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select {...field}>
+                                        <option value="">Select category...</option>
+                                        <option value="electronics">Electronics</option>
+                                        <option value="clothing">Clothing</option>
+                                        <option value="home_kitchen">Home & Kitchen</option>
+                                        <option value="beauty_personal_care">Beauty & Personal Care</option>
+                                        <option value="health_wellness">Health & Wellness</option>
+                                        <option value="sports_outdoors">Sports & Outdoors</option>
+                                        <option value="toys_games">Toys & Games</option>
+                                        <option value="books">Books</option>
+                                        <option value="automotive">Automotive</option>
+                                        <option value="music_movies">Music & Movies</option>
+                                        <option value="office_supplies">Office Supplies</option>
+                                        <option value="pet_supplies">Pet Supplies</option>
+                                        <option value="baby_products">Baby Products</option>
+                                        <option value="garden_outdoor">Garden & Outdoor</option>
+                                        <option value="jewelry_accessories">Jewelry & Accessories</option>
+                                        <option value="shoes_footwear">Shoes & Footwear</option>
+                                        <option value="handmade_products">Handmade Products</option>
+                                        <option value="groceries">Groceries</option>
+                                        <option value="furniture">Furniture</option>
+                                        <option value="appliances">Appliances</option>
+                                        <option value="tools_home_improvement">Tools & Home Improvement</option>
+                                        <option value="arts_crafts">Arts & Crafts</option>
+                                        <option value="travel_luggage">Travel & Luggage</option>
+                                        <option value="smart_home_devices">Smart Home Devices</option>
+                                        <option value="software">Software</option>
+                                        <option value="industrial_scientific">Industrial & Scientific</option>
+                                        <option value="collectibles_fine_art">Collectibles & Fine Art</option>
+                                        <option value="musical_instruments">Musical Instruments</option>
+                                        <option value="gift_cards">Gift Cards</option>
+                                        <option value="watches">Watches</option>
+                                    </Select>
+                                )}
+                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Keywords</FormLabel>
-                            <Textarea name="keywords" value={formData.keywords} onChange={handleChange} />
+                            <Controller
+                                name="keywords"
+                                control={control}
+                                render={({ field }) => <Textarea {...field} />}
+                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Inventory Count</FormLabel>
-                            <Input name="inventory_count" type="number" value={formData.inventory_count} onChange={handleChange} />
+                            <Controller
+                                name="inventory_count"
+                                control={control}
+                                render={({ field }) => <Input type="number" {...field} />}
+                            />
                         </FormControl>
                         <FormControl>
                             <FormLabel>Pictures</FormLabel>
