@@ -51,7 +51,7 @@ const AddStore = () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                'Authorization': `Token ${token}`
             },
             body: JSON.stringify({
                 name,
