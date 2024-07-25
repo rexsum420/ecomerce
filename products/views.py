@@ -67,7 +67,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         if store:
             try:
                 store_id = int(store)
-                return queryset.filter(store__id=store_id)
+                return queryset.filter(store__id=store_id).order_by('id')
             except ValueError:
                 # If store is not an integer, fallback to filtering by name
                 store = replace_spaces(store)
@@ -133,7 +133,7 @@ class ProductListView(viewsets.ReadOnlyModelViewSet):
         if store:
             try:
                 store_id = int(store)
-                return queryset.filter(store__id=store_id)
+                return queryset.filter(store__id=store_id).order_by('id')
             except ValueError:
                 # If store is not an integer, fallback to filtering by name
                 store = replace_spaces(store)

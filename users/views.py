@@ -86,6 +86,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = Profile.objects.all()
     lookup_field = 'user__username'
+    pagination_class=[]
 
     def get_queryset(self):
         username = self.request.query_params.get('user')
