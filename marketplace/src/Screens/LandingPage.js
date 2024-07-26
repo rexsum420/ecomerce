@@ -5,7 +5,6 @@ import ProductCard from '../components/ProductCard';
 import {
   Container,
   Box,
-  Text,
   FormControl,
   Heading,
   Grid,

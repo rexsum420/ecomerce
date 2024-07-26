@@ -56,7 +56,6 @@ if not DEBUG and USE_ENCRYPTION: MIDDLEWARE += ['market.middleware.EncryptionMid
 
 ROOT_URLCONF = 'market.urls'
 
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

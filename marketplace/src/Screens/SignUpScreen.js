@@ -11,17 +11,14 @@ import {
 } from '@chakra-ui/react';
 import { useForm } from 'react-hook-form';
 import Api from '../utils/Api';
+import { useNavigate } from 'react-router-dom';
 
 const SignUpScreen = () => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
   const password = watch('password');
-  
+  const navigate = useNavigate();
+
   const onSubmit = async (data) => {
     try {
       await Api(`${apiBaseUrl}/api/users/`, 'POST', data, false);

@@ -58,14 +58,14 @@ const LoginScreen = () => {
             <FormLabel>Password</FormLabel>
             <Input
               type="password"
-              variant="filled"
+              variant='filled'
               {...register('password', { required: 'Password is required' })}
             />
             {errors.password && (
-              <Text color="red.500" mt={2}>{errors.password.message}</Text>
+              <Text color='red.500' mt={2}>{errors.password.message}</Text>
             )}
           </FormControl>
-          <Button colorScheme="blue" type="submit" mb={4} w="100%">
+          <Button colorScheme='blue' type='submit' mb={4} w='100%'>
             Login
           </Button>
         </form>
