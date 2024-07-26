@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Spinner, Alert, AlertIcon, Heading, Grid, GridItem, Image, Badge, Text, Flex, Button } from "@chakra-ui/react";
+import { Box, Spinner, Alert, AlertIcon, Heading, Grid, GridItem, Image, Badge, Text, Flex, Button, Tooltip } from "@chakra-ui/react";
 import Api from "../utils/Api";
 import { getCategoryValue } from '../utils/CategoryEncoder';
 import getCategoryLabel from '../utils/CategoryDecoder';
@@ -109,41 +109,49 @@ const SearchScreen = () => {
           {category && category.trim() !== '' && <Heading size="sm" mb={5}>Results in category: {getCategoryLabel(category)}</Heading>}
         </Flex>
         <Flex justifyContent="end" alignItems="center">
-          <Image 
-            src={PriceAscending} 
-            alt="Price Ascending" 
-            boxSize="16px" 
-            cursor="pointer" 
-            onClick={() => handleSortChange('price_asc')} 
-            opacity={sortOption === 'price_asc' ? 0.5 : 1}
-          />
-          <Image 
-            src={PriceDescending} 
-            alt="Price Descending" 
-            boxSize="16px" 
-            cursor="pointer" 
-            onClick={() => handleSortChange('price_desc')} 
-            opacity={sortOption === 'price_desc' ? 0.5 : 1}
-            ml={2}
-          />
-          <Image 
-            src={colorMode === 'dark' ? AlphaAscendingWhite : AlphaAscending} 
-            alt="Alpha Ascending" 
-            boxSize="16px" 
-            cursor="pointer" 
-            onClick={() => handleSortChange('name_asc')} 
-            opacity={sortOption === 'name_asc' ? 0.5 : 1}
-            ml={2}
-          />
-          <Image 
-            src={colorMode === 'dark' ? AlphaDescendingWhite : AlphaDescending} 
-            alt="Alpha Descending" 
-            boxSize="16px" 
-            cursor="pointer" 
-            onClick={() => handleSortChange('name_desc')} 
-            opacity={sortOption === 'name_desc' ? 0.5 : 1}
-            ml={2}
-          />
+          <Tooltip label="Sort by price: Lowest to highest" aria-label="Sort by price ascending">
+            <Image 
+              src={PriceAscending} 
+              alt="Price Ascending" 
+              boxSize="16px" 
+              cursor="pointer" 
+              onClick={() => handleSortChange('price_asc')} 
+              opacity={sortOption === 'price_asc' ? 0.5 : 1}
+            />
+          </Tooltip>
+          <Tooltip label="Sort by price: Highest to lowest" aria-label="Sort by price descending">
+            <Image 
+              src={PriceDescending} 
+              alt="Price Descending" 
+              boxSize="16px" 
+              cursor="pointer" 
+              onClick={() => handleSortChange('price_desc')} 
+              opacity={sortOption === 'price_desc' ? 0.5 : 1}
+              ml={2}
+            />
+          </Tooltip>
+          <Tooltip label="Sort by name: A-Z" aria-label="Sort by name ascending">
+            <Image 
+              src={colorMode === 'dark' ? AlphaAscendingWhite : AlphaAscending} 
+              alt="Alpha Ascending" 
+              boxSize="16px" 
+              cursor="pointer" 
+              onClick={() => handleSortChange('name_asc')} 
+              opacity={sortOption === 'name_asc' ? 0.5 : 1}
+              ml={2}
+            />
+          </Tooltip>
+          <Tooltip label="Sort by name: Z-A" aria-label="Sort by name descending">
+            <Image 
+              src={colorMode === 'dark' ? AlphaDescendingWhite : AlphaDescending} 
+              alt="Alpha Descending" 
+              boxSize="16px" 
+              cursor="pointer" 
+              onClick={() => handleSortChange('name_desc')} 
+              opacity={sortOption === 'name_desc' ? 0.5 : 1}
+              ml={2}
+            />
+          </Tooltip>
         </Flex>
       </Flex>
       <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>

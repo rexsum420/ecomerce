@@ -14,7 +14,8 @@ import {
   Flex,
   Image,
   Button,
-  IconButton
+  IconButton,
+  Tooltip,
 } from '@chakra-ui/react';
 import CategoryScroll from '../components/CategoryScroll';
 import PriceAscending from '../assets/price-ascending.png';
@@ -97,41 +98,49 @@ const LandingPage = ({ category }) => {
         <Box flex="1" ml={4}>
           <FormControl width={{ base: "250px", md: "400px" }}>
             <Flex justifyContent="end" alignItems="center">
-              <Image 
-                src={PriceAscending} 
-                alt="Price Ascending" 
-                boxSize="16px" 
-                cursor="pointer" 
-                onClick={() => handleSortChange('price_asc')} 
-                opacity={sortOption === 'price_asc' ? 0.5 : 1}
-              />
-              <Image 
-                src={PriceDescending} 
-                alt="Price Descending" 
-                boxSize="16px" 
-                cursor="pointer" 
-                onClick={() => handleSortChange('price_desc')} 
-                opacity={sortOption === 'price_desc' ? 0.5 : 1}
-                ml={2}
-              />
-              <Image 
-                src={colorMode === 'dark' ? AlphaAscendingWhite : AlphaAscending} 
-                alt="Alpha Ascending" 
-                boxSize="16px" 
-                cursor="pointer" 
-                onClick={() => handleSortChange('name_asc')} 
-                opacity={sortOption === 'name_asc' ? 0.5 : 1}
-                ml={2}
-              />
-              <Image 
-                src={colorMode === 'dark' ? AlphaDescendingWhite : AlphaDescending} 
-                alt="Alpha Descending" 
-                boxSize="16px" 
-                cursor="pointer" 
-                onClick={() => handleSortChange('name_desc')} 
-                opacity={sortOption === 'name_desc' ? 0.5 : 1}
-                ml={2}
-              />
+              <Tooltip label="Sort by price: Lowest to highest" aria-label="Sort by price ascending">
+                <Image 
+                  src={PriceAscending} 
+                  alt="Price Ascending" 
+                  boxSize="16px" 
+                  cursor="pointer" 
+                  onClick={() => handleSortChange('price_asc')} 
+                  opacity={sortOption === 'price_asc' ? 0.5 : 1}
+                />
+              </Tooltip>
+              <Tooltip label="Sort by price: Highest to lowest" aria-label="Sort by price descending">
+                <Image 
+                  src={PriceDescending} 
+                  alt="Price Descending" 
+                  boxSize="16px" 
+                  cursor="pointer" 
+                  onClick={() => handleSortChange('price_desc')} 
+                  opacity={sortOption === 'price_desc' ? 0.5 : 1}
+                  ml={2}
+                />
+              </Tooltip>
+              <Tooltip label="Sort by name: A-Z" aria-label="Sort by name ascending">
+                <Image 
+                  src={colorMode === 'dark' ? AlphaAscendingWhite : AlphaAscending} 
+                  alt="Alpha Ascending" 
+                  boxSize="16px" 
+                  cursor="pointer" 
+                  onClick={() => handleSortChange('name_asc')} 
+                  opacity={sortOption === 'name_asc' ? 0.5 : 1}
+                  ml={2}
+                />
+              </Tooltip>
+              <Tooltip label="Sort by name: Z-A" aria-label="Sort by name descending">
+                <Image 
+                  src={colorMode === 'dark' ? AlphaDescendingWhite : AlphaDescending} 
+                  alt="Alpha Descending" 
+                  boxSize="16px" 
+                  cursor="pointer" 
+                  onClick={() => handleSortChange('name_desc')} 
+                  opacity={sortOption === 'name_desc' ? 0.5 : 1}
+                  ml={2}
+                />
+              </Tooltip>
             </Flex>
           </FormControl>
         </Box>
