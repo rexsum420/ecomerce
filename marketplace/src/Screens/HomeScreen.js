@@ -13,7 +13,8 @@ import {
   Text,
   Flex,
   Image,
-  Button
+  Button,
+  IconButton,
 } from '@chakra-ui/react';
 import CategoryScroll from '../components/CategoryScroll';
 import PriceAscending from '../assets/price-ascending.png';
@@ -29,10 +30,10 @@ const HomeScreen = ({ category }) => {
   const [query, setQuery] = useState('');
   const [sortOption, setSortOption] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [nextPage, setNextPage] = useState(null);
-  const [previousPage, setPreviousPage] = useState(null);
+  const [totalPages, setTotalPages] = useState(1);
   const { colorMode } = useColorMode();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+  const PRODUCTS_PER_PAGE = 24;
 
   useEffect(() => {
     if (getCategoryValue(category) == null) {
@@ -52,8 +53,7 @@ const HomeScreen = ({ category }) => {
   useEffect(() => {
     if (data && Array.isArray(data.results)) {
       setProducts(data.results);
-      setNextPage(data.next);
-      setPreviousPage(data.previous);
+      setTotalPages(Math.ceil(data.count / PRODUCTS_PER_PAGE));
     } else {
       setProducts([]);
     }
@@ -76,6 +76,10 @@ const HomeScreen = ({ category }) => {
       return 0;
     }
   });
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   if (loading) {
     return <Spinner />;
@@ -143,19 +147,32 @@ const HomeScreen = ({ category }) => {
             </GridItem>
           ))}
         </Grid>
-        <Flex justifyContent="space-between" mt={4}>
-          <Button 
-            onClick={() => setCurrentPage(currentPage - 1)} 
-            isDisabled={!previousPage}
-          >
-            Previous
-          </Button>
-          <Button 
-            onClick={() => setCurrentPage(currentPage + 1)} 
-            isDisabled={!nextPage}
-          >
-            Next
-          </Button>
+        <Flex justifyContent="center" mt={4}>
+          <IconButton
+            icon={'<'}
+            onClick={() => handlePageChange(currentPage - 1)}
+            isDisabled={currentPage === 1}
+            mr={2}
+            color={colorMode === 'dark' ? 'white' : 'black'}
+          />
+          {Array.from({ length: totalPages }, (_, index) => (
+            <Button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              isActive={currentPage === index + 1}
+              mx={1}
+              color={colorMode === 'dark' ? 'white' : 'black'}
+            >
+              {index + 1}
+            </Button>
+          ))}
+          <IconButton
+            icon={'>'}
+            onClick={() => handlePageChange(currentPage + 1)}
+            isDisabled={currentPage === totalPages}
+            color={colorMode === 'dark' ? 'white' : 'black'}
+            ml={2}
+          />
         </Flex>
       </Box>
     </Container>

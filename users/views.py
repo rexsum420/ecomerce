@@ -12,7 +12,6 @@ from django.contrib import messages
 from rest_framework.status import HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework import permissions
-
 from rest_framework.authtoken.models import Token
 
 def activate(request, token):
@@ -86,7 +85,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = Profile.objects.all()
     lookup_field = 'user__username'
-    pagination_class=[]
+    pagination_class=None
 
     def get_queryset(self):
         username = self.request.query_params.get('user')

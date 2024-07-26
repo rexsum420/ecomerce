@@ -14,7 +14,7 @@ from market.utils import trim_and_case
 from stores.utils import replace_spaces
 
 class ProductListPagination(PageNumberPagination):
-    page_size = 25
+    page_size = 24
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()

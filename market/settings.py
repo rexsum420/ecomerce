@@ -131,7 +131,7 @@ REST_FRAMEWORK = {
         'market.authentication.CustomTokenAuthentication'
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 25,
+    'PAGE_SIZE': 24,
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
