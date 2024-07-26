@@ -178,7 +178,7 @@ const HomeScreen = ({ category }) => {
           <IconButton
             icon={'>'}
             onClick={() => handlePageChange(currentPage + 1)}
-            isDisabled={currentPage === totalPages}
+            isDisabled={currentPage >= totalPages}
             color={colorMode === 'dark' ? 'white' : 'black'}
             ml={2}
           />

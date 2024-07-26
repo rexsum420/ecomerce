@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image, Button } from "@chakra-ui/react";
+import { Box, Spinner, Alert, AlertIcon, Heading, Text, Grid, GridItem, Image, Button, Flex, IconButton } from "@chakra-ui/react";
 import { useParams, useNavigate } from "react-router-dom";
 import Api from "../utils/Api";
 
@@ -15,6 +15,7 @@ const StoreScreen = () => {
     const navigate = useNavigate();
     const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
     const baseUrl = process.env.REACT_APP_BASE_URL;
+    const PRODUCTS_PER_PAGE = 24;
 
     const fetchStore = async (storeId) => {
         try {
@@ -26,7 +27,7 @@ const StoreScreen = () => {
                     'Authorization': `Token ${token}`
                 }
             });
-        
+
             if (response.status === 401) {
                 console.log("Unauthorized");
                 setUnAuth(true);
@@ -45,14 +46,13 @@ const StoreScreen = () => {
             setError(true);
             setLoading(false);
         }
-    }
+    };
 
     const fetchProducts = async (page) => {
         try {
             const res = await Api(`${apiBaseUrl}/api/products/?store=${id}&page=${page}`);
             setProds(res.results);
-            setTotalPages(Math.ceil(res.count / 25)); // Assuming 25 products per page
-            console.log(res.results);
+            setTotalPages(Math.ceil(res.count / PRODUCTS_PER_PAGE));
         } catch (error) {
             console.error("Error fetching products:", error);
             setError(true);
@@ -93,7 +93,7 @@ const StoreScreen = () => {
 
     const handleEditStore = () => {
         window.location.href = `${baseUrl}/store/${id}/edit`;
-    }
+    };
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
@@ -149,23 +149,31 @@ const StoreScreen = () => {
                     );
                 })}
             </Grid>
-            <Box display='flex' justifyContent='center' mt={5}>
-                <Button
+            <Flex justifyContent="center" mt={4}>
+                <IconButton
+                    icon={'<'}
                     onClick={() => handlePageChange(currentPage - 1)}
                     isDisabled={currentPage === 1}
                     mr={2}
-                >
-                    Previous
-                </Button>
-                <Text mx={2}>{currentPage} of {totalPages}</Text>
-                <Button
+                />
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <Button
+                        key={index + 1}
+                        onClick={() => handlePageChange(index + 1)}
+                        colorScheme={index + 1 === currentPage ? 'blue' : 'gray'}
+                        mx={1}
+                        size="sm"
+                    >
+                        {index + 1}
+                    </Button>
+                ))}
+                <IconButton
+                    icon={'>'}
                     onClick={() => handlePageChange(currentPage + 1)}
                     isDisabled={currentPage === totalPages}
                     ml={2}
-                >
-                    Next
-                </Button>
-            </Box>
+                />
+            </Flex>
         </Box>
     );
 };

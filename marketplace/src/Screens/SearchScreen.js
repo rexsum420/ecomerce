@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Spinner, Alert, AlertIcon, Heading, Grid, GridItem, Image, Badge, Text, Flex, Button, Tooltip } from "@chakra-ui/react";
+import { Box, Spinner, Alert, AlertIcon, Heading, Grid, GridItem, Image, Badge, Text, Flex, Button, Tooltip, IconButton, Container } from "@chakra-ui/react";
 import Api from "../utils/Api";
 import { getCategoryValue } from '../utils/CategoryEncoder';
 import getCategoryLabel from '../utils/CategoryDecoder';
@@ -25,11 +25,12 @@ const SearchScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [sortOption, setSortOption] = useState('');
-  const [page, setPage] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const { colorMode } = useColorMode();
   const navigate = useNavigate();
   const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+  const PRODUCTS_PER_PAGE = 24;
 
   const fetchProducts = async (page = 1) => {
     setLoading(true);
@@ -38,8 +39,8 @@ const SearchScreen = () => {
       if (term) apiUrl += `search=${term}&`;
       if (category) apiUrl += `category=${category}&`;
       const res = await Api(apiUrl.slice(0, -1));
-      setProds((prevProds) => page === 1 ? res.results : [...prevProds, ...res.results]);
-      setHasNextPage(!!res.next);
+      setProds(res.results);
+      setTotalPages(Math.ceil(res.count / PRODUCTS_PER_PAGE));
       setLoading(false);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -49,8 +50,8 @@ const SearchScreen = () => {
   };
 
   useEffect(() => {
-    fetchProducts(page);
-  }, [term, category, page]);
+    fetchProducts(currentPage);
+  }, [term, category, currentPage]);
 
   useEffect(() => {
     if (sortOption) {
@@ -83,11 +84,11 @@ const SearchScreen = () => {
     navigate(`/view-product/${id}`);
   };
 
-  const loadMore = () => {
-    setPage((prevPage) => prevPage + 1);
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
-  if (loading && page === 1) {
+  if (loading && currentPage === 1) {
     return <Spinner size="xl" />;
   }
 
@@ -101,13 +102,13 @@ const SearchScreen = () => {
   }
 
   return (
-    <Box p={5}>
+    <Container maxW="container.xl" mt={4}>
       <CategoryScroll term={term} />
-      <Flex flexDirection="row" justifyContent="space-between" marginTop={'20px'}>
-        <Flex flexDirection="column">
-          {term && term.trim() !== '' && <Heading size="sm" mb={5}>Search Results for "{term}"</Heading>}
-          {category && category.trim() !== '' && <Heading size="sm" mb={5}>Results in category: {getCategoryLabel(category)}</Heading>}
-        </Flex>
+      <Box marginTop={'20px'} display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" mb={4}>
+        <Heading size="sm">
+          {term && term.trim() !== '' && `Search Results for "${term}"`}
+          {category && category.trim() !== '' && `Results in category: ${getCategoryLabel(category)}`}
+        </Heading>
         <Flex justifyContent="end" alignItems="center">
           <Tooltip label="Sort by price: Lowest to highest" aria-label="Sort by price ascending">
             <Image 
@@ -153,8 +154,11 @@ const SearchScreen = () => {
             />
           </Tooltip>
         </Flex>
-      </Flex>
-      <Grid templateColumns="repeat(auto-fill, minmax(300px, 1fr))" gap={6}>
+      </Box>
+      <Grid 
+        templateColumns={{ base: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' }} 
+        gap={6}
+      >
         {prods.map((product) => (
           <GridItem key={product.id}>
             <Box
@@ -207,14 +211,34 @@ const SearchScreen = () => {
           </GridItem>
         ))}
       </Grid>
-      {hasNextPage && (
-        <Flex justifyContent="center" mt={4}>
-          <Button onClick={loadMore} isLoading={loading}>
-            Load More
+      <Flex justifyContent="center" mt={4}>
+        <IconButton
+          icon={'<'}
+          onClick={() => handlePageChange(currentPage - 1)}
+          isDisabled={currentPage === 1}
+          mr={2}
+          color={colorMode === 'dark' ? 'white' : 'black'}
+        />
+        {Array.from({ length: totalPages }, (_, index) => (
+          <Button
+            key={index + 1}
+            onClick={() => handlePageChange(index + 1)}
+            colorScheme={index + 1 === currentPage ? 'blue' : 'gray'}
+            mx={1}
+            size="sm"
+          >
+            {index + 1}
           </Button>
-        </Flex>
-      )}
-    </Box>
+        ))}
+        <IconButton
+          icon={'>'}
+          onClick={() => handlePageChange(currentPage + 1)}
+          isDisabled={currentPage === totalPages}
+          ml={2}
+          color={colorMode === 'dark' ? 'white' : 'black'}
+        />
+      </Flex>
+    </Container>
   );
 };
 

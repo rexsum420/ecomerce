@@ -175,7 +175,7 @@ const LandingPage = ({ category }) => {
         <IconButton
           icon={'>'}
           onClick={() => handlePageChange(currentPage + 1)}
-          isDisabled={currentPage === totalPages}
+          isDisabled={currentPage >= totalPages}
           ml={2}
         />
       </Flex>
