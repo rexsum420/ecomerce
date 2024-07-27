@@ -7,6 +7,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
+from django.http import HttpRequest
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -26,10 +27,16 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Profile.objects.create(user=instance)
         Token.objects.create(user=instance)
+        
+        # Send verification email
+        send_verification_email(instance)
 
-def send_verification_email(user, request):
+def send_verification_email(user):
     tokn = Token.objects.get(user=user)
     token = tokn.key 
+    request = HttpRequest()
+    request.META['SERVER_NAME'] = 'yourdomain.com'
+    request.META['SERVER_PORT'] = '80'
     current_site = get_current_site(request)
     mail_subject = 'Activate your account.'
     message = render_to_string('acc_active_email.html', {

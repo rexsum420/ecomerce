@@ -9,7 +9,7 @@ load_dotenv()
 
 if 'SECRET_KEY' not in os.environ:
     SECRET_KEY = secrets.token_urlsafe(50)
-    os.environ['SECRET_KEY'] = SECRET_KEY.decode()
+    os.environ['SECRET_KEY'] = SECRET_KEY.encode()
 else:
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
@@ -77,10 +77,21 @@ WSGI_APPLICATION = 'market.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.environ.get('DB_ENGINE'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
     }
 }
+
+CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT = [os.environ.get('CELERY_ACCEPT_CONTENT')]
+CELERY_TASK_SERIALIZER = os.environ.get('CELERY_TASK_SERIALIZER')
+CELERY_RESULT_SERIALIZER = os.environ.get('CELERY_RESULT_SERIALIZER')
+CELERY_TIMEZONE = os.environ.get('CELERY_TIMEZONE')
 
 AUTH_PASSWORD_VALIDATORS = [
     {

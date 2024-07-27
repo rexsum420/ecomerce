@@ -2,8 +2,9 @@ from django.db import models
 from stores.models import Store
 from products.models import Product
 from django.contrib.auth import get_user_model
-User = get_user_model()
 import uuid
+
+User = get_user_model()
 
 class Order(models.Model):
     transaction_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
